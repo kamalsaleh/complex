@@ -73,3 +73,54 @@ function( identity, name, properties )
                            name := name,
                            properties := properties ));
 end );
+
+#######################################################################
+##
+#M  \.( <cat>, <propName> ) 
+##
+##  Method for retrieving properties from a category, where <propName>
+##  is one of the properties listed in the Cat() documentation above.
+##  
+InstallMethod( \.,
+[ IsCat, IsPosInt ],
+function( cat, propName )
+    return cat!.properties.( NameRNam( propName ) );
+end );
+
+#######################################################################
+##
+#M  \=( <cat1>, <cat2> ) 
+##
+##  Equality test for two categories. Two categories are equal if
+##  and only if their identity are the same.
+##  
+InstallMethod( \=,
+[ IsCat, IsCat ],
+function( cat1, cat2 )
+    return cat1!.identity = cat2!.identity;
+end );
+
+#######################################################################
+##
+#M  PrintObj( <cat> ) 
+##
+##  Printing a category, using its name.
+##  
+InstallMethod( PrintObj,
+[ IsCat ],
+function( cat )
+    Print( "<cat: ", cat!.name, ">" );
+end );
+
+#######################################################################
+##
+#M  ViewObj( <cat> ) 
+##
+##  Viewing a cateory, adding no more information than the PrintObj.
+##  
+InstallMethod( ViewObj,
+[ IsCat ],
+function( cat )
+    Print( cat );
+end );
+

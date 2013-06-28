@@ -5,7 +5,7 @@ DeclareCategory( "IsAdditiveCat", IsCat );
 DeclareCategory( "IsAbelianCat", IsAdditiveCat );
 
 DeclareRepresentation( "IsCatDefaultRep", IsComponentObjectRep,
-                       [ "identity", "properties" ] );
+                       [ "identity", "name", "properties" ] );
 
 DeclareOperation( "Cat", [ IsObject, IsString, IsRecord ] );
 DeclareOperation( "AdditiveCat", [ IsObject, IsString, IsRecord ] );
