@@ -26,7 +26,7 @@ function( identity, name, properties )
     
     catProps := [ "objInCat", "morphInCat", "domain", "codomain",
                   "compose", "identityMorph", "isIsomorphism", "inverse", "isomorphic", "isomorphism",
-                  "zeroMorph", "addMorph", "invMorph", "zeroObj", "directSum" ];
+                  "zeroMorph", "addMorph", "negateMorph", "zeroObj", "directSum" ];
     givenProps := RecNames( properties );
     if not ForAll( catProps, prop -> prop in givenProps ) then
         Error( "Missing properties for cat" );
