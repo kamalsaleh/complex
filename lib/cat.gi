@@ -124,3 +124,46 @@ function( cat )
     Print( cat );
 end );
 
+InstallMethod( ObjectInCat,
+[ IsCat, IsObject ],
+function( cat, X )
+    return cat.objInCat( X );
+end );
+
+InstallMethod( MorphismInCat,
+[ IsCat, IsObject ],
+function( cat, f )
+    return cat.morphInCat( f );
+end );
+
+InstallMethod( Domain,
+[ IsCat, IsObject ],
+function( cat, f )
+    return cat.domain( f );
+end );
+
+InstallMethod( Codomain,
+[ IsCat, IsObject ],
+function( cat, f )
+    return cat.codomain( f );
+end );
+
+InstallMethod( Compose,
+[ IsCat, IsObject, IsObject ],
+function( cat, f, g )
+    return cat.compose( f, g );
+end );
+
+InstallMethod( IdentityMorphism,
+[ IsCat, IsObject ],
+function( cat, X )
+    return cat.identityMorph( X );
+end );
+
+InstallMethod( IsIsomorphism,
+[ IsCat, IsObject ],
+function( cat, f )
+    return cat.isIsomorphism( f );
+end );
+
+
