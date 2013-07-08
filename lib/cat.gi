@@ -33,7 +33,7 @@ function( identity, name, properties )
     fi;
 
     return Objectify( NewType( NewFamily( "CatFamily", IsCat ),
-                               IsCat and IsCatDefaultRep ),
+                               IsAdditiveCat and IsCatDefaultRep ),
                       rec( identity := identity,
                            name := name,
                            properties := properties ));
@@ -68,7 +68,7 @@ function( identity, name, properties )
     fi;
 
     return Objectify( NewType( NewFamily( "CatFamily", IsCat ),
-                               IsCat and IsCatDefaultRep ),
+                               IsAbelianCat and IsCatDefaultRep ),
                       rec( identity := identity,
                            name := name,
                            properties := properties ));
