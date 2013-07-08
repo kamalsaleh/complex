@@ -13,8 +13,8 @@ DeclareOperation( "AbelianCat", [ IsObject, IsString, IsRecord ] );
 
 DeclareOperation( "ObjectInCat", [ IsCat, IsObject ] );
 DeclareOperation( "MorphismInCat", [ IsCat, IsObject ] );
-DeclareOperation( "Domain", [ IsCat, IsObject ] );
-DeclareOperation( "Codomain", [ IsCat, IsObject ] );
+DeclareOperation( "DomainOfMorphism", [ IsCat, IsObject ] );
+DeclareOperation( "CodomainOfMorphism", [ IsCat, IsObject ] );
 DeclareOperation( "Compose", [ IsCat, IsObject, IsObject ] );
 DeclareOperation( "IdentityMorphism", [ IsCat, IsObject ] );
 DeclareOperation( "IsIsomorphism", [ IsCat, IsObject ] );

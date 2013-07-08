@@ -136,13 +136,13 @@ function( cat, f )
     return cat.morphInCat( f );
 end );
 
-InstallMethod( Domain,
+InstallMethod( DomainOfMorphism,
 [ IsCat, IsObject ],
 function( cat, f )
     return cat.domain( f );
 end );
 
-InstallMethod( Codomain,
+InstallMethod( CodomainOfMorphism,
 [ IsCat, IsObject ],
 function( cat, f )
     return cat.codomain( f );
@@ -166,4 +166,74 @@ function( cat, f )
     return cat.isIsomorphism( f );
 end );
 
+InstallMethod( Inverse,
+[ IsCat, IsObject ],
+function( cat, f )
+    return cat.inverse( f );
+end );
 
+InstallMethod( Isomorphic,
+[ IsCat, IsObject, IsObject ],
+function( cat, X, Y )
+    return cat.isomorphic( X, Y );
+end );
+
+InstallMethod( Isomorphism,
+[ IsCat, IsObject, IsObject ],
+function( cat, X, Y )
+    return cat.isomorphism( X, Y );
+end );
+
+InstallMethod( ZeroMorphism,
+[ IsAdditiveCat, IsObject, IsObject ],
+function( cat, X, Y )
+    return cat.zeroMorph( X, Y );
+end );
+
+InstallMethod( AddMorphisms,
+[ IsAdditiveCat, IsObject, IsObject ],
+function( cat, f, g )
+    return cat.addMorph( f, g );
+end );
+
+InstallMethod( NegateMorphism,
+[ IsAdditiveCat, IsObject ],
+function( cat, f )
+    return cat.negateMorph( f );
+end );
+
+InstallMethod( ZeroObject,
+[ IsAdditiveCat ],
+function( cat )
+    return cat.zeroObj;
+end );
+
+InstallMethod( DirectSum,
+[ IsAdditiveCat, IsObject, IsObject ],
+function( cat, X, Y )
+    return cat.directSum( X, Y );
+end );
+
+InstallMethod( KernelOfMorphism,
+[ IsAbelianCat, IsObject ],
+function( cat, f )
+    return cat.kernel( f );
+end );
+
+InstallMethod( CokernelOfMorphism,
+[ IsAbelianCat, IsObject ],
+function( cat, f )
+    return cat.cokernel( f );
+end );
+
+InstallMethod( KernelFactorization,
+[ IsAbelianCat, IsObject, IsObject ],
+function( cat, f, g )
+    return cat.kernelFactorization( f, g );
+end );
+
+InstallMethod( CokernelFactorization,
+[ IsAbelianCat, IsObject, IsObject ],
+function( cat, f, g )
+    return cat.cokernelFactorization( f, g );
+end );
