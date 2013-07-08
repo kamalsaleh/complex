@@ -208,7 +208,7 @@ function( cat )
     return cat.zeroObj;
 end );
 
-InstallMethod( DirectSum,
+InstallMethod( DirectSumOfObjects,
 [ IsAdditiveCat, IsObject, IsObject ],
 function( cat, X, Y )
     return cat.directSum( X, Y );

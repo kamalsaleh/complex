@@ -26,7 +26,7 @@ DeclareOperation( "ZeroMorphism", [ IsAdditiveCat, IsObject, IsObject ] );
 DeclareOperation( "AddMorphisms", [ IsAdditiveCat, IsObject, IsObject ] );
 DeclareOperation( "NegateMorphism", [ IsAdditiveCat, IsObject ] );
 DeclareOperation( "ZeroObject", [ IsAdditiveCat ] );
-DeclareOperation( "DirectSum", [ IsAdditiveCat, IsObject, IsObject ] );
+DeclareOperation( "DirectSumOfObjects", [ IsAdditiveCat, IsObject, IsObject ] );
 
 DeclareOperation( "KernelOfMorphism", [ IsAbelianCat, IsObject ] );
 DeclareOperation( "CokernelOfMorphism", [ IsAbelianCat, IsObject ] );
