@@ -133,6 +133,37 @@ end );
 
 #######################################################################
 ##
+#M  PrintObj( <list> )
+##
+##  Implementation of Print for IsHalfInfList objects.
+##  
+InstallMethod( PrintObj,
+[ IsHalfInfList ],
+function( list )
+    Print( "<HalfInfList with range " );
+    if Direction( list ) = 1 then
+        Print( "[", String( StartPosition( list ) ), ",inf)" );
+    else
+        Print( "(-inf,", String( StartPosition( list ) ), "]" );
+    fi;
+    Print( ", type " );
+    if InfListType( list ) = "repeat" then
+        Print( "repeat(", String( Length( RepeatingList( list ) ) ), ")" );
+    elif InfListType( list ) = "pos" then
+        Print( "pos" );
+        if not IsStoringValues( list ) then
+            Print( " (not storing values)" );
+        fi;
+    elif InfListType( list ) = "next" then
+        Print( "next" );
+    else
+        Print( "unknown" ); # this should never happen
+    fi;
+    Print( ">" );
+end );
+
+#######################################################################
+##
 #M  StartPosition( <list> )
 ##
 ##  Returns the start position of a IsHalfInfList <list>.
@@ -378,6 +409,57 @@ function( basePosition, middle, positive, negative, callback )
                                 -1, negative, callback );
 
     return MakeInfListFromHalfInfLists( basePosition, middle, posList, negList );
+
+end );
+
+#######################################################################
+##
+#M  PrintObj( <list> )
+##
+##  Implementation of Print for IsInfList objects.
+##  
+InstallMethod( PrintObj,
+[ IsInfList ],
+function( list )
+    local pos, neg, mid;
+
+    pos := PositivePart( list );
+    neg := NegativePart( list );
+    mid := MiddlePart( list );
+
+    Print( "<InfList: " );
+
+    # negative part:
+    Print( "(-inf,", String( StartPosition( neg ) ), "]:" );
+    if InfListType( neg ) = "repeat" then
+        Print( "repeat(", String( Length( RepeatingList( neg ) ) ), ")" );
+    elif InfListType( neg ) = "pos" then
+        Print( "pos" );
+    elif InfListType( neg ) = "next" then
+        Print( "next" );
+    else
+        Print( "unknown" ); # this should never happen
+    fi;
+    Print( ", " );
+
+    # middle part:
+    Print( "[", MiddleStart( list ), ",", MiddleEnd( list ), "]:" );
+    Print( mid );
+    Print( ", " );
+
+    # positive part:
+    Print( "[", String( StartPosition( pos ) ), ",inf):" );
+    if InfListType( pos ) = "repeat" then
+        Print( "repeat(", String( Length( RepeatingList( pos ) ) ), ")" );
+    elif InfListType( pos ) = "pos" then
+        Print( "pos" );
+    elif InfListType( pos ) = "next" then
+        Print( "next" );
+    else
+        Print( "unknown" ); # this should never happen
+    fi;
+
+    Print( ">" );
 
 end );
 
