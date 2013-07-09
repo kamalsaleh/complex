@@ -4,8 +4,11 @@ InstallMethod( Cat,
 function( identity, name, properties )
     local catProps, givenProps;
     
-    catProps := [ "objInCat", "morphInCat", "domain", "codomain",
-                  "compose", "identityMorph", "isIsomorphism", "inverse", "isomorphic", "isomorphism" ];
+    catProps := [ "objInCat", "morphInCat",
+                  "domain", "codomain",
+                  "compose", "identityMorph",
+                  "isIsomorphism", "inverse", "isomorphic", "isomorphism",
+                  "objString" ];
     givenProps := RecNames( properties );
     if not ForAll( catProps, prop -> prop in givenProps ) then
         Error( "Missing properties for cat" );
@@ -24,8 +27,12 @@ InstallMethod( AdditiveCat,
 function( identity, name, properties )
     local catProps, givenProps;
     
-    catProps := [ "objInCat", "morphInCat", "domain", "codomain",
-                  "compose", "identityMorph", "isIsomorphism", "inverse", "isomorphic", "isomorphism",
+    catProps := [ "objInCat", "morphInCat",
+                  "domain", "codomain",
+                  "compose", "identityMorph",
+                  "isIsomorphism", "inverse", "isomorphic", "isomorphism",
+                  "objString",
+                  # for additive cat:
                   "zeroMorph", "addMorph", "negateMorph", "zeroObj", "directSum" ];
     givenProps := RecNames( properties );
     if not ForAll( catProps, prop -> prop in givenProps ) then
@@ -45,9 +52,14 @@ InstallMethod( AbelianCat,
 function( identity, name, properties )
     local catProps, givenProps;
     
-    catProps := [ "objInCat", "morphInCat", "domain", "codomain",
-                  "compose", "identityMorph", "isIsomorphism", "inverse", "isomorphic", "isomorphism",
+    catProps := [ "objInCat", "morphInCat",
+                  "domain", "codomain",
+                  "compose", "identityMorph",
+                  "isIsomorphism", "inverse", "isomorphic", "isomorphism",
+                  "objString",
+                  # for additive cat:
                   "zeroMorph", "addMorph", "negateMorph", "zeroObj", "directSum",
+                  # for abelian cat:
                   "kernel", "cokernel", "kernelFactorization", "cokernelFactorization" ];
     givenProps := RecNames( properties );
     if not ForAll( catProps, prop -> prop in givenProps ) then
@@ -184,6 +196,12 @@ function( cat, X, Y )
     return cat.isomorphism( X, Y );
 end );
 
+InstallMethod( ObjectAsString,
+[ IsCat, IsObject ],
+function( cat, X )
+    return cat.objString( X );
+end );
+
 InstallMethod( ZeroMorphism,
 [ IsAdditiveCat, IsObject, IsObject ],
 function( cat, X, Y )
@@ -212,6 +230,23 @@ InstallMethod( DirectSumOfObjects,
 [ IsAdditiveCat, IsObject, IsObject ],
 function( cat, X, Y )
     return cat.directSum( X, Y );
+end );
+
+InstallMethod( IsZeroObject,
+[ IsAdditiveCat, IsObject ],
+function( cat, X )
+    return X = ZeroObject( cat );
+end );
+
+InstallMethod( IsZeroMorphism,
+[ IsAdditiveCat, IsObject ],
+function( cat, f )
+    if not MorphismInCat( cat, f ) then
+        return false;
+    fi;
+    return f = ZeroMorphism( cat,
+                             DomainOfMorphism( cat, f ),
+                             CodomainOfMorphism( cat, f ) );
 end );
 
 InstallMethod( KernelOfMorphism,
