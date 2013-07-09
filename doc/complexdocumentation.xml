@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Reading PKGVERSIONDATA chunk from the PackageInfo.g file -->
+
+<!DOCTYPE Book SYSTEM "gapdoc.dtd"
+   [ <!ENTITY Complex "<Package>Complex</Package>">
+     <#Include Label="PKGVERSIONDATA">
+   ]>
+
+<!-- Documentation of the Example package. -->
+
+<Book Name="Complex"> 
+
+<TitlePage>
+  <Title>&Complex;</Title>
+  <Subtitle>A &GAP; package for chain complexes.</Subtitle>
+  <Version>Version &VERSION;</Version>
+  <Date>&RELEASEDATE;</Date>
+  <Author> Kristin Krogh Arnesen
+    <Email>kristink@math.ntnu.no</Email>
+    <Homepage>http://www.math.ntnu.no/~kristink</Homepage>
+  </Author>
+  <Author> Øystein Skartsæterhagen
+    <Email>oysteini@math.ntnu.no</Email>
+    <Homepage>http://www.math.ntnu.no/~oysteini</Homepage>
+  </Author>
+    <Copyright> 
+    <Index>License</Index>
+    &copyright; ??
+    <!-- &Example; package is free software;  -->
+    <!-- you can redistribute it and/or modify it under the terms of the  -->
+    <!-- <URL Text="GNU General Public License">http://www.fsf.org/licenses/gpl.html</URL>  -->
+    <!-- as published by the Free Software Foundation; either version 2 of the License,  -->
+    <!-- or (at your option) any later version. -->
+  </Copyright>
+  <Acknowledgements>
+    Thanks to Hjalmar Lundbohm, sjiraffen Sven, sjiraffen Svens venn and Ole Lauritz.
+  </Acknowledgements>
+</TitlePage>
+
+<TableOfContents/>
+
+<Body>
+
+<#Include SYSTEM "intro.xml">
+
+<#Include SYSTEM "chapter_quickstart.xml">
+
+<#Include SYSTEM "chapter_abeliancategories.xml">
+
+</Body>
+
+<TheIndex/>
+
+</Book>
+
+<!-- ==================================================================== -->
+

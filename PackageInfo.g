@@ -46,8 +46,8 @@ Date := "24/12/2013",
 ##  version and the release date as shown below to read them while building
 ##  the manual using GAPDoc facilities to distibute documents across files.
 ##  <#GAPDoc Label="PKGVERSIONDATA">
-##  <!ENTITY VERSION "3.4.3">
-##  <!ENTITY RELEASEDATE "27 March 2013">
+##  <!ENTITY VERSION "1.0">
+##  <!ENTITY RELEASEDATE "24 December 2013">
 ##  <#/GAPDoc>
 
 PackageWWWHome :="https://bitbucket.org/karnesen/complex",

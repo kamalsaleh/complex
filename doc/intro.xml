@@ -1,0 +1,50 @@
+<Chapter Label="Introduction"><Heading>Introduction</Heading>
+
+<Section Label="Aims"><Heading>General aims</Heading>
+
+The <Package>Complex</Package> package is a &GAP; package which
+implements chain complexes over an abelian category.  Chain complexes
+are a basic concept of homological algebra, well known by both
+algebraists and topologists.  The &Complex; package includes
+implementation of chain complexes, a diversity of operations on chain
+complexes, and some ready-made examples of abelian categories.  <P />
+
+It should be easy to make interfaces between &Complex; and other
+packages.  For instance, the <Package>QPA</Package> package includes
+an implementation of the abelian category <M>\mathrm{mod}~ \Lambda</M>
+of right modules (or representations) of a finite-dimensional quotient
+of a path algebra, which is used to compute with chain complexes over
+this category.  Hence one can do computations in the derived category
+of <M>\mathrm{mod}~ \Lambda</M> in <Package>QPA</Package> using the
+&Complex; package.  The &GAP; category implementing abelian categories
+is called <C>IsAbelianCategory</C>.<P />
+
+Chain complexes have, from a programmer's point of view, a difficult
+nature: They can be <E>unbounded</E>, that is, infinite.  An example
+of this occurs for an algebra <M>A</M> of infinite global dimension.
+There are objects in <M>\mathrm{mod}~A</M> with infinite (and maybe
+also non-periodic) projective resolutions.  Yet, infinite chain
+complexes may be described with a finite amount of information. The
+&Complex; package is capable of handling, in a completely immutable
+way, such unbounded chain complexes.  This is achieved by creating a
+&GAP; category <C>IsInfList</C>.  A chain complex is essentially such
+an infinite list of morphisms belonging to some abelian category.<P />
+
+The first version of the code in &Complex; was originally a part of
+<Package>QPA</Package>. As the concept of chain complexes have a much
+wider scope than just the mathematics <Package>QPA</Package> deals
+with, we have separated and generalized the code into a package of its
+own.
+
+The mathematical notation and conventions used is mainly taken from
+the first chapter of ``An introduction to homological algebra'' by
+Charles A. Weibel (Cambridge University Press, 1994).
+
+</Section>
+
+<Section Label="Installation"><Heading>Installation and system requirements</Heading>
+Tralala.
+
+</Section>
+
+</Chapter>
