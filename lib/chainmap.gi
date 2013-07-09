@@ -25,8 +25,9 @@ function( source, range, basePosition, middle, positive, negative )
 
     if positive = "zero" then
         positiveL := [ "pos",
-                       i -> cat.zeroMap( ObjectOfComplex( source, i ),
-                                         ObjectOfComplex( range, i ) ),
+                       i -> ZeroMorphism( cat,
+                                          ObjectOfComplex( source, i ),
+                                          ObjectOfComplex( range, i ) ),
                        false ];
     elif positive[ 1 ] = "pos" then
         positiveL := ShallowCopy( positive );
@@ -38,8 +39,9 @@ function( source, range, basePosition, middle, positive, negative )
     fi;
     if negative = "zero" then
         negativeL := [ "pos",
-                       i -> cat.zeroMap( ObjectOfComplex( source, i ),
-                                         ObjectOfComplex( range, i ) ),
+                       i -> ZeroMorphism( cat,
+                                          ObjectOfComplex( source, i ),
+                                          ObjectOfComplex( range, i ) ),
                        false ];
     elif negative[ 1 ] = "pos" then
         negativeL := ShallowCopy( negative );
@@ -81,7 +83,7 @@ function( source, range, basePosition, middle, positive, negative )
     end;
 
     commutesAt := function( i )
-        return cat.composeMaps( range^i, map^i ) = cat.composeMaps( map^(i-1), source^i );
+        return Compose( cat, range^i, map^i ) = Compose( cat, map^(i-1), source^i );
     end;
 
     checkDomainAndCodomain := function( i )
