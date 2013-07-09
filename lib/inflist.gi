@@ -84,7 +84,7 @@ function( n )
 
 #######################################################################
 ##
-#F  MakeHalfInfList( <start>, <direction>, <typeWithArgs>, <callback> )
+#M  MakeHalfInfList( <start>, <direction>, <typeWithArgs>, <callback> )
 ##
 ##  Creates a IsHalfInfList with start index <start>, <direction> is
 ##  -1 for negative or 1 for positive, <typeWithArgs> is a list of either
@@ -92,11 +92,47 @@ function( n )
 ##  (see the documentation), and <callback> is a function which is called
 ##  whenever a new list element is computed.
 ##  
-InstallGlobalFunction( MakeHalfInfList,
+InstallMethod( MakeHalfInfList,
+[ IsInt, IsInt, IsList, IsObject ],
 function( start, direction, typeWithArgs, callback )
     local type, repeatingList, func, initialValue, storeValues, data, list;
 
+    if not direction in [ 1, -1 ] then
+        Error( "direction of HalfInfList must be either 1 or -1" );
+    fi;
+    if Length( typeWithArgs ) < 2 or Length( typeWithArgs ) > 3 then
+        Error( "Third argument to MakeHalfInfList must be a list of length 2 or 3" );
+    fi;
+    if not ( IsFunction( callback ) or callback = false ) then
+        Error( "callback argument must be either a function or false" );
+    fi;
+
     type := typeWithArgs[ 1 ];
+    if not type in [ "repeat", "next", "pos" ] then
+        Error( "Invalid type \"", type, "\" for HalfInfList ",
+               "(should be one of \"repeat\", \"next\", \"pos\")" );
+    fi;
+    if type = "repeat" and Length( typeWithArgs ) > 2 then
+        Error( "Invalid type specification ", typeWithArgs, " for HalfInfList ",
+               "(\"repeat\" type takes exactly one argument)" );
+    fi;
+    if type = "next" and Length( typeWithArgs ) < 3 then
+        Error( "Invalid type specification ", typeWithArgs, " for HalfInfList ",
+               "(\"next\" type takes two arguments)" );
+    fi;
+    if type = "repeat" and not IsList( typeWithArgs[ 2 ] ) then
+        Error( "Invalid type specification ", typeWithArgs, " for HalfInfList ",
+               "(\"repeat\" type needs a list as argument)" );
+    fi;
+    if ( type = "next" or type = "pos" ) and not IsFunction( typeWithArgs[ 2 ] ) then
+        Error( "Invalid type specification ", typeWithArgs, " for HalfInfList ",
+               "(\"", type, "\" type needs a function as argument)" );
+    fi;
+    if type = "pos" and Length( typeWithArgs ) = 3 and not IsBool( typeWithArgs[ 3 ] ) then
+        Error( "Invalid type specification ", typeWithArgs, " for HalfInfList ",
+               "(second argument for \"pos\" type must be boolean)" );
+    fi;
+
     if type = "repeat" then
         repeatingList := typeWithArgs[ 2 ];
         func := fail;
@@ -385,7 +421,7 @@ end );
 
 #######################################################################
 ##
-#F  MakeInfList( <basePosition>, <middle>, <positive>, <negative>,
+#M  MakeInfList( <basePosition>, <middle>, <positive>, <negative>,
 ##               <callback> )
 ##
 ##  Creates an IsInfList object.  <basePostition> tells in which index
@@ -395,7 +431,8 @@ end );
 ##  of the list.  <callback> is a function to be called whenever a 
 ##  new value of the infinite list is computed.
 ##  
-InstallGlobalFunction( MakeInfList,
+InstallMethod( MakeInfList,
+[ IsInt, IsList, IsList, IsList, IsObject ],
 function( basePosition, middle, positive, negative, callback )
     local posList, negList;
 
@@ -430,15 +467,19 @@ function( list )
     Print( "<InfList: " );
 
     # negative part:
-    Print( "(-inf,", String( StartPosition( neg ) ), "]:" );
-    if InfListType( neg ) = "repeat" then
-        Print( "repeat(", String( Length( RepeatingList( neg ) ) ), ")" );
-    elif InfListType( neg ) = "pos" then
-        Print( "pos" );
-    elif InfListType( neg ) = "next" then
-        Print( "next" );
+    if neg = fail then
+        Print( "(-inf,", String( MiddleStart( list ) - 1 ), "]:empty" );
     else
-        Print( "unknown" ); # this should never happen
+        Print( "(-inf,", String( StartPosition( neg ) ), "]:" );
+        if InfListType( neg ) = "repeat" then
+            Print( "repeat(", String( Length( RepeatingList( neg ) ) ), ")" );
+        elif InfListType( neg ) = "pos" then
+            Print( "pos" );
+        elif InfListType( neg ) = "next" then
+            Print( "next" );
+        else
+            Print( "unknown" ); # this should never happen
+        fi;
     fi;
     Print( ", " );
 
@@ -448,15 +489,19 @@ function( list )
     Print( ", " );
 
     # positive part:
-    Print( "[", String( StartPosition( pos ) ), ",inf):" );
-    if InfListType( pos ) = "repeat" then
-        Print( "repeat(", String( Length( RepeatingList( pos ) ) ), ")" );
-    elif InfListType( pos ) = "pos" then
-        Print( "pos" );
-    elif InfListType( pos ) = "next" then
-        Print( "next" );
+    if neg = fail then
+        Print( "[", String( MiddleEnd( list ) + 1 ), ",inf):empty" );
     else
-        Print( "unknown" ); # this should never happen
+        Print( "[", String( StartPosition( pos ) ), ",inf):" );
+        if InfListType( pos ) = "repeat" then
+            Print( "repeat(", String( Length( RepeatingList( pos ) ) ), ")" );
+        elif InfListType( pos ) = "pos" then
+            Print( "pos" );
+        elif InfListType( pos ) = "next" then
+            Print( "next" );
+        else
+            Print( "unknown" ); # this should never happen
+        fi;
     fi;
 
     Print( ">" );
@@ -465,15 +510,23 @@ end );
 
 #######################################################################
 ##
-#F  MakeInfListFromHalfInfLists( <basePosition>, <middle>, <positive>,
+#M  MakeInfListFromHalfInfLists( <basePosition>, <middle>, <positive>,
 ##                                <negative> )
 ##  
 ##  Creates an IsInfList from a middle part (a list) and two IsHalfInfLists
 ##  <positive> and <negative>.
 ##
-InstallGlobalFunction( MakeInfListFromHalfInfLists,
+InstallMethod( MakeInfListFromHalfInfLists,
+[ IsInt, IsList, IsObject, IsObject ],
 function( basePosition, middle, positive, negative )
     local list;
+
+    if negative <> fail and not IsHalfInfList( negative ) then
+        Error( "negative list must be either a HalfInfList or fail" );
+    fi;
+    if positive <> fail and not IsHalfInfList( positive ) then
+        Error( "positive list must be either a HalfInfList or fail" );
+    fi;
 
     if negative <> fail and basePosition <> StartPosition( negative ) + 1 then
         Error( "negative list starts at incorrect position" );
@@ -495,12 +548,13 @@ end );
 
 #######################################################################
 ##
-#F  FunctionInfList( <func> )
+#M  FunctionInfList( <func> )
 ##  
 ##  Creates an IsInfList where all list entries are described by a 
 ##  function.
 ##
-InstallGlobalFunction( FunctionInfList,
+InstallMethod( FunctionInfList,
+[ IsFunction ],
 function( func )
     local positiveNegativeList;
     positiveNegativeList := [ "pos", func, false ];
@@ -509,23 +563,25 @@ end );
 
 #######################################################################
 ##
-#F  ConstantInfList( <value> )
+#M  ConstantInfList( <value> )
 ##  
 ##  Creates an IsInfList with <value> in each position.
 ##
-InstallGlobalFunction( ConstantInfList,
+InstallMethod( ConstantInfList,
+[ IsObject ],
 function( value )
     return MakeInfList( 0, [], [ "repeat", [ value ] ], [ "repeat", [ value ] ], false );
 end );
 
 #######################################################################
 ##
-#F  FiniteInfList( <basePosition>, <list> )
+#M  FiniteInfList( <basePosition>, <list> )
 ##  
 ##  Creates an IsInfList which is finite.  Only indexes in the interval
 ##  [basePostition, basePosition + length(<list>) - 1] is allowed.
 ##
-InstallGlobalFunction( FiniteInfList,
+InstallMethod( FiniteInfList,
+[ IsInt, IsList ],
 function( basePosition, list )
     return MakeInfListFromHalfInfLists( basePosition, list, fail, fail );
 end );

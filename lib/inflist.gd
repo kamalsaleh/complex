@@ -56,7 +56,7 @@ DeclareRepresentation( "IsInfListDefaultRep",
                        IsComponentObjectRep and IsAttributeStoringRep,
                        [ "basePosition", "middle", "positive", "negative" ] );
 
-DeclareGlobalFunction( "MakeHalfInfList" );
+DeclareOperation( "MakeHalfInfList", [ IsInt, IsInt, IsList, IsObject ] );
 
 # MakeHalfInfList( start, direction, typeWithArgs, callback )
 # MakeHalfInfList( start, direction, [ "repeat", repeatList ], callback )
@@ -64,7 +64,7 @@ DeclareGlobalFunction( "MakeHalfInfList" );
 # MakeHalfInfList( start, direction, [ "pos", posFunction ], callback )
 # MakeHalfInfList( start, direction, [ "pos", posFunction, storeValues ], callback )
 
-DeclareGlobalFunction( "MakeInfList" );
+DeclareOperation( "MakeInfList", [ IsInt, IsList, IsList, IsList, IsObject ] );
 
 # MakeInfList( basePosition, middle, positive, negative, callback )
 # MakeInfList( basePosition, middle, [ "repeat", repeatList ], [ "repeat", repeatList ],
@@ -74,10 +74,10 @@ DeclareGlobalFunction( "MakeInfList" );
 #              [ "repeat", repeatList ], callback )
 # ...
 
-DeclareGlobalFunction( "MakeInfListFromHalfInfLists" );
+DeclareOperation( "MakeInfListFromHalfInfLists", [ IsInt, IsList, IsObject, IsObject ] );
 
 # MakeInfListFromHalfInfLists( middle, positive, negative )
 
-DeclareGlobalFunction( "FunctionInfList" );
-DeclareGlobalFunction( "ConstantInfList" );
-DeclareGlobalFunction( "FiniteInfList" );
+DeclareOperation( "FunctionInfList", [ IsFunction ] );
+DeclareOperation( "ConstantInfList", [ IsObject ] );
+DeclareOperation( "FiniteInfList", [ IsInt, IsList ] );
