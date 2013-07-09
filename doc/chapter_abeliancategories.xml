@@ -13,13 +13,13 @@ A category is called <E>additive</E> if, for any pair of objects
 <M>(X,Y)</M>, the set of morphisms from <M>X</M> to <M>Y</M> is an
 abelian group such that composition distributes over addition;
 moreover there is a special ``zero object'' in the category with only
-the zero morphism between itself and other objects; and the concept of
+the zero morphism between itself and other objects; and there exists
 direct sums with associated inclusions and projections. <P />
 
 Finally, an additive category is called <E>abelian</E> if every
 morphism in the category has a kernel and a cokernel; any monomorphism
-in the cateogory is the kernel of its cokernel; any epimorphism in the
-category is the cokernel of its kernel. Kernels and cokernels in a
+in the cateogory is the kernel of its cokernel; and any epimorphism in
+the category is the cokernel of its kernel. Kernels and cokernels in a
 general abelian category is defined by a universal factorization
 property.<P />
 
@@ -28,6 +28,142 @@ of categories mentioned above.  In practice, the only category the
 user will ever come in contact with is the last --
 <C>IsAbelianCat</C>.  Nevertheless, all three categories are
 thoroughly docoumented in the following section.
+
+An abelian category should implement all the above mentioned
+properties.  For instance, it should be known how to compose two
+morphisms of the category, or how to produce the kernel of a morphims.
+
+</Section>
+
+<Section>
+<Heading>General, additive and abelian categories</Heading>
+
+Each of the three categories for categories have an
+<C>IsCatDefaulRep</C> representation (extending
+<C>IsComponentObjectRep</C>, see the &GAP; documentation), with three
+associated things: ``identity'', ``name'' and ``properties''.  These
+are in turn the three arguments of the constructors.  The identity is
+used to uniquely identify the category, the name is used when printing
+the category, and properties is a record storing the properties listed
+in the previous section.  This record is described in the constructors
+documentation.
+
+<ManSection>
+  <Filt Type="Category" Name="IsCat" />
+  <Description>
+  The category for categories.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Filt Type="Category" Name="IsAdditiveCat" />
+  <Description>
+  The category for additive categories.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Filt Type="Category" Name="IsAbelianCat" />
+  <Description>
+  The category for abelian categories.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Filt Type="Var" Name="Ab" />
+  <Description>
+    The category of abelian groups.
+  </Description>
+</ManSection>
+
+<Example> <![CDATA[
+gap> # The category of abelian groups
+gap> Ab;
+<cat: Ab>
+gap> IsAbelianCat(Ab);
+true
+gap> Ab!.identity;
+"Niels Henrik"
+gap> Ab!.name;
+"Ab" ]]>
+</Example>
+
+<ManSection>
+  <Oper Name="Cat" Arg="identity, name, properties"/>
+  <Description>
+    Arguments: <A>identity</A> -- and object, <A>name</A> -- a string,
+    <A>properties</A> -- a record.<Br />
+  </Description>
+  <Returns>
+    A newly created category.
+  </Returns>
+  <Description>
+  The constructor for a general category.  The <A>identity</A> should
+  be unique for this category.  The <A>properties</A> argument is an
+  <C>IsRecord</C> object, with the following elements:
+  <C>objInCat</C>, <C>morphInCat</C>, <C>domain</C>, <C>codomain</C>,
+  <C>compose</C>, <C>identityMorph</C>, <C>isIsomorphism</C>,
+  <C>inverse</C>, <C>isomorphic</C>, <C>isomorphism</C> and
+  <C>objString</C>.  All of these are also included in the
+  <A>properties</A> record for the <C>AbelianCat</C> constructor, so
+  see that section for further descriptions.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="AdditiveCat" Arg="identity, name, properties"/>
+  <Description>
+    Arguments: <A>identity</A> -- and object, <A>name</A> -- a string,
+    <A>properties</A> -- a record.<Br />
+  </Description>
+  <Returns>
+    A newly created additive category.
+  </Returns>
+  <Description>
+  The constructor for a general category.  The <A>identity</A> should
+  be unique for this category.  The <A>properties</A> argument is an
+  <C>IsRecord</C> object, with the following elements:
+  <C>objInCat</C>, <C>morphInCat</C>, <C>domain</C>, <C>codomain</C>,
+  <C>compose</C>, <C>identityMorph</C>, <C>isIsomorphism</C>,
+  <C>inverse</C>, <C>isomorphic</C>, <C>isomorphism</C>,
+  <C>objString</C>, <C>zeroMorph</C>, <C>addMorph</C>,
+  <C>negateMorph</C>, <C>zeroObj</C> and <C>directSum</C>.  All of
+  these are also included in the <A>properties</A> record for the
+  <C>AbelianCat</C> constructor, so see that section for further
+  descriptions.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="AbelianCat" Arg="identity, name, properties"/>
+  <Description>
+    Arguments: <A>identity</A> -- and object, <A>name</A> -- a string,
+    <A>properties</A> -- a record.<Br />
+  </Description>
+  <Returns>
+    A newly created abelian category.
+  </Returns>
+  <Description>
+  The constructor for a general category.  The <A>identity</A> should
+  be unique for this category.  The <A>properties</A> argument is an
+  <C>IsRecord</C> object, with the following elements:
+  <C>objInCat</C>, <C>morphInCat</C>, <C>domain</C>, <C>codomain</C>,
+  <C>compose</C>, <C>identityMorph</C>, <C>isIsomorphism</C>,
+  <C>inverse</C>, <C>isomorphic</C>, <C>isomorphism</C>,
+  <C>objString</C>, <C>zeroMorph</C>, <C>addMorph</C>,
+  <C>negateMorph</C>, <C>zeroObj</C>, <C>directSum</C>, <C>kernel</C>,
+  <C>cokernel</C>, <C>kernelFactorization</C> and
+  <C>cokernelFactorization</C>. <P />
+
+  To each of these record elements, there is an associated operation
+  retrieving the value of the element.  Hence, the value can either be
+  retrieved by using direct record evaluation (for instance
+  <C>cat.addMorph</C>), or by the more user-friendly associated
+  operation.  Below is a list of record elements with corresponding
+  operations.  The operations are documented in their own sections,
+  each describing their record element.
+  </Description>
+</ManSection>
 
 </Section>
 
