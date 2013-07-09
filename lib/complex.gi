@@ -21,13 +21,14 @@ end );
 ##  
 InstallGlobalFunction( ZeroComplex,
 function( cat )
-    local fam, C;
+    local fam, C, zeroMap;
     fam := NewFamily( "ComplexesFamily", IsComplex );
     fam!.cat := cat;
     C := Objectify( NewType( fam, IsZeroComplex and IsComplexDefaultRep ),
                     rec( ) );
     SetCatOfComplex( C, cat );
-    SetDifferentialsOfComplex( C, ConstantInfList( cat.zeroMap( cat.zeroObj, cat.zeroObj ) ) );
+    zeroMap := ZeroMorphism( cat, ZeroObject( cat ), ZeroObject( cat ) );
+    SetDifferentialsOfComplex( C, ConstantInfList( zeroMap ) );
     return C;
 end );
 
@@ -41,8 +42,8 @@ end );
 InstallGlobalFunction( StalkComplex,
 function( cat, obj, degree )
     return FiniteComplex( cat, degree,
-                          [ cat.zeroMap( obj, cat.zeroObj ),
-                            cat.zeroMap( cat.zeroObj, obj ) ] );
+                          [ ZeroMorphism( cat, obj, ZeroObject( cat ) ),
+                            ZeroMorphism( cat, ZeroObject( cat ), obj ) ] );
 end );
 
 #######################################################################
@@ -91,7 +92,7 @@ function( cat, basePosition, middle, positive, negative )
             Error( "range of ", diffNames[ 1 ], " is not the same as source of ",
                    diffNames[ 2 ], ".\n" );
         fi;
-        if not cat.isZeroMapping( cat.composeMaps( diffs[ 2 ], diffs[ 1 ] ) ) then
+        if not IsZeroMorphism( cat, Compose( cat, diffs[ 2 ], diffs[ 1 ] ) ) then
             Error( "non-zero composition of ", diffNames[ 2 ],
                    " and ", diffNames[ 1 ], ".\n" );
         fi;
@@ -164,31 +165,31 @@ function( cat, basePosition, middle, positive, negative )
     fi;
     if positive = "zero" then
         # add zero object at the end if necessary:
-        if not cat.isZeroObj( lastMiddleObj ) then
+        if not IsZeroObject( cat, lastMiddleObj ) then
             middleL := Concatenation( middleL,
-                                      [ cat.zeroMap( cat.zeroObj, lastMiddleObj ) ] );
+                                      [ ZeroMorphism( cat, ZeroObject( cat ), lastMiddleObj ) ] );
         fi;
         # cut away superfluous zero objects:
-        while cat.isZeroObj( Range( middleL[ Length( middleL ) ] ) ) do
+        while IsZeroObject( cat, Range( middleL[ Length( middleL ) ] ) ) do
             middleL := middleL{ [ 1 .. Length( middleL ) - 1 ] };
         od;
     fi;
     if negative = "zero" then
         # add zero object at the end if necessary:
-        if not cat.isZeroObj( lastMiddleObj ) then
-            middleL := Concatenation( [ cat.zeroMap( firstMiddleObj, cat.zeroObj ) ],
+        if not IsZeroObject( cat, lastMiddleObj ) then
+            middleL := Concatenation( [ ZeroMorphism( cat, firstMiddleObj, ZeroObject( cat ) ) ],
                                       middleL );
             basePositionL := basePositionL - 1;
         fi;
         # cut away superfluous zero objects:
-        while cat.isZeroObj( Source( middleL[ 1 ] ) ) do
+        while IsZeroObject( cat, Source( middleL[ 1 ] ) ) do
             middleL := middleL{ [ 2 .. Length( middleL ) ] };
             basePositionL := basePositionL + 1;
         od;
     fi;
 
     if positive = "zero" then
-        positiveL := [ "repeat", [ cat.zeroMap( cat.zeroObj, cat.zeroObj ) ] ];
+        positiveL := [ "repeat", [ ZeroMorphism( cat, ZeroObject( cat ), ZeroObject( cat ) ) ] ];
     elif positive[ 1 ] = "pos" then
         positiveL := ShallowCopy( positive );
         positiveL[ 2 ] := function( i )
@@ -198,7 +199,7 @@ function( cat, basePosition, middle, positive, negative )
         positiveL := positive;
     fi;
     if negative = "zero" then
-        negativeL := [ "repeat", [ cat.zeroMap( cat.zeroObj, cat.zeroObj ) ] ];
+        negativeL := [ "repeat", [ ZeroMorphism( cat, ZeroObject( cat ), ZeroObject( cat ) ) ] ];
     elif negative[ 1 ] = "pos" then
         negativeL := ShallowCopy( negative );
         negativeL[ 2 ] := function( i )
@@ -222,7 +223,7 @@ function( cat, basePosition, middle, positive, negative )
                    " is not the same as range of differential ",
                    degrees[ 2 ], " in complex\n   ", C, "\n" );
         fi;
-        if not cat.isZeroMapping( cat.composeMaps( diffs[ 1 ], diffs[ 2 ] ) ) then
+        if not IsZeroMorphism( cat, Compose( cat, diffs[ 1 ], diffs[ 2 ] ) ) then
             Error( "nonzero composition of differentials ", degrees[ 1 ],
                    " and ", degrees[ 2 ], " in complex\n   ", C, "\n" );
         fi;
@@ -488,9 +489,9 @@ function( C )
     if IsZeroComplex( C ) then
         return NegativeInfinity;
     elif IsRepeating( positive ) and Length( RepeatingList( positive ) ) = 1
-      and cat.isZeroObj( ObjectOfComplex( C, StartPosition( positive ) ) ) then
+      and IsZeroObject( cat, ObjectOfComplex( C, StartPosition( positive ) ) ) then
         i := MiddleEnd( diffs ) - 1;
-        while cat.isZeroObj( ObjectOfComplex( C, i ) ) do
+        while IsZeroObject( cat, ObjectOfComplex( C, i ) ) do
             i := i - 1;
             if i < MiddleStart( diffs ) then
                 return fail;
@@ -526,9 +527,9 @@ function( C )
     if IsZeroComplex( C ) then
         return PositiveInfinity;
     elif IsRepeating( negative ) and Length( RepeatingList( negative ) ) = 1
-      and cat.isZeroObj( ObjectOfComplex( C, StartPosition( negative ) ) ) then
+      and IsZeroObject( cat, ObjectOfComplex( C, StartPosition( negative ) ) ) then
         i := MiddleStart( diffs );
-        while cat.isZeroObj( ObjectOfComplex( C, i ) ) do
+        while IsZeroObject( cat, ObjectOfComplex( C, i ) ) do
             i := i + 1;
             if i > MiddleEnd( diffs ) then
                 return fail;
@@ -686,7 +687,7 @@ function( C1, C2 )
 
     diff1 := Shift( DifferentialsOfComplex( C1 ), lowbound1 - upbound2 + 1 );
     diff2 := DifferentialsOfComplex( C2 );
-    connection := cat.composeMaps( C2^upbound2, C1^(lowbound1+1) );
+    connection := Compose( cat, C2^upbound2, C1^(lowbound1+1) );
 
     diffs := InfConcatenation( PositivePartFrom( diff1, upbound2 + 1 ),
                                FiniteInfList( 0, [ connection ] ),
@@ -717,7 +718,7 @@ function( C, i )
     difflist := DifferentialsOfComplex( C );
     truncpart := PositivePartFrom( difflist, i+2 );
     kerinc := KernelInclusion( DifferentialOfComplex( C, i ) );
-    newpart := FiniteInfList( i, [ cat.zeroMap( Source(kerinc), cat.zeroObj ),
+    newpart := FiniteInfList( i, [ ZeroMorphism( cat, Source(kerinc), ZeroObject( cat ) ),
                                    LiftingInclusionMorphisms( kerinc, DifferentialOfComplex( C, i+1 ) ) ] );
     zeropart := NegativePartFrom( DifferentialsOfComplex( ZeroComplex( cat ) ),
                                   i-1 );
@@ -751,8 +752,8 @@ function( C, i )
     kerinc := KernelInclusion( DifferentialOfComplex( C, i ) );
     factorproj := CoKernelProjection( kerinc );
     factor := Range( factorproj );
-    factorinclusion := cat.zeroMap( factor, ObjectOfComplex( C, i-1 ) ); #TODO
-    newpart := FiniteInfList( i, [ factorinclusion, cat.zeroMap( cat.zeroObj, factor ) ] );
+    factorinclusion := ZeroMorphism( cat, factor, ObjectOfComplex( C, i-1 ) ); #TODO
+    newpart := FiniteInfList( i, [ factorinclusion, ZeroMorphism( cat, ZeroObject( cat ), factor ) ] );
 
     zeropart := NegativePartFrom( DifferentialsOfComplex( ZeroComplex( cat ) ),
                                   i+2 );
@@ -783,8 +784,9 @@ function( C, i )
     cat := CatOfComplex( C );
     difflist := DifferentialsOfComplex( C );
     truncpart := PositivePartFrom( difflist, i+1 );
-    newpart := FiniteInfList( i, [ cat.zeroMap( ObjectOfComplex( C, i), 
-                                                cat.zeroObj) ] );
+    newpart := FiniteInfList( i, [ ZeroMorphism( cat,
+                                                 ObjectOfComplex( C, i), 
+                                                 ZeroObject( cat )) ] );
     zeropart := NegativePartFrom( DifferentialsOfComplex( ZeroComplex( cat ) ),
                                   i-1 );
     newdifflist := InfConcatenation( truncpart, newpart, zeropart );
@@ -811,8 +813,9 @@ function( C, i )
     cat := CatOfComplex( C );
     difflist := DifferentialsOfComplex( C );
     truncpart := NegativePartFrom( difflist, i );
-    newpart := FiniteInfList( i+1, [ cat.zeroMap( cat.zeroObj,
-                                                ObjectOfComplex( C, i )) ] );
+    newpart := FiniteInfList( i+1, [ ZeroMorphism( cat,
+                                                   ZeroObject( cat ),
+                                                   ObjectOfComplex( C, i )) ] );
     zeropart := PositivePartFrom( DifferentialsOfComplex( ZeroComplex( cat ) ),
                                   i+2 );
     newdifflist := InfConcatenation( zeropart, newpart, truncpart );
@@ -867,7 +870,7 @@ function( C, i )
     kernelinc := KernelInclusion( DifferentialOfComplex( C, i ) );
     kernel := Source( kernelinc );
     newpart := FiniteInfList( i+1, [ kernelinc, 
-                                     cat.zeroMap( cat.zeroObj, kernel ) ] );
+                                     ZeroMorphism( cat, ZeroObject( cat ), kernel ) ] );
     zeropart := PositivePartFrom( DifferentialsOfComplex( ZeroComplex( cat ) ),
                                   i+3 );
 
@@ -899,7 +902,7 @@ function( C, i )
 
     cokerproj := CoKernelProjection( DifferentialOfComplex( C, i ) );
     coker := Range( cokerproj );
-    newpart := FiniteInfList( i-2, [ cat.zeroMap( coker, cat.zeroObj ),
+    newpart := FiniteInfList( i-2, [ ZeroMorphism( cat, coker, ZeroObject( cat ) ),
                                      cokerproj ] );
 
     zeropart := NegativePartFrom( DifferentialsOfComplex( ZeroComplex( cat ) ),
@@ -940,14 +943,14 @@ function( C, i, j )
     kernelinc := KernelInclusion( DifferentialOfComplex( C, i ) );
     kernel := Source( kernelinc );
     newpart1 := FiniteInfList( i+1, [ kernelinc, 
-                                     cat.zeroMap( cat.zeroObj, kernel ) ] );
+                                     ZeroMorphism( cat, ZeroObject( cat ), kernel ) ] );
     zeropart1 := PositivePartFrom( DifferentialsOfComplex( ZeroComplex( cat ) ),
                                   i+3 );
 
 
     cokerproj := CoKernelProjection( DifferentialOfComplex( C, j ) );
     coker := Range( cokerproj );
-    newpart2 := FiniteInfList( j-2, [ cat.zeroMap( coker, cat.zeroObj ),
+    newpart2 := FiniteInfList( j-2, [ ZeroMorphism( cat, coker, ZeroObject( cat ) ),
                                      cokerproj ] );
 
     zeropart2 := NegativePartFrom( DifferentialsOfComplex( ZeroComplex( cat ) ),
@@ -1086,19 +1089,19 @@ function( C )
     if IsPositiveRepeating( C ) and upbound = PositiveInfinity then
         Print( "[ " );
         for i in Reversed( PositiveRepeatDegrees( C ) ) do
-            Print( i, ":", cat.objStr( ObjectOfComplex( C, i ) ), " -> " );
+            Print( i, ":", ObjectAsString( cat, ObjectOfComplex( C, i ) ), " -> " );
         od;
         Print( "] " );
     fi;
 
     for i in [ top, top - 1 .. bottom ] do
-        Print( i, ":", cat.objStr( ObjectOfComplex( C, i ) ), " -> " );
+        Print( i, ":", ObjectAsString( cat, ObjectOfComplex( C, i ) ), " -> " );
     od;
 
     if IsNegativeRepeating( C ) and lowbound = NegativeInfinity then
         Print( "[ " );
         for i in Reversed( NegativeRepeatDegrees( C ) ) do
-            Print( i, ":", cat.objStr( ObjectOfComplex( C, i ) ), " -> " );
+            Print( i, ":", ObjectAsString( cat, ObjectOfComplex( C, i ) ), " -> " );
         od;
         Print( "] " );
     fi;
