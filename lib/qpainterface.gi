@@ -7,7 +7,7 @@ InstallMethod( CatOfRightAlgebraModules,
 [ IsAlgebra ],
 function( alg )
     local properties, objInCat, morphInCat, compose, domain, codomain,
-          identityMorph, isIsomorphism, inverse, isomorphic, zeroMorph,
+          identityMorph, isIsomorphism, inverse, isomorphic, objString, zeroMorph,
           #isomorphism,
           addMorph, negateMorph, directSum, kernel, cokernel,
           kernelFactorization, cokernelFactorization;
@@ -160,6 +160,12 @@ function( alg )
         return HomomorphismFromImages( coker, Range( g ), images );
     end;
     
+    objString := function( M )
+        local dims;
+        dims := JoinStringsWithSeparator( DimensionVector( M ), "," );
+        return Concatenation( "(", dims, ")" );
+    end;
+
     properties := rec( objInCat := objInCat,
                        morphInCat := morphInCat,
                        domain := domain,
@@ -170,6 +176,7 @@ function( alg )
                        inverse := inverse,
                        isomorphic := isomorphic,
                        isomorphism := false,
+                       objString := objString,
                        zeroMorph := zeroMorph,
                        addMorph := addMorph,
                        negateMorph := negateMorph,
