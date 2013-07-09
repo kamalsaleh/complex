@@ -33,7 +33,7 @@ PackageName := "complex",
 
 ##  This may be used by a default banner or on a Web page, should fit on
 ##  one line.
-Subtitle := "Chain complexes are cool",
+Subtitle := "I wear a chain complex now.  Chain complexes are cool",
 
 ##  See '?Extending: Version Numbers' in GAP help for an explanation
 ##  of valid version numbers. For an automatic package distribution update
