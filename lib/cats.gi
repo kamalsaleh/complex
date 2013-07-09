@@ -131,6 +131,7 @@ createAb := function()
                        inverse := inverse,
                        isomorphic := isomorphic,
                        isomorphism := isomorphism,
+                       objString := StringView,
                        zeroMorph := zeroMorph,
                        addMorph := addMorph,
                        negateMorph := negateMorph,
