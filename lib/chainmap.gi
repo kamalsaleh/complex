@@ -77,10 +77,10 @@ function( source, range, basePosition, middle, positive, negative )
     # fi;
 
     correctDomainAt := function( i )
-        return Source( map^i ) = ObjectOfComplex( source, i );
+        return DomainOfMorphism( cat, map^i ) = ObjectOfComplex( source, i );
     end;
     correctCodomainAt := function( i )
-        return Range( map^i ) = ObjectOfComplex( range, i );
+        return CodomainOfMorphism( cat, map^i ) = ObjectOfComplex( range, i );
     end;
 
     commutesAt := function( i )
