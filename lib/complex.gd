@@ -58,4 +58,4 @@ DeclareOperation( "StalkComplex", [ IsAbelianCat, IsObject, IsInt ] );
 DeclareOperation( "ShortExactSequence", [ IsAbelianCat, IsObject, IsObject ] );
 DeclareOperation( "ComplexByDifferentialList", [ IsAbelianCat, IsInfList ] );
 
-DeclareOperation( "ProjectiveResolution", [ IsAlgebraModule ] );
+DeclareOperation( "MappingCone", [ IsChainMap ] );
