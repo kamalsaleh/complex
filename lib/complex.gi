@@ -175,8 +175,8 @@ function( cat, basePosition, middle, positive, negative )
         diffNames := List( [1,2], i -> Concatenation(
           "differential ", String( degrees[ i ] ),
           " (element ", String( indices[ i ] ), " in ", String( listNames[ i ] ), " list)" ) );
-        if Range( diffs[ 1 ] ) <> Source( diffs[ 2 ] ) then
-            Error( "range of ", diffNames[ 1 ], " is not the same as source of ",
+        if CodomainOfMorphism( cat, diffs[ 1 ] ) <> DomainOfMorphism( cat, diffs[ 2 ] ) then
+            Error( "codomain of ", diffNames[ 1 ], " is not the same as domain of ",
                    diffNames[ 2 ], ".\n" );
         fi;
         if not IsZeroMorphism( cat, Compose( cat, diffs[ 2 ], diffs[ 1 ] ) ) then
@@ -247,8 +247,8 @@ function( cat, basePosition, middle, positive, negative )
     basePositionL := basePosition;
     middleL := middle;
     if positive = "zero" or negative = "zero" then
-        firstMiddleObj := Range( middle[ 1 ] );
-        lastMiddleObj := Source( middle[ Length( middle ) ] );
+        firstMiddleObj := CodomainOfMorphism( cat, middle[ 1 ] );
+        lastMiddleObj := DomainOfMorphism( cat, middle[ Length( middle ) ] );
     fi;
     if positive = "zero" then
         # add zero object at the end if necessary:
@@ -257,7 +257,7 @@ function( cat, basePosition, middle, positive, negative )
                                       [ ZeroMorphism( cat, ZeroObject( cat ), lastMiddleObj ) ] );
         fi;
         # cut away superfluous zero objects:
-        while IsZeroObject( cat, Range( middleL[ Length( middleL ) ] ) ) do
+        while IsZeroObject( cat, CodomainOfMorphism( cat, middleL[ Length( middleL ) ] ) ) do
             middleL := middleL{ [ 1 .. Length( middleL ) - 1 ] };
         od;
     fi;
@@ -269,7 +269,7 @@ function( cat, basePosition, middle, positive, negative )
             basePositionL := basePositionL - 1;
         fi;
         # cut away superfluous zero objects:
-        while IsZeroObject( cat, Source( middleL[ 1 ] ) ) do
+        while IsZeroObject( cat, DomainOfMorphism( cat, middleL[ 1 ] ) ) do
             middleL := middleL{ [ 2 .. Length( middleL ) ] };
             basePositionL := basePositionL + 1;
         od;
@@ -305,9 +305,9 @@ function( cat, basePosition, middle, positive, negative )
         fi;
         diffs := [ DifferentialOfComplex( C, degrees[ 1 ] ),
                    DifferentialOfComplex( C, degrees[ 2 ] ) ];
-        if Source( diffs[ 1 ] ) <> Range( diffs[ 2 ] ) then
-            Error( "source of differential ", degrees[ 1 ],
-                   " is not the same as range of differential ",
+        if DomainOfMorphism( cat, diffs[ 1 ] ) <> CodomainOfMorphism( cat, diffs[ 2 ] ) then
+            Error( "domain of differential ", degrees[ 1 ],
+                   " is not the same as codomain of differential ",
                    degrees[ 2 ], " in complex\n   ", C, "\n" );
         fi;
         if not IsZeroMorphism( cat, Compose( cat, diffs[ 1 ], diffs[ 2 ] ) ) then
@@ -345,7 +345,7 @@ end );
 InstallMethod( ObjectOfComplex,
 [ IsComplex, IsInt ],
 function( C, i )
-    return Source( DifferentialOfComplex( C, i ) );
+    return DomainOfMorphism( CatOfComplex( C ), DifferentialOfComplex( C, i ) );
 end );
 
 #######################################################################
@@ -370,7 +370,9 @@ end );
 InstallMethod( CyclesOfComplex,
 [ IsComplex, IsInt ],
 function( C, i )
-    return Kernel( DifferentialOfComplex( C, i ) );
+    local cat;
+    cat := CatOfComplex( C );
+    return KernelOfMorphism( cat, DifferentialOfComplex( C, i ) );
 end );
 
 #######################################################################
@@ -383,7 +385,9 @@ end );
 InstallMethod( BoundariesOfComplex,
 [ IsComplex, IsInt ],
 function( C, i )
-    return Image( DifferentialOfComplex( C, i + 1 ) );
+    local cat;
+    cat := CatOfComplex( C );
+    return ImageOfMorphism( cat, DifferentialOfComplex( C, i + 1 ) );
 end );
 
 #######################################################################
@@ -393,12 +397,15 @@ end );
 ##  For a complex <C> and an integer <i>. Returns the ith homology of 
 ##  the complex.
 ##
-##  TODO: Does not currently work (see the documentation).
-##  
-InstallMethod( HomologyOfComplex, # TODO: this does not work
+InstallMethod( HomologyOfComplex,
 [ IsComplex, IsInt ],
 function( C, i )
-    return CyclesOfComplex( C, i ) / BoundariesOfComplex( C, i );
+    local cat, im, d, inc;
+    cat := CatOfComplex( C );
+    im := BoundariesOfComplex( C, i );
+    d := DifferentialOfComplex( C, i );
+    inc := KernelFactorization( cat, d, im );
+    return CodomainOfMorphism( cat, CokernelOfMorphism( cat, inc ) );
 end );
 
 #######################################################################
@@ -805,7 +812,7 @@ function( C, i )
     difflist := DifferentialsOfComplex( C );
     truncpart := PositivePartFrom( difflist, i+2 );
     kerinc := KernelInclusion( DifferentialOfComplex( C, i ) );
-    newpart := FiniteInfList( i, [ ZeroMorphism( cat, Source(kerinc), ZeroObject( cat ) ),
+    newpart := FiniteInfList( i, [ ZeroMorphism( cat, DomainOfMorphism( cat, kerinc ), ZeroObject( cat ) ),
                                    LiftingInclusionMorphisms( kerinc, DifferentialOfComplex( C, i+1 ) ) ] );
     zeropart := NegativePartFrom( DifferentialsOfComplex( ZeroComplex( cat ) ),
                                   i-1 );
@@ -838,7 +845,7 @@ function( C, i )
     truncpart := NegativePartFrom( difflist, i-1 );
     kerinc := KernelInclusion( DifferentialOfComplex( C, i ) );
     factorproj := CoKernelProjection( kerinc );
-    factor := Range( factorproj );
+    factor := CodomainOfMorphism( cat, factorproj );
     factorinclusion := ZeroMorphism( cat, factor, ObjectOfComplex( C, i-1 ) ); #TODO
     newpart := FiniteInfList( i, [ factorinclusion, ZeroMorphism( cat, ZeroObject( cat ), factor ) ] );
 
@@ -955,7 +962,7 @@ function( C, i )
     truncpart := NegativePartFrom( difflist, i );
 
     kernelinc := KernelInclusion( DifferentialOfComplex( C, i ) );
-    kernel := Source( kernelinc );
+    kernel := DomainOfMorphism( cat, kernelinc );
     newpart := FiniteInfList( i+1, [ kernelinc, 
                                      ZeroMorphism( cat, ZeroObject( cat ), kernel ) ] );
     zeropart := PositivePartFrom( DifferentialsOfComplex( ZeroComplex( cat ) ),
@@ -988,7 +995,7 @@ function( C, i )
     truncpart := PositivePartFrom( difflist, i );
 
     cokerproj := CoKernelProjection( DifferentialOfComplex( C, i ) );
-    coker := Range( cokerproj );
+    coker := CodomainOfMorphism( cat, cokerproj );
     newpart := FiniteInfList( i-2, [ ZeroMorphism( cat, coker, ZeroObject( cat ) ),
                                      cokerproj ] );
 
@@ -1028,7 +1035,7 @@ function( C, i, j )
     truncpart := FiniteInfList( j, middlediffs );
 
     kernelinc := KernelInclusion( DifferentialOfComplex( C, i ) );
-    kernel := Source( kernelinc );
+    kernel := DomainOfMorphism( cat, kernelinc );
     newpart1 := FiniteInfList( i+1, [ kernelinc, 
                                      ZeroMorphism( cat, ZeroObject( cat ), kernel ) ] );
     zeropart1 := PositivePartFrom( DifferentialsOfComplex( ZeroComplex( cat ) ),
@@ -1036,7 +1043,7 @@ function( C, i, j )
 
 
     cokerproj := CoKernelProjection( DifferentialOfComplex( C, j ) );
-    coker := Range( cokerproj );
+    coker := CodomainOfMorphism( cat, cokerproj );
     newpart2 := FiniteInfList( j-2, [ ZeroMorphism( cat, coker, ZeroObject( cat ) ),
                                      cokerproj ] );
 
