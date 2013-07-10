@@ -4,7 +4,8 @@
 ##
 ##  TODO: documentation for all chain map-functions
 ##  
-InstallGlobalFunction( "ChainMap",
+InstallMethod( ChainMap,
+[ IsComplex, IsComplex, IsInt, IsList, IsObject, IsObject ],
 function( source, range, basePosition, middle, positive, negative )
     local cat, fam, map, positiveL, negativeL, numZeroMaps, i,
           correctDomainAt, correctCodomainAt, commutesAt,

@@ -14,7 +14,7 @@ DeclareOperation( "\^", [ IsChainMap, IsInt ] );
 DeclareOperation( "HighestKnownDegree", [ IsChainMap ] );
 DeclareOperation( "LowestKnownDegree", [ IsChainMap ] );
 
-DeclareGlobalFunction( "ChainMap" );
+DeclareOperation( "ChainMap", [ IsComplex, IsComplex, IsInt, IsList, IsObject, IsObject ] );
 DeclareGlobalFunction( "FiniteChainMap" );
 DeclareGlobalFunction( "ZeroChainMap" );
 
