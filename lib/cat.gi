@@ -235,7 +235,7 @@ end );
 InstallMethod( IsZeroObject,
 [ IsAdditiveCat, IsObject ],
 function( cat, X )
-    return X = ZeroObject( cat );
+    return Isomorphic( X, ZeroObject( cat ) );
 end );
 
 InstallMethod( IsZeroMorphism,
