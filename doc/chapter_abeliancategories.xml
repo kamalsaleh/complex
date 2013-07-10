@@ -91,7 +91,7 @@ gap> Ab!.name;
 <ManSection>
   <Oper Name="Cat" Arg="identity, name, properties"/>
   <Description>
-    Arguments: <A>identity</A> -- and object, <A>name</A> -- a string,
+    Arguments: <A>identity</A> -- an object, <A>name</A> -- a string,
     <A>properties</A> -- a record.<Br />
   </Description>
   <Returns>
@@ -113,7 +113,7 @@ gap> Ab!.name;
 <ManSection>
   <Oper Name="AdditiveCat" Arg="identity, name, properties"/>
   <Description>
-    Arguments: <A>identity</A> -- and object, <A>name</A> -- a string,
+    Arguments: <A>identity</A> -- an object, <A>name</A> -- a string,
     <A>properties</A> -- a record.<Br />
   </Description>
   <Returns>
@@ -137,7 +137,7 @@ gap> Ab!.name;
 <ManSection>
   <Oper Name="AbelianCat" Arg="identity, name, properties"/>
   <Description>
-    Arguments: <A>identity</A> -- and object, <A>name</A> -- a string,
+    Arguments: <A>identity</A> -- an object, <A>name</A> -- a string,
     <A>properties</A> -- a record.<Br />
   </Description>
   <Returns>
@@ -155,13 +155,373 @@ gap> Ab!.name;
   <C>cokernel</C>, <C>kernelFactorization</C> and
   <C>cokernelFactorization</C>. <P />
 
-  To each of these record elements, there is an associated operation
-  retrieving the value of the element.  Hence, the value can either be
-  retrieved by using direct record evaluation (for instance
-  <C>cat.addMorph</C>), or by the more user-friendly associated
-  operation.  Below is a list of record elements with corresponding
-  operations.  The operations are documented in their own sections,
-  each describing their record element.
+  The values, which are typically functions, of the listed record
+  elements can be retrieved by direct record evaluation (for instance
+  <C>cat.addMorph</C>) and then used (for instance we can compute
+  <C>cat.addMorph( f, g )</C>).  Another way of evaluating the
+  functions stored in the record elements is to use the associated and
+  more user-friendly operations (for instance <C>AddMorphisms( cat, f,
+  g )</C>.  Note that these associated operations always takes the
+  category itself as the first argument. Below is a list of all record
+  elements with their associated operation.
+  <List>
+    <Item><C>objInCat</C> corresponds to <Ref Oper="ObjectInCat" /></Item>
+    <Item><C>morphInCat</C> corresponds to <Ref Oper="MorphismInCat" /></Item>
+    <Item><C>domain</C> corresponds to <Ref Oper="DomainOfMorphism" /></Item>
+    <Item><C>codomain</C> corresponds to <Ref Oper="CodomainOfMorphism" /></Item>
+    <Item><C>compose</C> corresponds to <Ref Oper="Compose" /></Item>
+    <Item><C>identityMorph</C> corresponds to <Ref Oper="IdentityMorphism" /></Item>
+    <Item><C>isIsomorphism</C> corresponds to <Ref Oper="IsIsomorphism" /></Item>
+    <Item><C>inverse</C> corresponds to <Ref Oper="Inverse" /></Item>
+    <Item><C>isomorphic</C> corresponds to <Ref Oper="Isomorphic" /></Item>
+    <Item><C>isomorphism</C> corresponds to <Ref Oper="Isomorphism" /></Item>
+    <Item><C>objString</C> corresponds to <Ref Oper="ObjectAsString" /></Item>
+    <Item><C>zeroMorph</C> corresponds to <Ref Oper="ZeroMorphism" /></Item>
+    <Item><C>addMorph</C> corresponds to <Ref Oper="AddMorphisms" /></Item>
+    <Item><C>negateMorph</C> corresponds to <Ref Oper="NegateMorphism" /></Item>
+    <Item><C>zeroObj</C> corresponds to <Ref Oper="ZeroObject" /></Item>
+    <Item><C>directSum</C> corresponds to <Ref Oper="DirectSumOfObjects" /></Item>
+    <Item><C>kernel</C> corresponds to <Ref Oper="KernelOfMorphism" /></Item>
+    <Item><C>cokernel</C> corresponds to <Ref Oper="CokernelOfMorphism" /></Item>
+    <Item><C>kernelFactorization</C> corresponds to <Ref Oper="KernelFactorization" /></Item>
+    <Item><C>cokernelFactorization</C> corresponds to <Ref Oper="CokernelFactorization" /></Item>
+  </List>
+  As all of these operations will evaluate the corresponding record
+  element with its given arguments, the documentation of the operation
+  also gives a specification for the record element.  When creating a
+  new category, we recommend that in addition to the following
+  documentation one should also look at an existing category, for
+  instance <C>Ab</C>.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="ObjectInCat" Arg="cat, X" />
+  <Description>
+    Arguments: <A>cat</A> -- a category, <A>X</A> -- an <C>IsObject</C>. <Br />
+  </Description>
+  <Returns>
+    <C>true</C> if <A>X</A> is an object of <A>cat</A>, <C>false</C>
+    otherwise.
+  </Returns>
+  <Description>
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="MorphismInCat" Arg="cat, f" />
+  <Description>
+    Arguments: <A>cat</A> -- a category, <A>f</A> -- an <C>IsObject</C>. <Br />
+  </Description>
+  <Returns>
+    <C>true</C> if <A>f</A> is a morphism of <A>cat</A>, <C>false</C>
+    otherwise.
+  </Returns>
+  <Description>
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="DomainOfMorphism" Arg="cat, f" />
+  <Description>
+    Arguments: <A>cat</A> -- a category, <A>f</A> -- a morphism. <Br />
+  </Description>
+  <Returns>
+    The domain of the morphism <A>f</A>.
+  </Returns>
+  <Description>
+    Checks that <A>f</A> is a morphism of <A>cat</A>.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="CodomainOfMorphism" Arg="cat, f" />
+  <Description>
+    Arguments: <A>cat</A> -- a category, <A>f</A> -- a morphism. <Br />
+  </Description>
+  <Returns>
+    The codomain of the morphism <A>f</A>.
+  </Returns>
+  <Description>
+    Checks that <A>f</A> is a morphism of <A>cat</A>.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="Compose" Arg="cat, f, g" />
+  <Description>
+    Arguments: <A>cat</A> -- a category, <A>f</A> -- a morphism,
+    <A>g</A> -- a morphism. <Br />
+  </Description>
+  <Returns>
+    The composition <M>fg</M>.
+  </Returns>
+  <Description>
+    Checks that <A>f</A> and <A>g</A> are morphisms of <A>cat</A>, and
+    that the domain of <A>f</A> is the codomain of <A>g</A>.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="IdentityMorphism" Arg="cat, X" />
+  <Description>
+    Arguments: <A>cat</A> -- a category, <A>X</A> -- an object. <Br />
+  </Description>
+  <Returns>
+    The identity morphism <M>id_X</M> on <A>X</A>.
+  </Returns>
+  <Description>
+    Checks that <A>X</A> is an object of <A>cat</A>.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="IsIsomorphism" Arg="cat, f" />
+  <Description>
+    Arguments: <A>cat</A> -- a category, <A>f</A> -- a morphism. <Br />
+  </Description>
+  <Returns>
+    <C>true</C> if <A>f</A> is an isomorphism in <A>cat</A>,
+    <C>false</C> otherwise.
+  </Returns>
+  <Description>
+    Checks that <A>f</A> is a morphism of <A>cat</A>.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="Inverse" Arg="cat, f" />
+  <Description>
+    Arguments: <A>cat</A> -- a category, <A>f</A> -- a morphism. <Br />
+  </Description>
+  <Returns>
+    The inverse of the isomorphism <A>f</A> in <A>cat</A>.
+  </Returns>
+  <Description>
+    Checks that <A>f</A> is a morphism of <A>cat</A>.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="Isomorphic" Arg="cat, X, Y" />
+  <Description>
+    Arguments: <A>cat</A> -- a category, <A>X</A> -- an object,
+    <A>Y</A> -- an object. <Br />
+  </Description>
+  <Returns>
+    <C>true</C> if <A>X</A> and <A>Y</A> are isomorphic objects in
+    <A>cat</A>, <C>false</C> otherwise.
+  </Returns>
+  <Description>
+    Checks that <A>X</A> and <A>Y</A> are objects of <A>cat</A>.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="Isomorphism" Arg="cat, X, Y" />
+  <Description>
+    Arguments: <A>cat</A> -- a category, <A>X</A> -- an object,
+    <A>Y</A> -- an object isomorphic to <A>X</A>. <Br />
+  </Description>
+  <Returns>
+    An isomorphism from <A>X</A> to <A>Y</A>.
+  </Returns>
+  <Description>
+    Checks that <A>X</A> and <A>Y</A> are objects of <A>cat</A>, and
+    that they are isomorphic.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="ObjectAsString" Arg="cat, X" />
+  <Description>
+    Arguments: <A>cat</A> -- a category, <A>X</A> -- an object. <Br />
+  </Description>
+  <Returns>
+    A string used when printing the object <A>X</A>.
+  </Returns>
+  <Description>
+    Checks that <A>X</A> is an object of <A>cat</A>.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="ZeroMorphism" Arg="cat, X, Y" />
+  <Description>
+    Arguments: <A>cat</A> -- an additive category, <A>X</A> -- an
+    object, <A>Y</A> -- an object. <Br />
+  </Description>
+  <Returns>
+    The zero morphism from <A>X</A> to <A>Y</A>.
+  </Returns>
+  <Description>
+    Checks that <A>X</A> and <A>Y</A> are objects of <A>cat</A>.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="AddMorphisms" Arg="cat, f, g" />
+  <Description>
+    Arguments: <A>cat</A> -- an additive category, <A>f</A> -- a
+    morphism, <A>g</A> -- a morphism. <Br />
+  </Description>
+  <Returns>
+    The morphism <A>f+g</A>.
+  </Returns>
+  <Description>
+    Checks that <A>f</A> and <A>g</A> are morphisms of <A>cat</A>, and
+    that they have the same domain and the same codomain.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="NegateMorphism" Arg="cat, f" />
+  <Description>
+    Arguments: <A>cat</A> -- an additive category, <A>f</A> -- a
+    morphism. <Br />
+  </Description>
+  <Returns>
+    The additive inverse of <A>f</A> in the group <M>\mathrm{Hom}_{\mathtt{cat}}(\mathtt{Domain(f), Range(f)})</M>.
+  </Returns>
+  <Description>
+    Checks that <A>f</A> is a morphism of <A>cat</A>.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="ZeroObject" Arg="cat" />
+  <Description>
+    Arguments: <A>cat</A> -- an additive category. <Br />
+  </Description>
+  <Returns>
+    The zero object in <A>cat</A>.
+  </Returns>
+  <Description>
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="DirectSumOfObjects" Arg="cat, X, Y" />
+  <Description>
+    Arguments: <A>cat</A> -- an additive category, <A>X</A> -- an
+    object, <A>Y</A> -- an object. <Br />
+  </Description>
+  <Returns>
+    A list <C>[ inc1, inc2, proj1, proj2]</C> where <C>inc1</C> is the
+    inclusion of <A>X</A> into <M>X\oplus Y</M>, <C>inc2</C> is the
+    inclusion of <A>Y</A> into <M>X\oplus Y</M>, <C>proj1</C> is the
+    projection <M>X\oplus Y</M> onto <A>X</A>, and <C>proj2</C> is the
+    projection <M>X\oplus Y</M> onto <A>Y</A>.
+  </Returns>
+  <Description>
+    Checks that <A>X</A> and <A>Y</A> are objects of <A>cat</A>.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="IsZeroObject" Arg="cat, X" />
+  <Description>
+    Arguments: <A>cat</A> -- an additive category, <A>X</A> -- an
+    object. <Br />
+  </Description>
+  <Returns>
+    <C>true</C> if <A>X</A> is the zero object of <A>cat</A>,
+    <C>false</C> otherwise.
+  </Returns>
+  <Description>
+    Checks that <A>X</A> is an object of <A>cat</A>.  Note that this
+    operation does not correspond to a record element in the
+    properties of the category.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="IsZeroMorphism" Arg="cat, f" />
+  <Description>
+    Arguments: <A>cat</A> -- an additive category, <A>f</A> -- a
+    morphism. <Br />
+  </Description>
+  <Returns>
+    <C>true</C> if <A>f</A> is the zero morphism from its domain to
+    its codomain, <C>false</C> otherwise.
+  </Returns>
+  <Description>
+    Checks that <A>f</A> is a morphism of <A>cat</A>. Note that this
+    operation does not correspond to a record element in the
+    properties of the category.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="KernelOfMorphism" Arg="cat, f" />
+  <Description>
+    Arguments: <A>cat</A> -- an abelian category, <A>f</A> -- a
+    morphism. <Br />
+  </Description>
+  <Returns>
+    The kernel of the morphism <A>f</A>.
+  </Returns>
+  <Description>
+    Checks that <A>f</A> is a morphism of <A>cat</A>.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="CokernelOfMorphism" Arg="cat, f" />
+  <Description>
+    Arguments: <A>cat</A> -- an abelian category, <A>f</A> -- a
+    morphism. <Br />
+  </Description>
+  <Returns>
+    The cokernel of the morphism <A>f</A>.
+  </Returns>
+  <Description>
+    Checks that <A>f</A> is a morphism of <A>cat</A>.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="KernelFactorization" Arg="cat, f, g" />
+  <Description>
+    Arguments: <A>cat</A> -- an abelian category, <A>f</A> -- a
+    morphism, <A>g</A> -- a morphism such that the composition
+    <A>fg</A> is zero. <Br />
+  </Description>
+  <Returns>
+    The morphism <M>h</M> from the domain of <A>g</A> to the kernel of
+    <A>f</A>, such that <M>g = ih</M>.
+  </Returns>
+  <Description>
+    Checks that <A>f</A> and <A>g</A> are morphisms of <A>cat</A>, and
+    that the composition <A>fg</A> is zero. The diagram looks as
+    follows:
+    <Display>
+      \xymatrix{ &amp; A \ar@{-->}[dl]^{h} \ar[d]^{g} &amp; \\
+      \mathrm{ker}~f \ar@{)->}[r]^{i} &amp; \ar[r]^{f} B &amp; C \\ }
+    </Display>
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="CokernelFactorization" Arg="cat, f, g" />
+  <Description>
+    Arguments: <A>cat</A> -- an abelian category, <A>f</A> -- a
+    morphism, <A>g</A> -- a morphism such that the composition
+    <A>gf</A> is zero. <Br />
+  </Description>
+  <Returns>
+    The morphism <M>h</M> from the cokernel of <A>f</A> to the range
+    of of <A>g</A>, such that <M>g = hp</M>.
+  </Returns>
+  <Description>
+    Checks that <A>f</A> and <A>g</A> are morphisms of <A>cat</A>, and
+    that the composition <A>gf</A> is zero. The diagram looks as
+    follows:
+    <Display>
+      \xymatrix{ A \ar[r]^f &amp; B \ar[d]^{g} \ar@{->>}[r]^p &amp;
+      \mathrm{cok}~f \ar@{-->}[dl]^h \\
+       &amp; C &amp;  \\ }
+    </Display>
   </Description>
 </ManSection>
 
