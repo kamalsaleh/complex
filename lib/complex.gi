@@ -175,8 +175,8 @@ function( cat, basePosition, middle, positive, negative )
         diffNames := List( [1,2], i -> Concatenation(
           "differential ", String( degrees[ i ] ),
           " (element ", String( indices[ i ] ), " in ", String( listNames[ i ] ), " list)" ) );
-        if Range( diffs[ 1 ] ) <> Source( diffs[ 2 ] ) then
-            Error( "range of ", diffNames[ 1 ], " is not the same as source of ",
+        if CodomainOfMorphism( cat, diffs[ 1 ] ) <> DomainOfMorphism( cat, diffs[ 2 ] ) then
+            Error( "codomain of ", diffNames[ 1 ], " is not the same as domain of ",
                    diffNames[ 2 ], ".\n" );
         fi;
         if not IsZeroMorphism( cat, Compose( cat, diffs[ 2 ], diffs[ 1 ] ) ) then
@@ -247,8 +247,8 @@ function( cat, basePosition, middle, positive, negative )
     basePositionL := basePosition;
     middleL := middle;
     if positive = "zero" or negative = "zero" then
-        firstMiddleObj := Range( middle[ 1 ] );
-        lastMiddleObj := Source( middle[ Length( middle ) ] );
+        firstMiddleObj := CodomainOfMorphism( cat, middle[ 1 ] );
+        lastMiddleObj := DomainOfMorphism( cat, middle[ Length( middle ) ] );
     fi;
     if positive = "zero" then
         # add zero object at the end if necessary:
@@ -257,7 +257,7 @@ function( cat, basePosition, middle, positive, negative )
                                       [ ZeroMorphism( cat, ZeroObject( cat ), lastMiddleObj ) ] );
         fi;
         # cut away superfluous zero objects:
-        while IsZeroObject( cat, Range( middleL[ Length( middleL ) ] ) ) do
+        while IsZeroObject( cat, CodomainOfMorphism( cat, middleL[ Length( middleL ) ] ) ) do
             middleL := middleL{ [ 1 .. Length( middleL ) - 1 ] };
         od;
     fi;
@@ -269,7 +269,7 @@ function( cat, basePosition, middle, positive, negative )
             basePositionL := basePositionL - 1;
         fi;
         # cut away superfluous zero objects:
-        while IsZeroObject( cat, Source( middleL[ 1 ] ) ) do
+        while IsZeroObject( cat, DomainOfMorphism( cat, middleL[ 1 ] ) ) do
             middleL := middleL{ [ 2 .. Length( middleL ) ] };
             basePositionL := basePositionL + 1;
         od;
@@ -305,9 +305,9 @@ function( cat, basePosition, middle, positive, negative )
         fi;
         diffs := [ DifferentialOfComplex( C, degrees[ 1 ] ),
                    DifferentialOfComplex( C, degrees[ 2 ] ) ];
-        if Source( diffs[ 1 ] ) <> Range( diffs[ 2 ] ) then
-            Error( "source of differential ", degrees[ 1 ],
-                   " is not the same as range of differential ",
+        if DomainOfMorphism( cat, diffs[ 1 ] ) <> CodomainOfMorphism( cat, diffs[ 2 ] ) then
+            Error( "domain of differential ", degrees[ 1 ],
+                   " is not the same as codomain of differential ",
                    degrees[ 2 ], " in complex\n   ", C, "\n" );
         fi;
         if not IsZeroMorphism( cat, Compose( cat, diffs[ 1 ], diffs[ 2 ] ) ) then
@@ -345,7 +345,7 @@ end );
 InstallMethod( ObjectOfComplex,
 [ IsComplex, IsInt ],
 function( C, i )
-    return Source( DifferentialOfComplex( C, i ) );
+    return DomainOfMorphism( CatOfComplex( C ), DifferentialOfComplex( C, i ) );
 end );
 
 #######################################################################
@@ -370,7 +370,9 @@ end );
 InstallMethod( CyclesOfComplex,
 [ IsComplex, IsInt ],
 function( C, i )
-    return Kernel( DifferentialOfComplex( C, i ) );
+    local cat;
+    cat := CatOfComplex( C );
+    return KernelOfMorphism( cat, DifferentialOfComplex( C, i ) );
 end );
 
 #######################################################################
@@ -383,7 +385,9 @@ end );
 InstallMethod( BoundariesOfComplex,
 [ IsComplex, IsInt ],
 function( C, i )
-    return Image( DifferentialOfComplex( C, i + 1 ) );
+    local cat;
+    cat := CatOfComplex( C );
+    return ImageOfMorphism( cat, DifferentialOfComplex( C, i + 1 ) );
 end );
 
 #######################################################################
@@ -393,12 +397,15 @@ end );
 ##  For a complex <C> and an integer <i>. Returns the ith homology of 
 ##  the complex.
 ##
-##  TODO: Does not currently work (see the documentation).
-##  
-InstallMethod( HomologyOfComplex, # TODO: this does not work
+InstallMethod( HomologyOfComplex,
 [ IsComplex, IsInt ],
 function( C, i )
-    return CyclesOfComplex( C, i ) / BoundariesOfComplex( C, i );
+    local cat, im, d, inc;
+    cat := CatOfComplex( C );
+    im := BoundariesOfComplex( C, i );
+    d := DifferentialOfComplex( C, i );
+    inc := KernelFactorization( cat, d, im );
+    return CodomainOfMorphism( cat, CokernelOfMorphism( cat, inc ) );
 end );
 
 #######################################################################
@@ -786,6 +793,275 @@ end );
 
 #######################################################################
 ##
+<<<<<<< HEAD
+=======
+#M  GoodTruncationBelow( <C>, <i> ) 
+##
+##  Not working at the moment.  Suppose that C is a complex
+##    ... --> C_{i+1} --> C_i --> C_{i-1} --> ...
+##
+##  then the function should return the complex
+##    ... --> C_{i+1} --> Z_i --> 0 --> 0 --> ...
+##
+##  where Z_i is the i-cycle of C.
+##  
+InstallMethod( GoodTruncationBelow,
+[ IsComplex, IsInt ],
+function( C, i )
+    local cat, difflist, truncpart, newpart, zeropart, newdifflist, kerinc;
+
+    cat := CatOfComplex( C );
+    difflist := DifferentialsOfComplex( C );
+    truncpart := PositivePartFrom( difflist, i+2 );
+    kerinc := KernelInclusion( DifferentialOfComplex( C, i ) );
+    newpart := FiniteInfList( i, [ ZeroMorphism( cat, DomainOfMorphism( cat, kerinc ), ZeroObject( cat ) ),
+                                   LiftingInclusionMorphisms( kerinc, DifferentialOfComplex( C, i+1 ) ) ] );
+    zeropart := NegativePartFrom( DifferentialsOfComplex( ZeroComplex( cat ) ),
+                                  i-1 );
+    newdifflist := InfConcatenation( truncpart, newpart, zeropart );
+    
+    return ComplexByDifferentialList( cat, newdifflist );
+
+end );
+
+#######################################################################
+##
+#M  GoodTruncationAbove( <C>, <i> ) 
+##
+##  Not working at the moment.  Suppose that C is a complex
+##    ... --> C_{i+1} --> C_i --> C_{i-1} --> ...
+##
+##  then the function should return the complex
+##    ... --> 0 --> C_i/Z_i --> C_{i-1} --> 0 --> ...
+##
+##  where Z_i is the i-cycle of C.
+##  
+InstallMethod( GoodTruncationAbove,
+ [ IsComplex, IsInt ],
+function( C, i )
+    local cat, difflist, truncpart, newpart, zeropart, newdifflist, factor, factorinclusion,
+          kerinc, factorproj;
+
+    cat := CatOfComplex( C );
+    difflist := DifferentialsOfComplex( C );
+    truncpart := NegativePartFrom( difflist, i-1 );
+    kerinc := KernelInclusion( DifferentialOfComplex( C, i ) );
+    factorproj := CoKernelProjection( kerinc );
+    factor := CodomainOfMorphism( cat, factorproj );
+    factorinclusion := ZeroMorphism( cat, factor, ObjectOfComplex( C, i-1 ) ); #TODO
+    newpart := FiniteInfList( i, [ factorinclusion, ZeroMorphism( cat, ZeroObject( cat ), factor ) ] );
+
+    zeropart := NegativePartFrom( DifferentialsOfComplex( ZeroComplex( cat ) ),
+                                  i+2 );
+    newdifflist := InfConcatenation( zeropart, newpart, truncpart );
+    
+    return ComplexByDifferentialList( cat, newdifflist );
+
+end );
+
+# TODO!
+# InstallMethod( GoodTruncation, [ IsComplex, IsInt, IsInt ] );
+
+#######################################################################
+##
+#M  BrutalTruncationBelow( <C>, <i> ) 
+##
+##  Suppose that C is a complex
+##    ... --> C_{i+1} --> C_i --> C_{i-1} --> ...
+##
+##  then the function returns the complex
+##    ... --> C_{i+1} --> C_i --> 0 --> 0 --> ...
+##
+InstallMethod( BrutalTruncationBelow,
+[ IsComplex, IsInt ],
+function( C, i )
+    local cat, difflist, truncpart, newpart, zeropart, newdifflist;
+    
+    cat := CatOfComplex( C );
+    difflist := DifferentialsOfComplex( C );
+    truncpart := PositivePartFrom( difflist, i+1 );
+    newpart := FiniteInfList( i, [ ZeroMorphism( cat,
+                                                 ObjectOfComplex( C, i), 
+                                                 ZeroObject( cat )) ] );
+    zeropart := NegativePartFrom( DifferentialsOfComplex( ZeroComplex( cat ) ),
+                                  i-1 );
+    newdifflist := InfConcatenation( truncpart, newpart, zeropart );
+    
+    return ComplexByDifferentialList( cat, newdifflist );
+
+end );
+
+#######################################################################
+##
+#M  BrutalTruncationAbove( <C>, <i> ) 
+##
+##  Suppose that C is a complex
+##    ... --> C_{i+1} --> C_i --> C_{i-1} --> ...
+##
+##  then the function returns the complex
+##    ... --> 0 --> C_i --> C_{i-1} --> 
+##
+InstallMethod( BrutalTruncationAbove,
+[ IsComplex, IsInt ],
+function( C, i )
+    local cat, difflist, truncpart, newpart, zeropart, newdifflist;
+    
+    cat := CatOfComplex( C );
+    difflist := DifferentialsOfComplex( C );
+    truncpart := NegativePartFrom( difflist, i );
+    newpart := FiniteInfList( i+1, [ ZeroMorphism( cat,
+                                                   ZeroObject( cat ),
+                                                   ObjectOfComplex( C, i )) ] );
+    zeropart := PositivePartFrom( DifferentialsOfComplex( ZeroComplex( cat ) ),
+                                  i+2 );
+    newdifflist := InfConcatenation( zeropart, newpart, truncpart );
+    
+    return ComplexByDifferentialList( cat, newdifflist );
+
+end );
+
+#######################################################################
+##
+#M  BrutalTruncation( <C>, <i>, <j> ) 
+##
+##  Suppose that C is a complex
+##    ... --> C_{i+1} --> C_i --> C_{i-1} --> ...
+##
+##  then the function returns the complex
+##    ... --> 0 --> C_i --> C_{i-1} --> ... --> C_j --> 0 --> ...
+##
+InstallMethod( BrutalTruncation, 
+[ IsComplex, IsInt, IsInt ],
+function( C, i, j )
+    local cat, difflist, middlediffs, truncpart, newpart1, zeropart1, 
+          newpart2, zeropart2, newdifflist;
+    
+    if( j > i ) then
+        Error( "First input integer must be greater than or equal to the second" );
+    fi;
+    
+    return BrutalTruncationAbove( BrutalTruncationBelow( C, j ), i );
+end );
+
+#######################################################################
+##
+#O  SyzygyTruncation( <C>, <i> ) 
+##
+##  Suppose that C is a complex
+##    ... --> C_{i+1} --> C_i --> C_{i-1} --> ...
+##
+##  then the function returns the complex
+##    ... --> 0 --> ker(d_i) --> C_i --> C_{i-1} --> ...
+##
+InstallMethod( SyzygyTruncation, 
+[ IsComplex, IsInt ],
+function( C, i )
+    local cat, difflist, truncpart, kernelinc, newpart, kernel,
+          zeropart, newdifflist;
+    
+    cat := CatOfComplex( C );
+    difflist := DifferentialsOfComplex( C );
+    truncpart := NegativePartFrom( difflist, i );
+
+    kernelinc := KernelInclusion( DifferentialOfComplex( C, i ) );
+    kernel := DomainOfMorphism( cat, kernelinc );
+    newpart := FiniteInfList( i+1, [ kernelinc, 
+                                     ZeroMorphism( cat, ZeroObject( cat ), kernel ) ] );
+    zeropart := PositivePartFrom( DifferentialsOfComplex( ZeroComplex( cat ) ),
+                                  i+3 );
+
+    newdifflist := InfConcatenation( zeropart, newpart, truncpart );
+
+    return ComplexByDifferentialList( cat, newdifflist );
+
+end );
+
+#######################################################################
+##
+#O  CosyzygyTruncation( <C>, <i> ) 
+##
+##  Suppose that C is a complex
+##    ... --> C_{i+1} --> C_i --> C_{i-1} --> ...
+##
+##  then the function returns the complex
+##    ... --> C_i --> C_{i-1} --> cok(d_i) --> 0 --> ...
+##
+InstallMethod( CosyzygyTruncation, 
+[ IsComplex, IsInt ],
+function( C, i )
+    local cat, difflist, truncpart, newpart,
+          zeropart, newdifflist, cokerproj, coker;
+    
+    cat := CatOfComplex( C );
+    difflist := DifferentialsOfComplex( C );
+    truncpart := PositivePartFrom( difflist, i );
+
+    cokerproj := CoKernelProjection( DifferentialOfComplex( C, i ) );
+    coker := CodomainOfMorphism( cat, cokerproj );
+    newpart := FiniteInfList( i-2, [ ZeroMorphism( cat, coker, ZeroObject( cat ) ),
+                                     cokerproj ] );
+
+    zeropart := NegativePartFrom( DifferentialsOfComplex( ZeroComplex( cat ) ),
+                                  i-3 );
+
+    newdifflist := InfConcatenation( truncpart, newpart, zeropart );
+
+    return ComplexByDifferentialList( cat, newdifflist );
+
+end );
+
+#######################################################################
+##
+#O  SyzygyCosyzygyTruncation( <C>, <i>, <j> ) 
+##
+##  Suppose that C is a complex
+##    ... --> C_{i+1} --> C_i --> C_{i-1} --> ...
+##
+##  then the function returns the complex
+##    ... --> 0 --> ker(d_i) --> C_i --> ... --> C_{j+1} --> cok(d_j) --> 0 --> ...
+##
+InstallMethod( SyzygyCosyzygyTruncation, 
+[ IsComplex, IsInt, IsInt ],
+function( C, i, j )
+    local cat, difflist, truncpart, newdifflist, cokerproj, coker, 
+          kernelinc, kernel, newpart1, zeropart1, newpart2, zeropart2, middlediffs;
+    
+    if( j > i ) then
+        Error( "First input integer must be greater than or equal to the second" );
+    fi;
+
+    cat := CatOfComplex( C );
+
+    difflist := DifferentialsOfComplex( C );
+    middlediffs := FinitePartAsList( difflist, j, i );
+    truncpart := FiniteInfList( j, middlediffs );
+
+    kernelinc := KernelInclusion( DifferentialOfComplex( C, i ) );
+    kernel := DomainOfMorphism( cat, kernelinc );
+    newpart1 := FiniteInfList( i+1, [ kernelinc, 
+                                     ZeroMorphism( cat, ZeroObject( cat ), kernel ) ] );
+    zeropart1 := PositivePartFrom( DifferentialsOfComplex( ZeroComplex( cat ) ),
+                                  i+3 );
+
+
+    cokerproj := CoKernelProjection( DifferentialOfComplex( C, j ) );
+    coker := CodomainOfMorphism( cat, cokerproj );
+    newpart2 := FiniteInfList( j-2, [ ZeroMorphism( cat, coker, ZeroObject( cat ) ),
+                                     cokerproj ] );
+
+    zeropart2 := NegativePartFrom( DifferentialsOfComplex( ZeroComplex( cat ) ),
+                                  j-3 );
+
+    newdifflist := InfConcatenation( zeropart1, newpart1, truncpart, 
+                                     newpart2, zeropart2 );
+
+    return ComplexByDifferentialList( cat, newdifflist );
+  
+end );
+
+#######################################################################
+##
+>>>>>>> 09e7a858b837b6f983ae2e1d689cfc2003d90a51
 #O  CutComplexAbove( <C> ) 
 ##
 ##  For a bounded below complex C which is stored as an infinite complex,
@@ -933,5 +1209,3 @@ function( C )
         Print( "---" );
     fi;
 end );
-
-

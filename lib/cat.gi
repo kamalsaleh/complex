@@ -235,7 +235,7 @@ end );
 InstallMethod( IsZeroObject,
 [ IsAdditiveCat, IsObject ],
 function( cat, X )
-    return X = ZeroObject( cat );
+    return Isomorphic( X, ZeroObject( cat ) );
 end );
 
 InstallMethod( IsZeroMorphism,
@@ -271,4 +271,16 @@ InstallMethod( CokernelFactorization,
 [ IsAbelianCat, IsObject, IsObject ],
 function( cat, f, g )
     return cat.cokernelFactorization( f, g );
+end );
+
+InstallMethod( ImageOfMorphism,
+[ IsAbelianCat, IsObject ],
+function( cat, f )
+    return cat.image( f );
+end );
+
+InstallMethod( IsExact,
+[ IsAbelianCat, IsObject, IsObject ],
+function( cat, f, g )
+    return cat.isExact( f, g );
 end );
