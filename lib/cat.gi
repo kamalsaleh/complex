@@ -75,6 +75,7 @@ function( identity, name, properties )
 
     if not "isExact" in givenProps then
         properties.isExact := function( f,g ) #  f: A ---> B , g: B ---> C
+            # TODO: fix!
             return properties.isomorphic( properties.image( f ), properties.kernel( g ) );
         end;
     fi;
