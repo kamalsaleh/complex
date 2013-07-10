@@ -150,3 +150,43 @@ end;
 
 InstallValue( Ab, createAb() );
 #InstallValue( Ab, 42 );
+
+
+# InstallMethod( Vec,
+# [ IsField ],
+# function( K )
+
+#     objInCat := function( X )
+#         return IsVectorSpace( X ) and
+#                LeftActingDomain( X ) = K;
+#     end;
+
+#     morphInCat := function( f )
+#         return IsLinearMapping( K, f );
+#     end;
+
+#     properties := rec( objInCat := IsGroup and IsAbelian,
+#                        morphInCat := morphInCat,
+#                        domain := Source,
+#                        codomain := Range,
+#                        compose := compose,
+#                        identityMorph := IdentityMapping,
+#                        isIsomorphism := isIsomorphism,
+#                        inverse := inverse,
+#                        isomorphic := isomorphic,
+#                        isomorphism := isomorphism,
+#                        zeroMorph := zeroMorph,
+#                        addMorph := addMorph,
+#                        negateMorph := negateMorph,
+#                        zeroObj := TrivialGroup(),
+#                        directSum := direkteSum,
+#                        kernel := kernel,
+#                        cokernel := cokernel,
+#                        kernelFactorization := kernelFactorization,
+#                        cokernelFactorization := cokernelFactorization );
+
+#     return AbelianCat( [ "Vec", K ],
+#                        Concatenation( "Vec(", String( K ), ")" ),
+#                        properties );
+
+# end );
