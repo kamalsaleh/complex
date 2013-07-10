@@ -35,3 +35,5 @@ DeclareOperation( "KernelOfMorphism", [ IsAbelianCat, IsObject ] );
 DeclareOperation( "CokernelOfMorphism", [ IsAbelianCat, IsObject ] );
 DeclareOperation( "KernelFactorization", [ IsAbelianCat, IsObject, IsObject ] );
 DeclareOperation( "CokernelFactorization", [ IsAbelianCat, IsObject, IsObject ] );
+DeclareOperation( "ImageOfMorphism", [ IsAbelianCat, IsObject ] );
+DeclareOperation( "IsExact", [ IsAbelianCat, IsObject, IsObject ] );
