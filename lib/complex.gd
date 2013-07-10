@@ -46,16 +46,16 @@ DeclareOperation( "SyzygyCosyzygyTruncation", [ IsComplex, IsInt, IsInt ] );
 DeclareOperation( "CutComplexAbove", [ IsComplex ] );
 DeclareOperation( "CutComplexBelow", [ IsComplex ] );
 
-DeclareGlobalFunction( "Complex" );
+DeclareOperation( "Complex", [ IsAbelianCat, IsInt, IsList, IsObject, IsObject ] );
 # Complex( cat, basePosition, differentials, [ "repeat", [ f, g, h ] ], "zero" );
 # Complex( cat, basePosition, differentials, [ "next", function( d ) ... end ], "zero" );
 # Complex( cat, basePosition, differentials, [ "pos", function( C, i ) ... end,  ], "zero" );
 # - If positive or negative is "zero", then middle must be nonempty.
 
-DeclareGlobalFunction( "FiniteComplex" );
-DeclareGlobalFunction( "ZeroComplex" );
-DeclareGlobalFunction( "StalkComplex" );
-DeclareGlobalFunction( "ShortExactSequence" );
-DeclareGlobalFunction( "ComplexByDifferentialList" );
+DeclareOperation( "FiniteComplex", [ IsAbelianCat, IsInt, IsList ] );
+DeclareOperation( "ZeroComplex", [ IsAbelianCat ] );
+DeclareOperation( "StalkComplex", [ IsAbelianCat, IsObject, IsInt ] );
+DeclareOperation( "ShortExactSequence", [ IsAbelianCat, IsObject, IsObject ] );
+DeclareOperation( "ComplexByDifferentialList", [ IsAbelianCat, IsInfList ] );
 
 DeclareOperation( "ProjectiveResolution", [ IsAlgebraModule ] );

@@ -7,8 +7,15 @@
 ##  an <basePosition> is some integer i. The returned complex has the 
 ##  map d1 from degree (i) to degree (i-1).
 ##  
-InstallGlobalFunction( FiniteComplex,
+InstallMethod( FiniteComplex,
+[ IsAbelianCat, IsInt, IsList ],
 function( cat, basePosition, differentials )
+    if not ForAll( differentials, cat.morphInCat ) then
+        Error( "FiniteComplex: the differentials must be morphisms in the category" );
+    fi;
+    if Length( differentials ) = 0 then
+        Error( "FiniteComplex: list of differentials must be nonempty" );
+    fi;
     return Complex( cat, basePosition, differentials, "zero", "zero" );
 end );
 
@@ -19,7 +26,8 @@ end );
 ##  Returns the complex in which all objects are the zero object in
 ##  <cat>.
 ##  
-InstallGlobalFunction( ZeroComplex,
+InstallMethod( ZeroComplex,
+[ IsAbelianCat ],
 function( cat )
     local fam, C, zeroMap;
     fam := NewFamily( "ComplexesFamily", IsComplex );
@@ -39,8 +47,12 @@ end );
 ##  Returns the stalk complex with the object <obj> from <cat> in
 ##  degree <degree>.
 ##  
-InstallGlobalFunction( StalkComplex,
+InstallMethod( StalkComplex,
+[ IsAbelianCat, IsObject, IsInt ],
 function( cat, obj, degree )
+    if not ObjectInCat( cat, obj ) then
+        Error( "StalkComplex: the object must be an object of the category" );
+    fi;
     return FiniteComplex( cat, degree,
                           [ ZeroMorphism( cat, obj, ZeroObject( cat ) ),
                             ZeroMorphism( cat, ZeroObject( cat ), obj ) ] );
@@ -56,7 +68,8 @@ end );
 ##  should be surjective. The function checks that this is the case, 
 ##  and returns an error otherwise.
 ##  
-InstallGlobalFunction( ShortExactSequence,
+InstallMethod( ShortExactSequence,
+[ IsAbelianCat, IsObject, IsObject ],
 function( cat, f, g )
     local SES;
     SES := FiniteComplex( cat, 0, [ g, f ] );
@@ -73,12 +86,86 @@ end );
 ##  Constructs a complex, not necessarily finite, from the given data.
 ##  See the QPA manual for detailed information on the input data.
 ##  
-InstallGlobalFunction( Complex,
+InstallMethod( Complex,
+[ IsAbelianCat, IsInt, IsList, IsObject, IsObject ],
 function( cat, basePosition, middle, positive, negative )
-    local checkDifferentials, checkDifferentialList, checkDifferentialListWithRepeat,
+    local checkInfinitePartDescription,
+          checkDifferentials, checkDifferentialList, checkDifferentialListWithRepeat,
           positiveRepeat, negativeRepeat,
           fam, C, basePositionL, middleL, positiveL, negativeL,
           firstMiddleObj, lastMiddleObj, checkNewDifferential;
+
+    # check that the middle list consists of morphisms:
+    if not ForAll( middle, cat.morphInCat ) then
+        Error( "Complex: bad middle list ", middle,
+               " (should consist of morphisms)" );
+    fi;
+
+    # if one of the infinite parts is given as "zero", the middle part must be nonempty:
+    if Length( middle ) = 0 then
+        if positive = "zero" then
+            Error( "Complex: must have nonempty middle part when positive part is \"zero\"" );
+        fi;
+        if negative = "zero" then
+            Error( "Complex: must have nonempty middle part when negative part is \"zero\"" );
+        fi;
+    fi;
+
+    # check that the positive and negative arguments are of the correct form:
+    checkInfinitePartDescription := function( desc, name )
+        if desc = "zero" then
+            return;
+        fi;
+        if ( not IsList( desc ) ) or IsString( desc ) then
+            Error( "Complex: description of ", name, " part must be ",
+                   "either the string \"zero\" or a list" );
+        fi;
+        if Length( desc ) < 2 or Length( desc ) > 3 then
+            Error( "Complex: bad list ", desc, " describing ", name, " part ",
+                   "(must have length 2 or 3)" );
+        fi;
+        if not desc[ 1 ] in [ "repeat", "pos", "next" ] then
+            Error( "Complex: bad list ", desc, " describing ", name, " part ",
+                   "(first element must be one of the strings ",
+                   "\"repeat\", \"pos\", \"next\")" );
+        fi;
+        if desc[ 1 ] = "repeat" and Length( desc ) <> 2 then
+            Error( "Complex: bad list ", desc, " describing ", name, " part ",
+                   "(\"repeat\" type takes only one argument)" );
+        fi;
+        if desc[ 1 ] = "repeat" and not
+           ( IsList( desc[ 2 ] ) and ForAll( desc[ 2 ], cat.morphInCat ) ) then
+            Error( "Complex: bad list ", desc, " describing ", name, " part ",
+                   "(\"repeat\" type takes a list of morphisms as argument)" );
+        fi;
+        if desc[ 1 ] = "next" and Length( desc ) <> 3 then
+            Error( "Complex: bad list ", desc, " describing ", name, " part ",
+                   "(\"next\" type takes exactly two arguments)" );
+        fi;
+        if ( desc[ 1 ] = "pos" or desc[ 1 ] = "next" ) and not IsFunction( desc[ 2 ] ) then
+            Error( "Complex: bad list ", desc, " describing ", name, " part ",
+                   "(\"", desc[ 1 ], "\" type takes a function as first argument)" );
+        fi;
+        if desc[ 1 ] = "next" and not NumberArgumentsFunction( desc[ 2 ] ) in [ -1, 1 ] then
+            Error( "Complex: bad list ", desc, " describing ", name, " part ",
+                   "(the function should take one argument)" );
+        fi;
+        if desc[ 1 ] = "pos" and not NumberArgumentsFunction( desc[ 2 ] ) in [ -1, 2 ] then
+            Error( "Complex: bad list ", desc, " describing ", name, " part ",
+                   "(the function should take two arguments)" );
+        fi;
+        if desc[ 1 ] = "next" and not MorphismInCat( cat, desc[ 3 ] ) then
+            Error( "Complex: bad list ", desc, " describing ", name, " part ",
+                   "(\"next\" type takes a morphism as second argument)" );
+        fi;
+        if desc[ 1 ] = "pos" and Length( desc ) = 3 and not IsBool( desc[ 3 ] ) then
+            Error( "Complex: bad list ", desc, " describing ", name, " part ",
+                   "(\"pos\" type takes a boolean as (optional) second argument)" );
+        fi;
+    end;
+
+    checkInfinitePartDescription( positive, "positive" );
+    checkInfinitePartDescription( negative, "negative" );
 
     # check that all consecutive differentials compose to zero
     checkDifferentials := function( topDegree, indices, lists, listNames )
@@ -1024,8 +1111,8 @@ end );
 ##  <cat> is a category, and <differentials> is an InfList of
 ##  differentials.
 ##  
-InstallGlobalFunction( ComplexByDifferentialList,
-[ IsCat, IsInfList ],
+InstallMethod( ComplexByDifferentialList,
+[ IsAbelianCat, IsInfList ],
 function( cat, differentials )
     local C, fam;
 
