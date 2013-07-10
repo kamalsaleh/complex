@@ -1,0 +1,30 @@
+GJORT:
+
+- Alt fra QPA-filene complex.g* og inflist.g* er nå flyttet, enten til
+  en av Complex-filene complex.g*, inflist.g* og chainmap.g*, eller
+  til QPA-filen midlertidig.g*.
+
+- Innholdet i Complex-filen qpainterface.g* er flyttet til
+  midlertidig.g* i QPA.  Det var kanskje ikke så lurt, for man bør jo
+  kunne bruke qpainterface.gi når man skal teste ting. Vær obs på
+  dette når ting skal endres i koden …
+
+
+GJØR:
+
+- MappingCone er full av ræl. Særlig når det gjelder å "huske" direkte
+  summer, se kommentarer i koden.  Hvordan fikser vi dette?  Skal vi
+  også prøve å endre i QPA??
+
+- Image og IsExact? Dukker opp i koden noen steder.
+
+- Truncation- og Syzygy-metodene må ryddes opp i, bruker masse
+  QPA-ting.
+
+- HomologyOfComplex funker dårlig.
+
+- Projektiv oppløsning etc. er nå i QPA. Bør dette implementeres i
+  Complex, hva gjør vi med projektive objekter? Egen kategori
+  "IsAbelianCatWithEnoughProjectives"??
+
+- Til slutt en gang: Sjekk om noe må endres i derivedcat.g* i QPA.

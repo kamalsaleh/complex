@@ -495,10 +495,22 @@ gap> Ab!.name;
     Checks that <A>f</A> and <A>g</A> are morphisms of <A>cat</A>, and
     that the composition <A>fg</A> is zero. The diagram looks as
     follows:
+    <Alt Only="LaTeX">
     <Display>
       \xymatrix{ &amp; A \ar@{-->}[dl]^{h} \ar[d]^{g} &amp; \\
       \mathrm{ker}~f \ar@{)->}[r]^{i} &amp; \ar[r]^{f} B &amp; C \\ }
     </Display>
+    </Alt>
+    <Alt Not="LaTeX">
+    <Verb>
+                 A
+               / |
+             h/  |g
+             /   |
+            v    v
+      ker f -i-> B --f--> C
+    </Verb>
+    </Alt>
   </Description>
 </ManSection>
 
@@ -517,11 +529,23 @@ gap> Ab!.name;
     Checks that <A>f</A> and <A>g</A> are morphisms of <A>cat</A>, and
     that the composition <A>gf</A> is zero. The diagram looks as
     follows:
+    <Alt Only="LaTeX">
     <Display>
       \xymatrix{ A \ar[r]^f &amp; B \ar[d]^{g} \ar@{->>}[r]^p &amp;
       \mathrm{cok}~f \ar@{-->}[dl]^h \\
        &amp; C &amp;  \\ }
     </Display>
+    </Alt>
+    <Alt Not="LaTeX">
+    <Verb>
+      A --f--> B -p-> cok f 
+               |    ^
+               |g  /
+               |  /h
+               v /
+               C
+    </Verb>
+    </Alt>
   </Description>
 </ManSection>
 
