@@ -19,7 +19,9 @@ GJØR:
 - Image og IsExact? Dukker opp i koden noen steder.
 
 - Truncation- og Syzygy-metodene må ryddes opp i, bruker masse
-  QPA-ting.
+  QPA-ting. Har fikset GoodTruncationBelow og GoodTruncationAbove. Det
+  er en feil i GoodTruncation, som skyldes noe annet. Se en kommentar
+  på papir.
 
 - HomologyOfComplex funker dårlig.
 

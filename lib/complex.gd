@@ -34,15 +34,6 @@ DeclareOperation( "Shift", [ IsComplex, IsInt ] );
 DeclareOperation( "ShiftUnsigned", [ IsComplex, IsInt ] );
 DeclareOperation( "YonedaProduct", [ IsComplex, IsComplex ] );
 
-DeclareOperation( "GoodTruncationBelow", [ IsComplex, IsInt ] );
-DeclareOperation( "GoodTruncationAbove", [ IsComplex, IsInt ] );
-DeclareOperation( "GoodTruncation", [ IsComplex, IsInt, IsInt ] );
-DeclareOperation( "BrutalTruncationBelow", [ IsComplex, IsInt ] );
-DeclareOperation( "BrutalTruncationAbove", [ IsComplex, IsInt ] );
-DeclareOperation( "BrutalTruncation", [ IsComplex, IsInt, IsInt ] );
-DeclareOperation( "SyzygyTruncation", [ IsComplex, IsInt ] );
-DeclareOperation( "CosyzygyTruncation", [ IsComplex, IsInt ] );
-DeclareOperation( "SyzygyCosyzygyTruncation", [ IsComplex, IsInt, IsInt ] );
 DeclareOperation( "CutComplexAbove", [ IsComplex ] );
 DeclareOperation( "CutComplexBelow", [ IsComplex ] );
 
@@ -58,4 +49,4 @@ DeclareOperation( "StalkComplex", [ IsAbelianCat, IsObject, IsInt ] );
 DeclareOperation( "ShortExactSequence", [ IsAbelianCat, IsObject, IsObject ] );
 DeclareOperation( "ComplexByDifferentialList", [ IsAbelianCat, IsInfList ] );
 
-DeclareOperation( "MappingCone", [ IsChainMap ] );
+

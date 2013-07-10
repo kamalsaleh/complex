@@ -489,7 +489,7 @@ function( list )
     Print( ", " );
 
     # positive part:
-    if neg = fail then
+    if pos = fail then
         Print( "[", String( MiddleEnd( list ) + 1 ), ",inf):empty" );
     else
         Print( "[", String( StartPosition( pos ) ), ",inf):" );
