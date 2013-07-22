@@ -3,10 +3,10 @@
 
 <Section><Heading>Mathematical introduction</Heading>
 
-A <E>category</E> in the mathematical sence (not a &GAP; category) is
+A <E>category</E> in the mathematical sense (not a &GAP; category) is
 a collection of objects, such that for each pair of objects, there is
 a set of morphisms between them.  Morphisms can be composed whenever
-this gives sence, and for the pair <M>(X, X)</M> of objects, there is
+this makes sense, and for the pair <M>(X, X)</M> of objects, there is
 a special morphism called the identity morphism. <P />
 
 A category is called <E>additive</E> if, for any pair of objects
@@ -20,7 +20,7 @@ Finally, an additive category is called <E>abelian</E> if every
 morphism in the category has a kernel and a cokernel; any monomorphism
 in the cateogory is the kernel of its cokernel; and any epimorphism in
 the category is the cokernel of its kernel. Kernels and cokernels in a
-general abelian category is defined by a universal factorization
+general abelian category are defined by a universal factorization
 property.<P />
 
 In &Complex;, there are &GAP; categories for each of the three types
@@ -31,7 +31,7 @@ thoroughly docoumented in the following section.
 
 An abelian category should implement all the above mentioned
 properties.  For instance, it should be known how to compose two
-morphisms of the category, or how to produce the kernel of a morphims.
+morphisms of the category, or how to produce the kernel of a morphism.
 
 </Section>
 
@@ -45,7 +45,7 @@ associated things: ``identity'', ``name'' and ``properties''.  These
 are in turn the three arguments of the constructors.  The identity is
 used to uniquely identify the category, the name is used when printing
 the category, and properties is a record storing the properties listed
-in the previous section.  This record is described in the constructors
+in the previous section.  This record is described in the constructor's
 documentation.
 
 <ManSection>
@@ -161,7 +161,7 @@ gap> Ab!.name;
   <C>cat.addMorph( f, g )</C>).  Another way of evaluating the
   functions stored in the record elements is to use the associated and
   more user-friendly operations (for instance <C>AddMorphisms( cat, f,
-  g )</C>.  Note that these associated operations always takes the
+  g )</C>).  Note that these associated operations always take the
   category itself as the first argument. Below is a list of all record
   elements with their associated operation.
   <List>
