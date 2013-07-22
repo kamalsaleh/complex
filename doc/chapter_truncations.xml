@@ -1,0 +1,148 @@
+<Chapter>
+<Heading>Truncations of complexes</Heading>
+For all the following operations, the input is a chain complex
+
+<Display>
+C: \cdots \longrightarrow C_{i+2} \longrightarrow C_{i+1} \longrightarrow C_{i}
+\longrightarrow C_{i-1}
+ \longrightarrow C_{i-2}  \longrightarrow \cdots
+</Display>
+
+and either an integer <M>i</M> or two integers <M>i \geq j</M>.
+Throughout this section, the following notation is used: <M>Z_i</M>
+denotes the <M>i</M>th cycle of <M>C</M>.
+
+<Section>
+<Heading>Good truncations</Heading>
+
+The good truncations …
+
+<ManSection>
+  <Oper Name="GoodTruncationBelow" Arg="C,i" />
+  <Description>
+    Arguments: <Arg>C</Arg> -- a complex, <Arg>i</Arg> -- an integer.<Br />
+  </Description>
+  <Returns>The complex
+  <Display>
+    \cdots \longrightarrow C_{i+2} \longrightarrow C_{i+1}
+    \longrightarrow Z_{i} \longrightarrow 0 \longrightarrow 0
+    \longrightarrow \cdots
+  </Display>
+  </Returns>
+</ManSection>
+
+<ManSection>
+  <Oper Name="GoodTruncationAbove" Arg="C,i" />
+  <Description>
+    Arguments: <Arg>C</Arg> -- a complex, <Arg>i</Arg> -- an integer.<Br />
+  </Description>
+  <Returns>The complex
+  <Display>
+    \cdots \longrightarrow 0 \longrightarrow C_{i}/Z_{i} \longrightarrow
+    C_{i-1} \longrightarrow C_{i-2} \longrightarrow \cdots
+  </Display>
+  </Returns>
+</ManSection>
+
+<ManSection>
+  <Oper Name="GoodTruncation" Arg="C,i,j" />
+  <Description>
+    Arguments: <Arg>C</Arg> -- a complex, <Arg>i,j</Arg> -- integers
+    with <M><Arg>i</Arg> \geq <Arg>j</Arg></M>. <Br />
+  </Description>
+  <Returns>The complex
+  <Display>
+    \cdots \longrightarrow 0 \longrightarrow C_{i}/Z_{i}
+    \longrightarrow C_{i+1} \longrightarrow \cdots \longrightarrow
+    C_{j+1} \longrightarrow Z_{j} \longrightarrow 0 \longrightarrow
+    \cdots
+  </Display>
+  </Returns>
+  <Description>
+    In particular, if <M><Arg>i</Arg>=<Arg>j</Arg></M>, the returned
+    complex is the zero complex.
+  </Description>
+</ManSection>
+
+<!-- <ManSection> -->
+<!--   <Oper Name="BrutalTruncationBelow" Arg="C,i" /> -->
+<!--   <Description> -->
+<!--     Arguments: <Arg>C</Arg> -- a complex, <Arg>i</Arg> -- an integer.<Br /> -->
+<!--   </Description> -->
+<!--   <Returns>A newly created complex. -->
+<!--   </Returns> -->
+<!--   <Description>Replace all objects with degree <Math>j</Math> -->
+<!--   &lt; <Math>i</Math> with zero. The differentials affected will -->
+<!--   also become zero. -->
+<!--   </Description> -->
+<!-- </ManSection> -->
+
+<!-- <ManSection> -->
+<!--   <Oper Name="BrutalTruncationAbove" Arg="C,i" /> -->
+<!--   <Description> -->
+<!--     Arguments: <Arg>C</Arg> -- a complex, <Arg>i</Arg> -- an integer.<Br /> -->
+<!--   </Description> -->
+<!--   <Returns>A newly created complex. -->
+<!--   </Returns> -->
+<!--   <Description>Replace all objects with degree <Math>j</Math> -->
+<!--   &gt; <Math>i</Math> with zero. The differentials affected will also -->
+<!--   become zero. -->
+<!--   </Description> -->
+<!-- </ManSection> -->
+
+<!-- <ManSection> -->
+<!--   <Oper Name="BrutalTruncation" Arg="C,i,j" /> -->
+<!--   <Description> -->
+<!--     Arguments: <Arg>C</Arg> -- a complex, <Arg>i, j</Arg> -- integers.<Br /> -->
+<!--   </Description> -->
+<!--   <Returns>A newly created complex. -->
+<!--   </Returns> -->
+<!--   <Description>Brutally truncates in both ends. The integer arguments -->
+<!--   must be ordered such that <Arg>i</Arg> &gt; <Arg>j</Arg>. -->
+<!--   </Description> -->
+<!-- </ManSection> -->
+
+<!-- <ManSection> -->
+<!--   <Oper Name="SyzygyTruncation" Arg="C,i" /> -->
+<!--   <Description> -->
+<!--     Arguments: <Arg>C</Arg> -- a complex, <Arg>i</Arg> -- an integer.<Br /> -->
+<!--   </Description> -->
+<!--   <Returns>A newly created complex. -->
+<!--   </Returns> -->
+<!--   <Description>Replace the object in degree <Math>i</Math> with the -->
+<!--   kernel of <Math>d_i</Math>, and <M>d_{i+1}</M> with the natural -->
+<!--   inclusion. All objects in degree <M>j &gt; i+1</M> are replaced with -->
+<!--   zero. -->
+<!--   </Description> -->
+<!-- </ManSection> -->
+
+<!-- <ManSection> -->
+<!--   <Oper Name="CosyzygyTruncation" Arg="C,i" /> -->
+<!--   <Description> -->
+<!--     Arguments: <Arg>C</Arg> -- a complex, <Arg>i</Arg> -- an integer.<Br /> -->
+<!--   </Description> -->
+<!--   <Returns>A newly created complex. -->
+<!--   </Returns> -->
+<!--   <Description>Replace the object in degree <Math>i-2</Math> with the -->
+<!--   cokernel of <Math>d_i</Math>, and <M>d_{i-1}</M> with the natural -->
+<!--   projection. All objects in degree <M>j &lt; i-2</M> are replaced with -->
+<!--   zero. -->
+<!--   </Description> -->
+<!-- </ManSection> -->
+
+<!-- <ManSection> -->
+<!--   <Oper Name="SyzygyCosyzygyTruncation" Arg="C,i,j" /> -->
+<!--   <Description> -->
+<!--     Arguments: <Arg>C</Arg> -- a complex, <Arg>i</Arg> -- an integer.<Br /> -->
+<!--   </Description> -->
+<!--   <Returns>A newly created complex. -->
+<!--   </Returns> -->
+<!--   <Description>Performs both the above truncations. The integer -->
+<!--   arguments must be ordered such that <Arg>i</Arg> &gt; <Arg>j</Arg>. -->
+<!--   </Description> -->
+<!-- </ManSection> -->
+
+
+</Section>
+
+</Chapter>

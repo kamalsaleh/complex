@@ -46,12 +46,13 @@ InstallMethod( GoodTruncationAbove,
  [ IsComplex, IsInt ],
 function( C, i )
     local cat, difflist, truncpart, newpart, zeropart, newdifflist, factorinclusion,
-          zeromap;
+          zeromap, kerinc;
 
     cat := CatOfComplex( C );
     difflist := DifferentialsOfComplex( C );
     truncpart := NegativePartFrom( difflist, i-1 );
-    factorinclusion := CokernelFactorization( cat, DifferentialOfComplex( C, i+1 ), DifferentialOfComplex( C, i ) );
+    kerinc := KernelOfMorphism( cat, DifferentialOfComplex( C, i ) );
+    factorinclusion := CokernelFactorization( cat, kerinc, DifferentialOfComplex( C, i ) );
     zeromap := ZeroMorphism( cat, ZeroObject( cat ), DomainOfMorphism( cat, factorinclusion ) );
     newpart := FiniteInfList( i, [ factorinclusion, zeromap ] );
     zeropart := PositivePartFrom( DifferentialsOfComplex( ZeroComplex( cat ) ),
@@ -82,6 +83,9 @@ function( C, i, j )
         Error( "First input integer must be greater than or equal to the second" );
     fi;
     
+    if( i = j ) then
+        return ZeroComplex( CatOfComplex( C ) );
+    fi;
     return GoodTruncationAbove( GoodTruncationBelow( C, j ), i );
 end );
 

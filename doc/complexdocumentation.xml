@@ -53,6 +53,8 @@
 
 <#Include SYSTEM "chapter_abeliancategories.xml">
 
+<#Include SYSTEM "chapter_truncations.xml">
+
 </Body>
 
 <TheIndex/>

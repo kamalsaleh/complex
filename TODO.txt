@@ -9,6 +9,7 @@ GJORT:
   kunne bruke qpainterface.gi når man skal teste ting. Vær obs på
   dette når ting skal endres i koden …
 
+- De gode trunkeringene er ok nå.
 
 GJØR:
 
@@ -18,10 +19,9 @@ GJØR:
 
 - Image og IsExact? Dukker opp i koden noen steder.
 
-- Truncation- og Syzygy-metodene må ryddes opp i, bruker masse
-  QPA-ting. Har fikset GoodTruncationBelow og GoodTruncationAbove. Det
-  er en feil i GoodTruncation, som skyldes noe annet. Se en kommentar
-  på papir.
+- BrutalTruncation- og Syzygy-metodene må ryddes opp i, bruker masse
+  QPA-ting.  Skriv ferdig dokumentasjonen (ikke ferdig med de gode
+  trunkeringene heller).
 
 - HomologyOfComplex funker dårlig.
 
