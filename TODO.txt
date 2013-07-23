@@ -9,8 +9,14 @@ GJORT:
   kunne bruke qpainterface.gi når man skal teste ting. Vær obs på
   dette når ting skal endres i koden …
 
+- Alt i filen midlertidig.gi fungerer fint i QPA.  Oppdaterer denne
+  istedenfor den som ligger i complex.
+
 - Alle trunkeringene er fikset. Dokumentasjonen om disse er relativt
   fikset (den har en pussig inkonsistens, men pytt).
+
+- Til slutt en gang: Sjekk om noe må endres i derivedcat.g* i QPA. Jeg
+  tror egentlig dette er i orden nå. Andre feil i den filen, derimot …
 
 GJØR:
 
@@ -26,4 +32,3 @@ GJØR:
   Complex, hva gjør vi med projektive objekter? Egen kategori
   "IsAbelianCatWithEnoughProjectives"??
 
-- Til slutt en gang: Sjekk om noe må endres i derivedcat.g* i QPA.
