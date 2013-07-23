@@ -802,14 +802,16 @@ end );
 InstallMethod( CutComplexAbove,
 [ IsComplex ],
 function( C )
-    local i, obj;
+    local i, obj, cat;
+    cat := CatOfComplex( C );
+
     if (IsInt(UpperBound(C))) then
         return C;
     else
        i := LowerBound(C);
        while true do
            obj := ObjectOfComplex(C, i);
-           if (IsZero(DimensionVector(obj))) then
+           if IsZeroObject( cat, obj ) then
                return BrutalTruncationAbove(C, i-1);
            fi;
            i := i+1;
@@ -829,14 +831,15 @@ end );
 InstallMethod( CutComplexBelow,
 [ IsComplex ],
 function( C )
-    local i, obj;
+    local i, obj, cat;
+    cat := CatOfComplex( C );
     if (IsInt(LowerBound(C))) then
         return C;
     else
        i := UpperBound(C);
        while true do
            obj := ObjectOfComplex(C, i);
-           if (IsZero(DimensionVector(obj))) then
+           if IsZero( cat, obj ) then
                return BrutalTruncationBelow(C, i+1);
            fi;
            i := i-1;
