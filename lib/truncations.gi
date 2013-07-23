@@ -1,7 +1,7 @@
 
 #######################################################################
 ##
-#M  GoodTruncationBelow( <C>, <i> ) 
+#O  GoodTruncationBelow( <C>, <i> ) 
 ##
 ##  Not working at the moment.  Suppose that C is a complex
 ##    ... --> C_{i+1} --> C_i --> C_{i-1} --> ...
@@ -32,7 +32,7 @@ end );
 
 #######################################################################
 ##
-#M  GoodTruncationAbove( <C>, <i> ) 
+#O  GoodTruncationAbove( <C>, <i> ) 
 ##
 ##  Not working at the moment.  Suppose that C is a complex
 ##    ... --> C_{i+1} --> C_i --> C_{i-1} --> ...
@@ -65,7 +65,7 @@ end );
 
 #######################################################################
 ##
-#M  GoodTruncation( <C>, <i>, <j> ) 
+#O  GoodTruncation( <C>, <i>, <j> ) 
 ##
 ##  Suppose that C is a complex
 ##    ... --> C_{i+1} --> C_i --> C_{i-1} --> ...
@@ -91,7 +91,7 @@ end );
 
 #######################################################################
 ##
-#M  BrutalTruncationBelow( <C>, <i> ) 
+#O  BrutalTruncationBelow( <C>, <i> ) 
 ##
 ##  Suppose that C is a complex
 ##    ... --> C_{i+1} --> C_i --> C_{i-1} --> ...
@@ -120,7 +120,7 @@ end );
 
 #######################################################################
 ##
-#M  BrutalTruncationAbove( <C>, <i> ) 
+#O  BrutalTruncationAbove( <C>, <i> ) 
 ##
 ##  Suppose that C is a complex
 ##    ... --> C_{i+1} --> C_i --> C_{i-1} --> ...
@@ -149,7 +149,7 @@ end );
 
 #######################################################################
 ##
-#M  BrutalTruncation( <C>, <i>, <j> ) 
+#O  BrutalTruncation( <C>, <i>, <j> ) 
 ##
 ##  Suppose that C is a complex
 ##    ... --> C_{i+1} --> C_i --> C_{i-1} --> ...
@@ -172,7 +172,7 @@ end );
 
 #######################################################################
 ##
-#O  SyzygyTruncation( <C>, <i> ) 
+#O  KernelTruncation( <C>, <i> ) 
 ##
 ##  Suppose that C is a complex
 ##    ... --> C_{i+1} --> C_i --> C_{i-1} --> ...
@@ -180,7 +180,7 @@ end );
 ##  then the function returns the complex
 ##    ... --> 0 --> ker(d_i) --> C_i --> C_{i-1} --> ...
 ##
-InstallMethod( SyzygyTruncation, 
+InstallMethod( KernelTruncation, 
 [ IsComplex, IsInt ],
 function( C, i )
     local cat, difflist, truncpart, kernelinc, newpart, kernel,
@@ -189,9 +189,9 @@ function( C, i )
     cat := CatOfComplex( C );
     difflist := DifferentialsOfComplex( C );
     truncpart := NegativePartFrom( difflist, i );
-
-    kernelinc := KernelInclusion( DifferentialOfComplex( C, i ) );
-    kernel := Source( kernelinc );
+    
+    kernelinc := KernelOfMorphism( cat, DifferentialOfComplex( C, i ) );
+    kernel := DomainOfMorphism( cat, kernelinc );
     newpart := FiniteInfList( i+1, [ kernelinc, 
                                      ZeroMorphism( cat, ZeroObject( cat ), kernel ) ] );
     zeropart := PositivePartFrom( DifferentialsOfComplex( ZeroComplex( cat ) ),
@@ -205,7 +205,7 @@ end );
 
 #######################################################################
 ##
-#O  CosyzygyTruncation( <C>, <i> ) 
+#O  CokernelTruncation( <C>, <i> ) 
 ##
 ##  Suppose that C is a complex
 ##    ... --> C_{i+1} --> C_i --> C_{i-1} --> ...
@@ -213,7 +213,7 @@ end );
 ##  then the function returns the complex
 ##    ... --> C_i --> C_{i-1} --> cok(d_i) --> 0 --> ...
 ##
-InstallMethod( CosyzygyTruncation, 
+InstallMethod( CokernelTruncation, 
 [ IsComplex, IsInt ],
 function( C, i )
     local cat, difflist, truncpart, newpart,
@@ -223,8 +223,8 @@ function( C, i )
     difflist := DifferentialsOfComplex( C );
     truncpart := PositivePartFrom( difflist, i );
 
-    cokerproj := CoKernelProjection( DifferentialOfComplex( C, i ) );
-    coker := Range( cokerproj );
+    cokerproj := CokernelOfMorphism( cat, DifferentialOfComplex( C, i ) );
+    coker := CodomainOfMorphism( cat, cokerproj );
     newpart := FiniteInfList( i-2, [ ZeroMorphism( cat, coker, ZeroObject( cat ) ),
                                      cokerproj ] );
 
@@ -239,7 +239,7 @@ end );
 
 #######################################################################
 ##
-#O  SyzygyCosyzygyTruncation( <C>, <i>, <j> ) 
+#O  KernelCokernelTruncation( <C>, <i>, <j> ) 
 ##
 ##  Suppose that C is a complex
 ##    ... --> C_{i+1} --> C_i --> C_{i-1} --> ...
@@ -247,7 +247,7 @@ end );
 ##  then the function returns the complex
 ##    ... --> 0 --> ker(d_i) --> C_i --> ... --> C_{j+1} --> cok(d_j) --> 0 --> ...
 ##
-InstallMethod( SyzygyCosyzygyTruncation, 
+InstallMethod( KernelCokernelTruncation, 
 [ IsComplex, IsInt, IsInt ],
 function( C, i, j )
     local cat, difflist, truncpart, newdifflist, cokerproj, coker, 
@@ -257,31 +257,6 @@ function( C, i, j )
         Error( "First input integer must be greater than or equal to the second" );
     fi;
 
-    cat := CatOfComplex( C );
-
-    difflist := DifferentialsOfComplex( C );
-    middlediffs := FinitePartAsList( difflist, j, i );
-    truncpart := FiniteInfList( j, middlediffs );
-
-    kernelinc := KernelInclusion( DifferentialOfComplex( C, i ) );
-    kernel := Source( kernelinc );
-    newpart1 := FiniteInfList( i+1, [ kernelinc, 
-                                     ZeroMorphism( cat, ZeroObject( cat ), kernel ) ] );
-    zeropart1 := PositivePartFrom( DifferentialsOfComplex( ZeroComplex( cat ) ),
-                                  i+3 );
-
-
-    cokerproj := CoKernelProjection( DifferentialOfComplex( C, j ) );
-    coker := Range( cokerproj );
-    newpart2 := FiniteInfList( j-2, [ ZeroMorphism( cat, coker, ZeroObject( cat ) ),
-                                     cokerproj ] );
-
-    zeropart2 := NegativePartFrom( DifferentialsOfComplex( ZeroComplex( cat ) ),
-                                  j-3 );
-
-    newdifflist := InfConcatenation( zeropart1, newpart1, truncpart, 
-                                     newpart2, zeropart2 );
-
-    return ComplexByDifferentialList( cat, newdifflist );
-  
+    return KernelTruncation( CokernelTruncation ( C, j ), i );
+    
 end );

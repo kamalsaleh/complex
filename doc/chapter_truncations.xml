@@ -3,19 +3,26 @@
 For all the following operations, the input is a chain complex
 
 <Display>
-C: \cdots \longrightarrow C_{i+2} \longrightarrow C_{i+1} \longrightarrow C_{i}
-\longrightarrow C_{i-1}
- \longrightarrow C_{i-2}  \longrightarrow \cdots
+C:~~ \cdots \longrightarrow C_{k+2} \stackrel{d_{k+2}}{\longrightarrow}
+C_{k+1} \stackrel{d_{k+1}}{\longrightarrow} C_{k}
+\stackrel{d_k}{\longrightarrow} C_{k-1}
+\stackrel{d_{k-1}}{\longrightarrow} C_{k-2} \longrightarrow \cdots
 </Display>
 
-and either an integer <M>i</M> or two integers <M>i \geq j</M>.
-Throughout this section, the following notation is used: <M>Z_i</M>
-denotes the <M>i</M>th cycle of <M>C</M>.
+and either an integer <M>i</M> or two integers <M>i \geq j</M>.  A
+<E>truncation</E> of <M>C</M> with respect to <M>i</M> is a new
+complex which is identical to <M>C</M> in all degrees strictly greater
+than (or, strictly lower than) <M>i</M>, and <M>0</M> in all degrees
+strictly lower than (or, in the latter case above, strictly greater
+than) <M>i</M>.  What happens in degree <M>i</M> depends on the
+truncation. <P />
 
 <Section>
 <Heading>Good truncations</Heading>
 
-The good truncations …
+The homologies of a good truncation of <M>C</M> are either the same as
+those of <M>C</M>, or <M>0</M>.  In particular, when truncating in degree
+<M>i</M>, the <M>i</M>th homology is <M>0</M>.
 
 <ManSection>
   <Oper Name="GoodTruncationBelow" Arg="C,i" />
@@ -25,8 +32,8 @@ The good truncations …
   <Returns>The complex
   <Display>
     \cdots \longrightarrow C_{i+2} \longrightarrow C_{i+1}
-    \longrightarrow Z_{i} \longrightarrow 0 \longrightarrow 0
-    \longrightarrow \cdots
+    \longrightarrow \mathrm{Ker}~ d_i \longrightarrow 0
+    \longrightarrow 0 \longrightarrow \cdots
   </Display>
   </Returns>
 </ManSection>
@@ -38,8 +45,9 @@ The good truncations …
   </Description>
   <Returns>The complex
   <Display>
-    \cdots \longrightarrow 0 \longrightarrow C_{i}/Z_{i} \longrightarrow
-    C_{i-1} \longrightarrow C_{i-2} \longrightarrow \cdots
+    \cdots \longrightarrow 0 \longrightarrow C_{i}/\mathrm{Ker}~ d_i
+    \longrightarrow C_{i-1} \longrightarrow C_{i-2} \longrightarrow
+    \cdots
   </Display>
   </Returns>
 </ManSection>
@@ -52,9 +60,9 @@ The good truncations …
   </Description>
   <Returns>The complex
   <Display>
-    \cdots \longrightarrow 0 \longrightarrow C_{i}/Z_{i}
+    \cdots \longrightarrow 0 \longrightarrow C_{i}/\mathrm{Ker}~ d_i
     \longrightarrow C_{i+1} \longrightarrow \cdots \longrightarrow
-    C_{j+1} \longrightarrow Z_{j} \longrightarrow 0 \longrightarrow
+    C_{j+1} \longrightarrow \mathrm{Ker}~ d_j \longrightarrow 0 \longrightarrow
     \cdots
   </Display>
   </Returns>
@@ -64,83 +72,137 @@ The good truncations …
   </Description>
 </ManSection>
 
-<!-- <ManSection> -->
-<!--   <Oper Name="BrutalTruncationBelow" Arg="C,i" /> -->
-<!--   <Description> -->
-<!--     Arguments: <Arg>C</Arg> -- a complex, <Arg>i</Arg> -- an integer.<Br /> -->
-<!--   </Description> -->
-<!--   <Returns>A newly created complex. -->
-<!--   </Returns> -->
-<!--   <Description>Replace all objects with degree <Math>j</Math> -->
-<!--   &lt; <Math>i</Math> with zero. The differentials affected will -->
-<!--   also become zero. -->
-<!--   </Description> -->
-<!-- </ManSection> -->
+</Section>
 
-<!-- <ManSection> -->
-<!--   <Oper Name="BrutalTruncationAbove" Arg="C,i" /> -->
-<!--   <Description> -->
-<!--     Arguments: <Arg>C</Arg> -- a complex, <Arg>i</Arg> -- an integer.<Br /> -->
-<!--   </Description> -->
-<!--   <Returns>A newly created complex. -->
-<!--   </Returns> -->
-<!--   <Description>Replace all objects with degree <Math>j</Math> -->
-<!--   &gt; <Math>i</Math> with zero. The differentials affected will also -->
-<!--   become zero. -->
-<!--   </Description> -->
-<!-- </ManSection> -->
+<Section>
+<Heading>Brutal truncations</Heading>
 
-<!-- <ManSection> -->
-<!--   <Oper Name="BrutalTruncation" Arg="C,i,j" /> -->
-<!--   <Description> -->
-<!--     Arguments: <Arg>C</Arg> -- a complex, <Arg>i, j</Arg> -- integers.<Br /> -->
-<!--   </Description> -->
-<!--   <Returns>A newly created complex. -->
-<!--   </Returns> -->
-<!--   <Description>Brutally truncates in both ends. The integer arguments -->
-<!--   must be ordered such that <Arg>i</Arg> &gt; <Arg>j</Arg>. -->
-<!--   </Description> -->
-<!-- </ManSection> -->
+The brutal truncations may introduce a non-zero homology group in
+degree <M>i</M> which is not the same as the <M>i</M>th homology of
+<M>C</M>.  Hence, they may be of less mathematical interest than the
+good truncations, but from a programmer's point of view they are
+useful.
 
-<!-- <ManSection> -->
-<!--   <Oper Name="SyzygyTruncation" Arg="C,i" /> -->
-<!--   <Description> -->
-<!--     Arguments: <Arg>C</Arg> -- a complex, <Arg>i</Arg> -- an integer.<Br /> -->
-<!--   </Description> -->
-<!--   <Returns>A newly created complex. -->
-<!--   </Returns> -->
-<!--   <Description>Replace the object in degree <Math>i</Math> with the -->
-<!--   kernel of <Math>d_i</Math>, and <M>d_{i+1}</M> with the natural -->
-<!--   inclusion. All objects in degree <M>j &gt; i+1</M> are replaced with -->
-<!--   zero. -->
-<!--   </Description> -->
-<!-- </ManSection> -->
+<ManSection>
+  <Oper Name="BrutalTruncationBelow" Arg="C,i" />
+  <Description>
+    Arguments: <Arg>C</Arg> -- a complex, <Arg>i</Arg> -- an integer.<Br />
+  </Description>
+  <Returns>The complex
+  <Display>
+    \cdots \longrightarrow C_{i+2} \longrightarrow C_{i+1}
+    \longrightarrow C_{i} \longrightarrow 0 \longrightarrow 0
+    \longrightarrow \cdots
+  </Display>
+  </Returns>
+  <Description>
+  </Description>
+</ManSection>
 
-<!-- <ManSection> -->
-<!--   <Oper Name="CosyzygyTruncation" Arg="C,i" /> -->
-<!--   <Description> -->
-<!--     Arguments: <Arg>C</Arg> -- a complex, <Arg>i</Arg> -- an integer.<Br /> -->
-<!--   </Description> -->
-<!--   <Returns>A newly created complex. -->
-<!--   </Returns> -->
-<!--   <Description>Replace the object in degree <Math>i-2</Math> with the -->
-<!--   cokernel of <Math>d_i</Math>, and <M>d_{i-1}</M> with the natural -->
-<!--   projection. All objects in degree <M>j &lt; i-2</M> are replaced with -->
-<!--   zero. -->
-<!--   </Description> -->
-<!-- </ManSection> -->
+<ManSection>
+  <Oper Name="BrutalTruncationAbove" Arg="C,i" />
+  <Description>
+    Arguments: <Arg>C</Arg> -- a complex, <Arg>i</Arg> -- an integer.<Br />
+  </Description>
+  <Returns>The complex
+  <Display>
+    \cdots \longrightarrow 0 \longrightarrow 0 \longrightarrow C_i
+    \longrightarrow C_{i-1} \longrightarrow C_{i-2} \longrightarrow
+    \cdots
+  </Display>
+  </Returns>
+  <Description>
+  </Description>
+</ManSection>
 
-<!-- <ManSection> -->
-<!--   <Oper Name="SyzygyCosyzygyTruncation" Arg="C,i,j" /> -->
-<!--   <Description> -->
-<!--     Arguments: <Arg>C</Arg> -- a complex, <Arg>i</Arg> -- an integer.<Br /> -->
-<!--   </Description> -->
-<!--   <Returns>A newly created complex. -->
-<!--   </Returns> -->
-<!--   <Description>Performs both the above truncations. The integer -->
-<!--   arguments must be ordered such that <Arg>i</Arg> &gt; <Arg>j</Arg>. -->
-<!--   </Description> -->
-<!-- </ManSection> -->
+<ManSection>
+  <Oper Name="BrutalTruncation" Arg="C,i,j" />
+  <Description>
+    Arguments: <Arg>C</Arg> -- a complex, <Arg>i,j</Arg> -- integers
+    with <M><Arg>i</Arg> \geq <Arg>j</Arg></M>. <Br />
+  </Description>
+  <Returns>The complex
+  <Display>
+    \cdots \longrightarrow 0 \longrightarrow 0 \longrightarrow C_{i}
+    \longrightarrow \cdots \longrightarrow C_{j} \longrightarrow 0
+    \longrightarrow 0 \longrightarrow \cdots
+  </Display>
+  </Returns>
+  <Description> In particular, if <M><Arg>i</Arg>=<Arg>j</Arg></M>,
+  the returned complex is the stalk complex with <M>C_i</M> in degree
+  <Arg>i</Arg>.
+  </Description>
+</ManSection>
+
+</Section>
+
+<Section>
+<Heading>Kernel and cokernel truncations</Heading>
+
+The following truncations are not usually found in textbooks.
+However, they are simple constructions which may be useful when
+working with e.g. projective resolutions.  Note that they can
+sometimes return complexes which has <E>more</E> non-zero entries than
+the original complex.
+
+<ManSection>
+  <Oper Name="KernelTruncation" Arg="C,i" />
+  <Description>
+    Arguments: <Arg>C</Arg> -- a complex, <Arg>i</Arg> -- an integer.<Br />
+  </Description>
+  <Returns>The complex
+  <Display>
+    \cdots \longrightarrow 0 \longrightarrow \ker{d_i} \longrightarrow
+    C_i \longrightarrow C_{i-1} \longrightarrow C_{i-2}
+    \longrightarrow \cdots
+  </Display>
+  </Returns>
+  <Description>
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="CokernelTruncation" Arg="C,i" />
+  <Description>
+    Arguments: <Arg>C</Arg> -- a complex, <Arg>i</Arg> -- an integer.<Br />
+  </Description>
+  <Returns>The complex
+  <Display>
+    \cdots \longrightarrow C_{i+1} \longrightarrow C_{i}
+    \longrightarrow C_{i-1} \longrightarrow \cok{d_i} \longrightarrow
+    0 \longrightarrow \cdots
+  </Display>
+  </Returns>
+  <Description>
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="KernelCokernelTruncation" Arg="C,i,j" />
+  <Description>
+    Arguments: <Arg>C</Arg> -- a complex, <Arg>i,j</Arg> -- integers
+    with <M><Arg>i</Arg> \geq <Arg>j</Arg></M>. <Br />
+  </Description>
+  <Returns>The complex
+  <Display>
+    \cdots \longrightarrow 0 \longrightarrow \ker{d_i} \longrightarrow
+    C_{i} \longrightarrow C_{i-1} \longrightarrow \cdots
+    \longrightarrow C_{j+1} \longrightarrow C_{j} \longrightarrow
+    C_{j+1} \longrightarrow \cok{d_j} \longrightarrow 0
+    \longrightarrow \cdots
+  </Display>
+  </Returns>
+  <Description>In particular, if <M><Arg>i</Arg>=<Arg>j</Arg></M>,
+  the returned complex is 
+  <Display>
+    \cdots \longrightarrow 0 \longrightarrow \ker{d_i} \longrightarrow
+    C_{i} \longrightarrow C_{i-1} \longrightarrow \cdots
+    \longrightarrow C_{j+1} \longrightarrow C_{j} \longrightarrow
+    C_{j+1} \longrightarrow \cok{d_j} \longrightarrow 0
+    \longrightarrow \cdots
+  </Display>
+  </Description>
+</ManSection>
 
 
 </Section>

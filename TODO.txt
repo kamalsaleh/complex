@@ -9,7 +9,8 @@ GJORT:
   kunne bruke qpainterface.gi når man skal teste ting. Vær obs på
   dette når ting skal endres i koden …
 
-- De gode trunkeringene er ok nå.
+- Alle trunkeringene er fikset. Dokumentasjonen om disse er relativt
+  fikset (den har en pussig inkonsistens, men pytt).
 
 GJØR:
 
@@ -18,10 +19,6 @@ GJØR:
   også prøve å endre i QPA??
 
 - Image og IsExact? Dukker opp i koden noen steder.
-
-- BrutalTruncation- og Syzygy-metodene må ryddes opp i, bruker masse
-  QPA-ting.  Skriv ferdig dokumentasjonen (ikke ferdig med de gode
-  trunkeringene heller).
 
 - HomologyOfComplex funker dårlig.
 

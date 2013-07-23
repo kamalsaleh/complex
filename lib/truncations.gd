@@ -4,7 +4,7 @@ DeclareOperation( "GoodTruncation", [ IsComplex, IsInt, IsInt ] );
 DeclareOperation( "BrutalTruncationBelow", [ IsComplex, IsInt ] );
 DeclareOperation( "BrutalTruncationAbove", [ IsComplex, IsInt ] );
 DeclareOperation( "BrutalTruncation", [ IsComplex, IsInt, IsInt ] );
-DeclareOperation( "SyzygyTruncation", [ IsComplex, IsInt ] );
-DeclareOperation( "CosyzygyTruncation", [ IsComplex, IsInt ] );
-DeclareOperation( "SyzygyCosyzygyTruncation", [ IsComplex, IsInt, IsInt ] );
+DeclareOperation( "KernelTruncation", [ IsComplex, IsInt ] );
+DeclareOperation( "CokernelTruncation", [ IsComplex, IsInt ] );
+DeclareOperation( "KernelCokernelTruncation", [ IsComplex, IsInt, IsInt ] );
 
