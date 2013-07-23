@@ -4,6 +4,6 @@ ReadPackage( "complex", "lib/cats.gi" );
 ReadPackage( "complex", "lib/inflist.gi" );
 ReadPackage( "complex", "lib/complex.gi" );
 ReadPackage( "complex", "lib/chainmap.gi" );
-ReadPackage( "complex", "lib/cone.gi" );
+#ReadPackage( "complex", "lib/cone.gi" );
 ReadPackage( "complex", "lib/truncations.gi" );
-ReadPackage( "complex", "lib/qpainterface.gi" );
+#ReadPackage( "complex", "lib/qpainterface.gi" );
