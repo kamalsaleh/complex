@@ -1,14 +1,159 @@
 <Chapter Label="InfLists">
 <Heading>Infinite numbers and infinite lists</Heading> 
 
+In this chapter, we discuss some basic constants and structures made
+for dealing with the infinite nature of chain complexes and chain
+maps.
+<P/>
+Since chain complexes are infinite chains of objects and morphisms, it
+would be convenient to have lists with infinitely many elements in
+GAP.  This is, of course, impossible.  Our ``infinite lists'' do,
+however, make it possible -- in a limited way -- to pretend that we
+have such infinitely long lists.
+<P/>
+The first section of this chapter is a motivational introduction.  The
+second section describes constants representing positive and negative
+infinity.  The third (and longest) section contains all the details
+about infinite lists.
+<P/>
+This chapter is concerned only with programming, and not with
+mathematics.  The structures and functions described here have nothing
+to do with complexes apart from being useful for representing them in
+GAP.  For the reader who is only interested in using complexes and
+chain maps, and not knowing all the implementation details, it is
+possible (and perhaps advisable) to skip this chapter.
+
+<Section>
+<Heading>Motivation</Heading>
+
+The structures we are interested in creating are chain complexes and
+chain maps.  These are of an infinite nature: a chain complex consists
+of infinitely many objects and differential morphisms, and a chain map
+consists of infinitely many morphisms between objects.
+<P/>
+Consider a chain complex
+<Display>
+C:~~ \cdots \longrightarrow C_{2} \stackrel{d_{2}}{\longrightarrow}
+C_{1} \stackrel{d_{1}}{\longrightarrow} C_{0}
+\stackrel{d_0}{\longrightarrow} C_{-1}
+\stackrel{d_{-1}}{\longrightarrow} C_{-2} \longrightarrow \cdots.
+</Display>
+We can describe the complex by the infinite sequence
+<Display>
+  \ldots,\ d_{-1},\ d_0,\ d_1,\ d_2,\ \ldots
+</Display>
+of morphisms.  Similarly, a chain map
+<Display>
+\xymatrix{
+{C:} \ar[d]^{f:} &amp;
+{\cdots} \ar[r] &amp;
+{C_2} \ar[r]^{d_2}\ar[d]^{f_2} &amp;
+{C_1} \ar[r]^{d_1}\ar[d]^{f_1} &amp;
+{C_0} \ar[r]^{d_0}\ar[d]^{f_0} &amp;
+{C_{-1}} \ar[r]^{d_{-1}}\ar[d]^{f_{-1}} &amp;
+{C_{-2}} \ar[r]\ar[d]^{f_{-2}} &amp;
+{\cdots} \\
+{D:} &amp;
+{\cdots} \ar[r] &amp;
+{D_2} \ar[r]^{d'_2} &amp;
+{D_1} \ar[r]^{d'_1} &amp;
+{D_0} \ar[r]^{d'_0} &amp;
+{D_{-1}} \ar[r]^{d'_{-1}} &amp;
+{D_{-2}} \ar[r] &amp;
+{\cdots}
+}
+</Display>
+can be described by the infinite sequence
+<Display>
+  \ldots,\ f_{-1},\ f_0,\ f_1,\ f_2,\ \ldots
+</Display>
+of morphisms.  In both cases, what we need is an infinite sequence
+indexed by the integers.
+<P/>
+To facilitate the implementation of chain complexes and chain maps, we
+have created a data structure in GAP for infinite, <M>\Z</M>-indexed,
+sequences.  We call this data structure ``infinite list''.  One can
+think of the infinite lists as being somewhat similar to the usual
+lists in GAP, but with infinite length.
+<P/>
+To access an element of a normal GAP list, we use square brackets,
+like this: <Code>L[5]</Code>.  To access an element of an infinite
+list, we use the caret operator, like this: <Code>L^5</Code>.  Note
+that all integers are valid indices in an infinite list, so if
+<Code>L</Code> is an infinite list, we can for example write
+<Code>L^0</Code> or <Code>L^-3645</Code>.  (If <Code>L</Code> was a
+normal list, writing <Code>L[0]</Code> or <Code>L[-3645]</Code> would
+result in an error.)
+<P/>
+There are, however, some important differences between normal lists
+and infinite lists.  In particular, creating an infinite list is
+somewhat complicated, and once created, it can not be changed.
+<P/>
+When creating a list in GAP, we can just write all its elements
+between a pair of square brackets, like this:
+<Example><![CDATA[
+gap> L := [ 5, 2, 14, 46 ];
+[ 5, 2, 14, 46 ]
+]]></Example>
+After creating a list, we can change its contents and even add new
+elements:
+<Example><![CDATA[
+gap> L[3] := 99;;
+gap> L;
+[ 5, 2, 99, 46 ]
+gap> L[5] := 123;;
+gap> L;
+[ 5, 2, 99, 46, 123 ]
+]]></Example>
+We can not do these things with infinite lists.  If we were to create
+an infinite sequence by explicitly listing all its elements, it would
+require infinite amounts of time and space.  Instead we need to
+describe the elements of the sequence in a systematic way.
+<P/>
+The following example shows how we can create an infinite list and
+look at some of its elements.  We create an infinite list
+<Code>infL</Code> where the values in positive degrees are determined
+by a function, and the values in negative degrees are just 1, 2 and 3
+repeated indefinitely.  It is not necessary to worry about all the
+details in the call to <Ref Func="MakeInfList"/> at this point; it is
+enough to notice that we write a complete specification of the whole
+list using a finite amount of data, and afterwards we can look up
+arbitrary elements of the list using the caret operator.
+<Example><![CDATA[
+gap> L := MakeInfList( 0, [ 0 ],
+                       [ "next",
+                         function( n )
+                           if n mod 2 = 0 then return n/2; else return 3*n+1; fi;
+			 end,
+			 27 ],
+                       [ "repeat", [ 1, 2, 3 ] ],
+                       false );
+<InfList: (-inf,-1]:repeat(3), [0,0]:[ 0 ], [1,inf):next>
+gap> L^1; L^2; L^3; L^100; L^200;
+82
+41
+124
+53
+2
+gap> L^-1; L^-2; L^-3; L^-4; L^-5;
+1
+2
+3
+1
+2
+]]></Example>
+</Section>
+
+<!--
 In this section we give documentation for the <C>IsInfList</C>
 category.  We start by giving a representation of <M>\pm \infty</M>.
 Then we quickly describe the <C>IsInfList</C> category, before we turn
-to the underlying structure of the infinite lists -- the half infinite
+to the underlying structure of the infinite lists --><!-- the half infinite
 lists (<C>IsHalfInfList</C>).  Most of the functionality of the
 infinite lists come from this category.  Finally, we give the
 constructors for infinite lists, and some methods for manipulating
 such objects.
+-->
 
 <Section Label="Infinite numbers">
 <Heading>Infinite numbers</Heading>
