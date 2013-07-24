@@ -315,15 +315,14 @@ AvailabilityTest := ReturnTrue,
 ##  the info in this file. If you are not happy with it, you can provide
 ##  a string here that is used as a banner. GAP decides when the banner is 
 ##  shown and when it is not shown (note the ~-syntax in this example).
-BannerString := Concatenation(  
-" #####  ####### #     # ######  #       ####### #     #\n",
-"#     # #     # ##   ## #     # #       #        #   #\n",
-"_______________________________________________________\n",
-"#       #     # # # # # #     # #       #         # #\n",
-"#       #     # #  #  # ######  #       #####      #\n",
-"#       #     # #     # #       #       #         # #\n",
-"#     # #     # #     # #       #       #        #   #\n",
-" #####  ####### #     # #       ####### ####### #     #\n" ),
+## BannerString := Concatenation(  
+## " #####  ####### #     # ######  #       ####### #     #\n",
+## "#     # #     # ##   ## #     # #       #        #   #\n",
+## "#       #     # # # # # #     # #       #         # #\n",
+## "#       #     # #  #  # ######  #       #####      #\n",
+## "#       #     # #     # #       #       #         # #\n",
+## "#     # #     # #     # #       #       #        #   #\n",
+## " #####  ####### #     # #       ####### ####### #     #\n" ),
 
 
 ##  *Optional*, but recommended: path relative to package root to a file which 
