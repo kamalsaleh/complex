@@ -59,6 +59,8 @@
 
 <#Include SYSTEM "chapter_truncations.xml">
 
+<#Include SYSTEM "chapter_operations.xml">
+
 </Body>
 
 <TheIndex/>
