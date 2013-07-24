@@ -10,12 +10,13 @@
 InstallMethod( MappingCone,
 [ IsChainMap ],
 function( f )
-    local cat, C, i, A, B, dirsum, dirsum2, diff, middle, positiveFunction, negativeFunction;
+    local cat, C, i, A, B, prevObj, prevObj2, dirsum, dirsum2, 
+          diff, middle, positiveFunction, negativeFunction;
 
-    cat := CatOfComplex( C );
+    A := Source( f );
+    B := Range( f );
 
-    A := DomainOfMorphism( cat, f );
-    B := CodomainOfMorphism( cat, f );
+    cat := CatOfComplex( A );
 
 #
 #  Consider where to "start" the cone complex.
@@ -36,38 +37,29 @@ function( f )
 #  Construct the first differential of the cone, and the first projection/inclusion morphisms
 #
 
-    dirsum := DirectSumOfObjects( cat, ObjectOfComplex(A,i-1), ObjectOfComplex(B,i) );
-#    dirsum := DirectSumOfModules( [ ObjectOfComplex(A,i-1), ObjectOfComplex(B,i) ] );
-    dirsum2 := DirectSumOfObjects( cat, ObjectOfComplex(A,i-2), ObjectOfComplex(B,i-1) );
-#    dirsum2 := DirectSumOfModules( [ ObjectOfComplex(A,i-2), ObjectOfComplex(B,i-1) ] );
-    diff := MultiplyListsOfMaps( #DirectSumProjections(dirsum),
-                                 [ dirsum[3], dirsum[4] ],
+    prevObj := DirectSumOfObjects( cat, ObjectOfComplex(A,i-1), ObjectOfComplex(B,i) );
+    prevObj2 := DirectSumOfObjects( cat, ObjectOfComplex(A,i-2), ObjectOfComplex(B,i-1) );
+    diff := MultiplyListsOfMaps( [ prevObj[3], prevObj[4] ],
                                  [[ -DifferentialOfComplex(A,i-1),
                                     ZeroMorphism(cat, ObjectOfComplex(B,i), ObjectOfComplex(A,i-2)) ],
                                   [ -MorphismOfChainMap(f,i-1), DifferentialOfComplex(B,i)]],
-                                 #DirectSumInclusions(dirsum2) );
- 
-                                 [ dirsum2[1], dirsum2[2] ] );
-    middle := [ [ diff, dirsum[2], dirsum[3] ] ];
-#    middle := [ [ diff, DirectSumInclusions(dirsum)[2], DirectSumProjections(dirsum)[1] ] ];
+                                 [ prevObj2[1], prevObj2[2] ] );
+    middle := [ [ diff, prevObj[2], prevObj[3] ] ];
 
 #
 #  Positive degrees of the cone, the projection and the inclusion
 #
     positiveFunction := function(C,inmap,outmap,i)
-        local nextObj, prevObj, nextDiff;
+        local nextObj, nextDiff;
         nextObj := DirectSumOfObjects( cat, ObjectOfComplex(A,i-1), ObjectOfComplex(B,i) );
-#        nextObj := DirectSumOfModules( [ ObjectOfComplex(A,i-1), ObjectOfComplex(B,i) ] );
-        prevObj := DomainOfMorphism( cat, DifferentialOfComplex(C,i-1) );
 
         nextDiff :=  MultiplyListsOfMaps( [ nextObj[3], nextObj[4] ],
-#                                         DirectSumProjections(nextObj),
                                           [[ -DifferentialOfComplex(A,i-1),
                                              ZeroMorphism(cat, ObjectOfComplex(B,i), ObjectOfComplex(A,i-2)) ],
                                            [ -MorphismOfChainMap(f,i-1), DifferentialOfComplex(B,i)]],
-#  DirectSumInclusion av prevObj??? Må huske denne. TODO
-                                          DirectSumInclusions(prevObj) );
-        return [ nextDiff, DirectSumInclusions(nextObj)[2], DirectSumProjections(nextObj)[1] ];
+                                          [ prevObj[1], prevObj[2] ] );
+        prevObj := nextObj;
+        return [ nextDiff, nextObj[2], nextObj[3] ];
 
     end ;
 
@@ -75,16 +67,17 @@ function( f )
 #  Negative degrees of the cone, the projection and the inclusion
 #
     negativeFunction := function(C,inmap,outmap,i)
-        local nextObj, prevObj, nextDiff;
-        nextObj := DirectSumOfModules( [ ObjectOfComplex(A,i-2), ObjectOfComplex(B,i-1) ] );
-        prevObj := Range(DifferentialOfComplex(C,i+1));
+        local nextObj, nextDiff, prevObjTemp;
+        nextObj := DirectSumOfObjects( cat, ObjectOfComplex(A,i-2), ObjectOfComplex(B,i-1) );
 
-        nextDiff := MultiplyListsOfMaps( DirectSumProjections(prevObj),
+        nextDiff := MultiplyListsOfMaps( [ prevObj2[3], prevObj2[4] ],
                                          [[ -DifferentialOfComplex(A,i-1),
-                                            ZeroMapping(ObjectOfComplex(B,i), ObjectOfComplex(A,i-2)) ],
+                                            ZeroMorphism(cat, ObjectOfComplex(B,i), ObjectOfComplex(A,i-2)) ],
                                           [ -MorphismOfChainMap(f,i-1), DifferentialOfComplex(B,i)]],
-                                         DirectSumInclusions(nextObj) );
-        return [ nextDiff, DirectSumInclusions(prevObj)[2], DirectSumProjections(prevObj)[1] ];
+                                         [ nextObj[1], nextObj[2] ] );
+        prevObjTemp := prevObj2;
+        prevObj2 := nextObj;
+        return [ nextDiff, prevObjTemp[2], prevObjTemp[3] ];
     end ;
 
 #
