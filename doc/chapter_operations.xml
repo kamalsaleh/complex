@@ -1,0 +1,23 @@
+<Chapter>
+<Heading>Other operations on chain complexes and chain maps</Heading>
+
+<Section>
+<Heading>Mapping cone</Heading>
+
+<ManSection>
+  <Oper Name="MappingCone" Arg="f" />
+    <Description>
+      Arguments: <Arg>f</Arg> -- a chain map. <Br />
+    </Description>
+    <Returns>A list <C>[cone, inc, proj]</C> where <C>cone</C> is the
+    mapping cone of <Arg>f</Arg>, <C>inc</C> is the inclusion of
+    <C>Source(<A>f</A>)</C> into <C>cone</C> and <C>proj</C> is the
+    projection of <C>cone</C> onto <C>Range(<A>f</A>)</C>.
+    </Returns>
+    <Description>
+    </Description>
+</ManSection>
+
+</Section>
+
+</Chapter>
