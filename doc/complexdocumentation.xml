@@ -10,6 +10,8 @@
 <?LaTeX ExtraPreamble="
 \usepackage{amsmath}
 \usepackage[all]{xy}
+\newcommand{\N}{\mathbb{N}} % set of natural numbers
+\newcommand{\Z}{\mathbb{Z}} % set of integers
 "?>
 
 <!-- Documentation of the Example package. -->
