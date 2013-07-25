@@ -25,4 +25,4 @@ CopyHTMLStyleFiles( "doc" );
 
 # Create the manual.lab file which is needed if the main manuals or another 
 # package is referring to your package
-GAPDocManualLab( "Complex" );; 
+GAPDocManualLab( "Complex" );;
