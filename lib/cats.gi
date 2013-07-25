@@ -152,41 +152,219 @@ InstallValue( Ab, createAb() );
 #InstallValue( Ab, 42 );
 
 
-# InstallMethod( Vec,
-# [ IsField ],
-# function( K )
+InstallMethod( Vec,
+[ IsField ],
+function( K )
+    local properties, objInCat, morphInCat, compose, domain, codomain,
+          identityMorph, isIsomorphism, inverse, isomorphic, objString, zeroMorph,
+          isomorphism, addMorph, negateMorph, directSum, kernel, cokernel,
+          kernelFactorization, cokernelFactorization;
 
-#     objInCat := function( X )
-#         return IsVectorSpace( X ) and
-#                LeftActingDomain( X ) = K;
-#     end;
+    objInCat := function( X )
+        return IsVectorSpace( X ) and
+               LeftActingDomain( X ) = K;
+    end;
 
-#     morphInCat := function( f )
-#         return IsLinearMapping( K, f );
-#     end;
+    morphInCat := function( f )
+        return IsMapping( f ) and
+               objInCat( Source( f ) ) and
+               objInCat( Range( f ) ) and
+               RespectsScalarMultiplication( f ) and
+               RespectsAddition( f );
+        
+    end;
 
-#     properties := rec( objInCat := IsGroup and IsAbelian,
-#                        morphInCat := morphInCat,
-#                        domain := Source,
-#                        codomain := Range,
-#                        compose := compose,
-#                        identityMorph := IdentityMapping,
-#                        isIsomorphism := isIsomorphism,
-#                        inverse := inverse,
-#                        isomorphic := isomorphic,
-#                        isomorphism := isomorphism,
-#                        zeroMorph := zeroMorph,
-#                        addMorph := addMorph,
-#                        negateMorph := negateMorph,
-#                        zeroObj := TrivialGroup(),
-#                        directSum := direkteSum,
-#                        kernel := kernel,
-#                        cokernel := cokernel,
-#                        kernelFactorization := kernelFactorization,
-#                        cokernelFactorization := cokernelFactorization );
+    domain := function( f )
+        if not morphInCat( f ) then
+            Error( "morphism is not in the category" );
+        fi;
+        return Source( f );
+    end;
 
-#     return AbelianCat( [ "Vec", K ],
-#                        Concatenation( "Vec(", String( K ), ")" ),
-#                        properties );
+    codomain := function( f )
+        if not morphInCat( f ) then
+            Error( "morphism is not in the category" );
+        fi;
+        return Range( f );
+    end;
 
-# end );
+    compose := function( g,f ) # V --f--> W --g--> U
+        if ( not morphInCat( g ) ) or ( not morphInCat( f ) ) then
+            Error( "one or both morphisms are not in the category" );
+        fi;
+        if Range( f ) = Source( g ) then
+            return f * g;
+        else
+            Error( "not composable morphisms" );
+        fi;
+    end;
+
+    identityMorph := function( V )
+        if not objInCat( V ) then
+            Error( "object is not in the category" );
+        fi;
+        return IdentityMapping(V);
+    end;
+
+    isIsomorphism := function( f )
+        if not morphInCat( f ) then
+            Error( "morphism is not in the category" );
+        fi;
+        return IsBijective( f );
+    end;
+
+    inverse := function( f )
+        if not morphInCat( f ) then
+            Error( "morphism is not in the category" );
+        elif not isIsomorphism( f ) then
+            Error( "morphism is not an isomorphism" );
+        fi;
+        return LeftModuleHomomorphismByMatrix( Basis( Range( f ) ),
+                                               Inverse( f!.matrix ),
+                                               Basis( Source( f ) ) );
+    end;
+
+    isomorphic := function( V, W )
+        if ( not objInCat( V ) ) or ( not objInCat( W ) ) then
+            Error( "one or both objects are not in the category" );
+        fi;
+        return Dimension( V ) = Dimension( W );
+    end;
+
+    isomorphism := function( V, W )
+        local identityMatrix;
+        if ( not isomorphic( V, W ) ) then
+            Error( "the objects are not isomorphic" );
+        fi;
+        identityMatrix := DiagonalMat( List( [1..Dimension(V)], x -> 1 ) );
+        return LeftModuleHomomorphismByMatrix( Basis( W ),
+                                               identityMatrix,
+                                               Basis( V ) );
+    end;
+
+    zeroMorph := function( V, W )
+        if ( not objInCat( V ) ) or ( not objInCat( W ) ) then
+            Error( "one or both objects are not in the category" );
+        fi;
+        return ZeroMapping( V, W );
+    end;
+
+    addMorph := function( f, g )
+        if ( not morphInCat( g ) ) or ( not morphInCat( f ) ) then
+            Error( "one or both morphisms are not in the cateogory" );
+        fi;
+        return f + g;
+    end;
+
+    negateMorph := function( f )
+        if not morphInCat( f ) then
+            Error( "the morphism is not in the cateogory" );
+        fi;
+        return -f;
+    end;
+
+    directSum := function( V, W )
+        local newDim, newGens, i, j, basisMapped, dirSum, identityMatrix, inc1mat, inc2mat,
+              proj1mat, proj2mat, inc1, inc2, proj1, proj2;
+        newDim := Dimension(V) + Dimension(W);
+        newGens := [];
+        if Dimension(V) = 1 then
+            Append( newGens, [ Concatenation( BasisVectors( Basis( V ) ), List( [1..Dimension(W)], x -> 0 ) ) ] );
+        else
+            for i in [1..Dimension(V)] do
+                basisMapped := Concatenation( BasisVectors( Basis( V ) )[i], List( [1..Dimension(W)], x -> 0 ) );
+                Append( newGens, [basisMapped] );
+            od;
+        fi;
+        if Dimension(W) = 1 then
+            Append( newGens, [ Concatenation( List( [1..Dimension(V)], x -> 0 ), BasisVectors( Basis( W ) ) ) ] );
+        else
+            for j in [1..Dimension(W)] do
+                basisMapped := Concatenation(  List( [1..Dimension(V)], x -> 0 ), BasisVectors( Basis( W ) )[j] );
+                Append( newGens, [basisMapped] );
+            od;
+        fi;
+        dirSum :=  VectorSpace( K, newGens );
+
+        identityMatrix := DiagonalMat( List( [1..Dimension(dirSum)], x -> 1 ) );        
+
+        inc1mat := List( [1..Dimension(V)], x -> identityMatrix[x] );
+        inc2mat := List( [1..Dimension(W)], x -> identityMatrix[x + Dimension(V)] );
+        proj1mat := TransposedMat(inc1mat);
+        proj2mat := TransposedMat(inc2mat);
+        
+        inc1 := LeftModuleHomomorphismByMatrix( Basis(V), inc1mat, Basis(dirSum) );
+        inc2 := LeftModuleHomomorphismByMatrix( Basis(W), inc2mat, Basis(dirSum) );
+        proj1 := LeftModuleHomomorphismByMatrix( Basis(dirSum), proj1mat, Basis(V) );
+        proj2 := LeftModuleHomomorphismByMatrix( Basis(dirSum), proj2mat, Basis(W) );
+
+        return [inc1, inc2, proj1, proj2];
+    end;
+
+    kernel := function( f )
+        local ker;
+        if not morphInCat( f ) then
+            Error( "morphism is not in the category" );
+        fi;
+        ker := Kernel(f);
+        if IsEmpty(BasisVectors(Basis(ker))) then
+            return ZeroMapping( ker, Source(f) );
+        fi;
+        return LeftModuleHomomorphismByMatrix( Basis(ker), BasisVectors(CanonicalBasis(ker)), Basis(Source(f)) );
+    end;
+
+    cokernel := function( f )
+        local mat, b, cok;
+        if not morphInCat( f ) then
+            Error( "morphism is not in the category" );
+        fi;
+
+        mat := [];
+
+        for b in BasisVectors(Basis(Range(f))) do
+            if IsEmpty( PreImages( f, b ) ) then
+                Add(mat, b);
+            fi;
+        od;
+        if IsEmpty( mat ) then
+            return ZeroMapping( Range(f), TrivialSubspace( Range(f) ) );
+        fi;
+        cok := Subspace(Range(f), mat);
+        return LeftModuleHomomorphismByMatrix( Basis(Range(f)), TransposedMat(BasisVectors(CanonicalBasis(cok))) , Basis(cok) );
+    end;
+
+    kernelFactorization := function( f, g ) # V --g--> U --f--> W, fg = 0
+        return true;
+    end;
+
+
+    cokernelFactorization := function( f, g ) # A --f--> B --g--> C, gf = 0
+        return true;
+    end;
+
+    properties := rec( objInCat := objInCat,
+                       morphInCat := morphInCat,
+                       domain := domain,
+                       codomain := codomain,
+                       compose := compose,
+                       identityMorph := identityMorph,
+                       isIsomorphism := isIsomorphism,
+                       inverse := inverse,
+                       isomorphic := isomorphic,
+                       isomorphism := isomorphism,
+                       objString := StringView,
+                       zeroMorph := zeroMorph,
+                       addMorph := addMorph,
+                       negateMorph := negateMorph,
+                       zeroObj := TrivialSubspace( K ),
+                       directSum := directSum,
+                       kernel := kernel,
+                       cokernel := cokernel,
+                       kernelFactorization := kernelFactorization,
+                       cokernelFactorization := cokernelFactorization );
+
+    return AbelianCat( [ "Vec", K ],
+                       Concatenation( "Vec(", String( K ), ")" ),
+                       properties );
+
+end );
