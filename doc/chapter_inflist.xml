@@ -7,7 +7,7 @@ maps.
 <P/>
 Since chain complexes are infinite chains of objects and morphisms, it
 would be convenient to have lists with infinitely many elements in
-GAP.  This is, of course, impossible.  Our ``infinite lists'' do,
+&GAP;.  This is, of course, impossible.  Our ``infinite lists'' do,
 however, make it possible -- in a limited way -- to pretend that we
 have such infinitely long lists.
 <P/>
@@ -19,7 +19,7 @@ about infinite lists.
 This chapter is concerned only with programming, and not with
 mathematics.  The structures and functions described here have nothing
 to do with complexes apart from being useful for representing them in
-GAP.  For the reader who is only interested in using complexes and
+&GAP;.  For the reader who is only interested in using complexes and
 chain maps, and not knowing all the implementation details, it is
 possible (and perhaps advisable) to skip this chapter.
 
@@ -71,12 +71,12 @@ of morphisms.  In both cases, what we need is an infinite sequence
 indexed by the integers.
 <P/>
 To facilitate the implementation of chain complexes and chain maps, we
-have created a data structure in GAP for infinite, <M>\Z</M>-indexed,
+have created a data structure in &GAP; for infinite, <M>\Z</M>-indexed,
 sequences.  We call this data structure ``infinite list''.  One can
 think of the infinite lists as being somewhat similar to the usual
-lists in GAP, but with infinite length.
+lists in &GAP;, but with infinite length.
 <P/>
-To access an element of a normal GAP list, we use square brackets,
+To access an element of a normal &GAP; list, we use square brackets,
 like this: <Code>L[5]</Code>.  To access an element of an infinite
 list, we use the caret operator, like this: <Code>L^5</Code>.  Note
 that all integers are valid indices in an infinite list, so if
@@ -89,7 +89,7 @@ There are, however, some important differences between normal lists
 and infinite lists.  In particular, creating an infinite list is
 somewhat complicated, and once created, it can not be changed.
 <P/>
-When creating a list in GAP, we can just write all its elements
+When creating a list in &GAP;, we can just write all its elements
 between a pair of square brackets, like this:
 <Example><![CDATA[
 gap> L := [ 5, 2, 14, 46 ];
@@ -166,20 +166,15 @@ such objects.
 </ManSection>
 
 <ManSection>
+  <Heading>Infinite numbers</Heading>
   <Filt Type="Var" Name="PositiveInfinity"/>
-  <Description>
-    A global variable representing the number <M>\infty</M>. It is
-    greater than any integer, but it can not be compared to numbers which
-    are not integers. It belongs to the <C>IsInfiniteNumber</C> category.
-  </Description>
-</ManSection>
-
-<ManSection>
   <Filt Type="Var" Name="NegativeInfinity"/>
   <Description>
-    A global variable representing the number <M>-\infty</M>. It is
-    smaller than any integer, but it can not be compared to numbers which
-    are not integers.  It belongs to the <C>IsInfiniteNumber</C> category.
+    Global variables representing the numbers <M>\infty</M> and
+    <M>-\infty</M>, respectively. <C>PositiveInfinity</C> is greater
+    than any integer, <C>NegativeInfinity</C> is smaller than any
+    integer, but they can not be compared to numbers which are not
+    integers. They belong to the <C>IsInfiniteNumber</C> category.
   </Description>
 </ManSection>
 

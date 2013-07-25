@@ -1,20 +1,20 @@
 #######################################################################
 ##
-#F  FiniteComplex( <cat>, <basePosition>, <differentials> ) 
+#F  BoundedComplex( <cat>, <basePosition>, <differentials> ) 
 ##
 ##  This function returns a finite complex with objects in <cat>.  The
 ##  differentials are given in the list <differentials> = [d1, ..., dN],
 ##  an <basePosition> is some integer i. The returned complex has the 
 ##  map d1 from degree (i) to degree (i-1).
 ##  
-InstallMethod( FiniteComplex,
+InstallMethod( BoundedComplex,
 [ IsAbelianCat, IsInt, IsList ],
 function( cat, basePosition, differentials )
     if not ForAll( differentials, cat.morphInCat ) then
-        Error( "FiniteComplex: the differentials must be morphisms in the category" );
+        Error( "BoundedComplex: the differentials must be morphisms in the category" );
     fi;
     if Length( differentials ) = 0 then
-        Error( "FiniteComplex: list of differentials must be nonempty" );
+        Error( "BoundedComplex: list of differentials must be nonempty" );
     fi;
     return Complex( cat, basePosition, differentials, "zero", "zero" );
 end );
@@ -53,7 +53,7 @@ function( cat, obj, degree )
     if not ObjectInCat( cat, obj ) then
         Error( "StalkComplex: the object must be an object of the category" );
     fi;
-    return FiniteComplex( cat, degree,
+    return BoundedComplex( cat, degree,
                           [ ZeroMorphism( cat, obj, ZeroObject( cat ) ),
                             ZeroMorphism( cat, ZeroObject( cat ), obj ) ] );
 end );
@@ -72,7 +72,7 @@ InstallMethod( ShortExactSequence,
 [ IsAbelianCat, IsObject, IsObject ],
 function( cat, f, g )
     local SES;
-    SES := FiniteComplex( cat, 0, [ g, f ] );
+    SES := BoundedComplex( cat, 0, [ g, f ] );
     if not IsShortExactSequence( SES ) then
         Error( "not exact\n" );
     fi;
@@ -410,11 +410,11 @@ end );
 
 #######################################################################
 ##
-#M  IsFiniteComplex( <C> ) 
+#M  IsBoundedComplex( <C> ) 
 ##
 ##  Returns true if the complex <C> is a finite complex, false otherwise.
 ##  
-InstallMethod( IsFiniteComplex,
+InstallMethod( IsBoundedComplex,
 [ IsComplex ],
 function( C )
     local upbound, lowbound;
@@ -446,7 +446,7 @@ InstallMethod( LengthOfComplex,
 [ IsComplex ],
 function( C )
     local finiteness;
-    finiteness := IsFiniteComplex( C );
+    finiteness := IsBoundedComplex( C );
     if IsZeroComplex( C ) then
         return 0;
     elif finiteness = true then
@@ -507,8 +507,8 @@ end );
 InstallMethod( IsExactInDegree,
 [ IsComplex, IsInt ],
 function( C, i )
-    return CatOfComplex( C ).isExact( DifferentialOfComplex( C, i ),
-                                      DifferentialOfComplex( C, i + 1 ) );
+    return CatOfComplex( C ).isExact( DifferentialOfComplex( C, i + 1 ),
+                                      DifferentialOfComplex( C, i ) );
 end );
 
 #######################################################################

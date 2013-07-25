@@ -75,8 +75,11 @@ function( identity, name, properties )
 
     if not "isExact" in givenProps then
         properties.isExact := function( f,g ) #  f: A ---> B , g: B ---> C
-            # TODO: fix!
-            return properties.isomorphic( properties.image( f ), properties.kernel( g ) );
+            local h, cok;
+            h := properties.kernelFactorization( g, properties.image( f ) );
+            cok := properties.codomain( cat.cokernel( h ) );
+            return properties.isomorphic( properties.zeroObj, cok );
+
         end;
     fi;
 
