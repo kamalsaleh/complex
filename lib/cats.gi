@@ -322,12 +322,45 @@ function( K )
     end;
 
     kernelFactorization := function( f, g ) # V --g--> U --f--> W, fg = 0
-        return true;
+        local basis, images;
+        if not morphInCat( f ) then
+            Error( "first morphism is not in the category" );
+        fi;
+        if not morphInCat( g ) then
+            Error( "second morphism is not in the category" );
+        fi;
+        if not Range( g ) = Source( f ) then
+            Error( "morphisms are not composable" );
+        fi;
+        if compose( f, g ) <> zeroMorph( Source( g ), Range( f ) ) then
+            Error( "composition must be zero for kernel factorization" );
+        fi;
+        basis := BasisVectors( Basis( Source( g ) ) );
+        images := List( basis, x -> Image( g, x ) );
+        return LeftModuleHomomorphismByImages( Source( g ), Kernel( f ), basis, images );
     end;
 
-
-    cokernelFactorization := function( f, g ) # A --f--> B --g--> C, gf = 0
-        return true;
+    cokernelFactorization := function( f, g ) # U --f--> V --g--> X, gf = 0
+        local X, coker, coker_obj, basis, preimages, images;
+        if not morphInCat( f ) then
+            Error( "first morphism is not in the category" );
+        fi;
+        if not morphInCat( g ) then
+            Error( "second morphism is not in the category" );
+        fi;
+        if not codomain( f ) = domain( g ) then
+            Error( "morphisms are not composable" );
+        fi;
+        if compose( g, f ) <> zeroMorph( domain( f ), codomain( g ) ) then
+            Error( "composition must be zero for kernel factorization" );
+        fi;
+        X := codomain( g );
+        coker := cokernel( f );
+        coker_obj := codomain( coker );
+        basis := BasisVectors( Basis( coker_obj ) );
+        preimages := List( basis, b -> Representative( PreImages( coker, b ) ) );
+        images := List( preimages, v -> Image( g, v ) );
+        return LeftModuleHomomorphismByImages( coker_obj, X, basis, images );
     end;
 
     properties := rec( objInCat := objInCat,
