@@ -215,9 +215,19 @@ gap> ses := ShortExactSequence(cat, f, g);
   <Returns>A newly created complex.
   </Returns>
   <Description>
-    The <M>i</M>th differential of the returned complex is the value
-    at position <M>i</M> of <A>differentials</A>.  Note that this
-    operation <E>does not</E> check that this actually gives a complex.
+    Constructs a new chain complex over the abelian category
+    <A>cat</A>, with <A>differentials</A> as its list of
+    differentials.  Thus, the <M>i</M>th differential of the returned
+    complex is the value at position <M>i</M> of <A>differentials</A>.
+    <P/>
+    This constructor performs no checks on the supplied differential
+    list (apart from requiring that it is an <Ref Filt="IsInfList"/>
+    object).  It is the caller's responsibility to make sure that the
+    list consists of morphisms from the right category, that their
+    domains and codomains match and that all compositions are zero.
+    <P/>
+    In most cases one of the other constructors should be used instead
+    of this.  <!-- TODO: explain when this might be useful? -->
   </Description>
 </ManSection>
 
