@@ -63,6 +63,8 @@
 
 <#Include SYSTEM "chapter_operations.xml">
 
+<#Include SYSTEM "chapter_repeating.xml">
+
 </Body>
 
 <TheIndex/>

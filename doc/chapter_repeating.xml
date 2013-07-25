@@ -1,0 +1,87 @@
+<Chapter>
+<Heading>
+Bounded and repeating complexes
+</Heading>
+
+<Section>
+<Heading>Introduction</Heading>
+
+The chain complexes it is easiest to get information about are those
+where all differentials can be looked up without compuations.  The
+only method for constructing half infinite lists (and hence;
+complexes) which fulfills this requirement is the ``repeating''
+method.  By a repeating complex we mean a complex where both the
+negative and positive part is repeating. <P />
+
+A special type of repeating complexes are the <E>bounded
+complexes</E>.  A complex <M>C</M> is <E>bounded above</E>
+(resp. <E>bounded below</E>) if there is a bound <M>b</M> such that
+<M>C_i = 0</M> for all <M>i > b</M> (resp. for all <M>i &lt; b</M>). We
+say that a chain complex is bounded if it is both bounded above and
+bounded below. <P />
+
+Note that any complex constructed by <Ref Func="ZeroComplex" />, <Ref
+Func="StalkComplex" />, <Ref Func="BoundedComplex" /> and <Ref
+Func="ShortExactSequence" /> are bounded complexes.  
+
+(Noe mer her)
+
+</Section>
+
+<Section>
+<Heading>Determining whether a complex is bounded or repeating</Heading>
+
+Sjekke UpperBound og LowerBound??
+
+<ManSection>
+  <Oper Name="IsBoundedComplex" Arg="C" />
+  <Description>
+    Arguments: <Arg>C</Arg> -- a complex.<Br />
+  </Description>
+  <Returns><C>true</C> if <Arg>C</Arg> is a bounded complex, false otherwise.
+  </Returns>
+  <Description>
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="IsPositiveRepeating" Arg="C" />
+  <Description>
+    Arguments: <Arg>C</Arg> -- a complex.<Br />
+  </Description>
+  <Returns><C>true</C> if the positive part of <Arg>C</Arg> is repeating.
+  </Returns>
+  <Description>
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="IsNegativeRepeating" Arg="C" />
+  <Description>
+    Arguments: <Arg>C</Arg> -- a complex.<Br />
+  </Description>
+  <Returns><C>true</C> if the negative part of <Arg>C</Arg> is repeating.
+  </Returns>
+  <Description>
+  </Description>
+</ManSection>
+
+</Section>
+
+<Section>
+<Heading>Tests on repeating or bounded complexes</Heading>
+ForEveryDegree
+IsExactSequence
+LengthOfComplex
+
+</Section>
+
+<Section>
+<Heading>Cutting complexes</Heading> 
+
+CutComplexAbove, CutComplexBelow, nb: trunkeringene som klipper i
+begge ender … Hvordan fungerer de??
+</Section>
+
+
+</Chapter>
