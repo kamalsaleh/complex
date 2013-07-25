@@ -146,14 +146,15 @@ gap> Ab!.name;
   <Description>
   The constructor for a general category.  The <A>identity</A> should
   be unique for this category.  The <A>properties</A> argument is an
-  <C>IsRecord</C> object, with the following elements:
+  <C>IsRecord</C> object, with the following required elements:
   <C>objInCat</C>, <C>morphInCat</C>, <C>domain</C>, <C>codomain</C>,
   <C>compose</C>, <C>identityMorph</C>, <C>isIsomorphism</C>,
   <C>inverse</C>, <C>isomorphic</C>, <C>isomorphism</C>,
   <C>objString</C>, <C>zeroMorph</C>, <C>addMorph</C>,
   <C>negateMorph</C>, <C>zeroObj</C>, <C>directSum</C>, <C>kernel</C>,
   <C>cokernel</C>, <C>kernelFactorization</C> and
-  <C>cokernelFactorization</C>. <P />
+  <C>cokernelFactorization</C>.  In addition, there are two optional
+  arguments <C>image</C> and <C>isExact</C>.<P />
 
   The values, which are typically functions, of the listed record
   elements can be retrieved by direct record evaluation (for instance
@@ -185,6 +186,8 @@ gap> Ab!.name;
     <Item><C>cokernel</C> corresponds to <Ref Oper="CokernelOfMorphism" /></Item>
     <Item><C>kernelFactorization</C> corresponds to <Ref Oper="KernelFactorization" /></Item>
     <Item><C>cokernelFactorization</C> corresponds to <Ref Oper="CokernelFactorization" /></Item>
+    <Item><C>image</C> corresponds to <Ref Oper="ImageOfMorphism" /></Item>
+    <Item><C>isExact</C> corresponds to <Ref Oper="IsExact" /></Item>
   </List>
   As all of these operations will evaluate the corresponding record
   element with its given arguments, the documentation of the operation
@@ -459,7 +462,8 @@ gap> Ab!.name;
     morphism. <Br />
   </Description>
   <Returns>
-    The kernel of the morphism <A>f</A>.
+    The inclusion of the kernel of the morphism <A>f</A> into the
+    domain of <A>f</A>.
   </Returns>
   <Description>
     Checks that <A>f</A> is a morphism of <A>cat</A>.
@@ -473,7 +477,7 @@ gap> Ab!.name;
     morphism. <Br />
   </Description>
   <Returns>
-    The cokernel of the morphism <A>f</A>.
+    The projection of the codomain of <A>f</A> onto the cokernel <A>f</A>.
   </Returns>
   <Description>
     Checks that <A>f</A> is a morphism of <A>cat</A>.
@@ -546,6 +550,43 @@ gap> Ab!.name;
                C
     </Verb>
     </Alt>
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="ImageOfMorphism" Arg="cat, f" />
+  <Description>
+    Arguments: <A>cat</A> -- an abelian category, <A>f</A> -- a
+    morphism. <Br />
+  </Description>
+  <Returns>
+    The inclusion of the image of <A>f</A> into the codomain of <A>f</A>.
+  </Returns>
+  <Description>
+    Note that it is optional to give the <C>image</C> function as
+    argument when constructing an abelian category -- if it is not
+    given, the image is computed as the kernel of the cokernel of
+    <A>f</A>.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="IsExact" Arg="cat, f, g" />
+  <Description>
+    Arguments: <A>cat</A> -- an abelian category, <A>f</A> -- a
+    morphism, <A>g</A> a morphism such that the composition <A>gf</A>
+    is defined. <Br />
+  </Description>
+  <Returns>
+    <C>true</C> if and only if <M>\mathrm{Im}(<A>f</A>) =
+    \mathrm{Ker}(<A>g</A>)</M>.
+  </Returns>
+  <Description>
+    Note that it is optional to give the <C>isExact</C> function as
+    argument when constructing an abelian category -- if it is not
+    given, the default function checks whether
+    <M>\mathrm{Cok}[\mathrm{Im}(f) \longrightarrow
+    \mathrm{Ker}(g)]</M> is zero.
   </Description>
 </ManSection>
 
