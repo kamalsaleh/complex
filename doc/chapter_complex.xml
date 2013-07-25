@@ -32,7 +32,7 @@ for common special cases:
 <List>
 <Item><Ref Func="ZeroComplex"/></Item>
 <Item><Ref Func="StalkComplex"/></Item>
-<Item><Ref Func="FiniteComplex"/></Item>
+<Item><Ref Func="BoundedComplex"/></Item>
 <Item><Ref Func="ShortExactSequence"/></Item>
 <Item><Ref Oper="ComplexByDifferentialList" /></Item>
 </List>
@@ -125,7 +125,7 @@ zero objects and zero morphisms) over the category described by the
 </ManSection>
 
 <ManSection>
-<Func Name="FiniteComplex" Arg="cat, baseDegree, differentials"/>
+<Func Name="BoundedComplex" Arg="cat, baseDegree, differentials"/>
 <Returns>A newly created complex</Returns>
 <Description>
 This function creates a complex where all but finitely many objects
@@ -162,7 +162,7 @@ All other objects in the complex are zero.
 gap> # L, M and N are modules over the same algebra A
 gap> # cat is the category mod A
 gap> # f: L --> M and g: M --> N maps
-gap> C := FiniteComplex(cat, 1, [g,f]);
+gap> C := BoundedComplex(cat, 1, [g,f]);
 0 -> 2:(1,0) -> 1:(2,2) -> 0:(1,1) -> 0 ]]>
 </Example>
 

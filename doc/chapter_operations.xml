@@ -2,6 +2,141 @@
 <Heading>Other operations on chain complexes and chain maps</Heading>
 
 <Section>
+<Heading>Homology operations</Heading>
+
+<ManSection>
+  <Oper Name="CyclesOfComplex" Arg="C, i" />
+  <Description>
+    Arguments: <Arg>C</Arg> -- a complex, <Arg>i</Arg> -- an integer. <Br />
+  </Description>
+  <Returns>The <Math>i</Math>-cycle of the complex, that is the inclusion of the 
+  subobject <Math>\mathrm{Ker}(d_i)</Math> into <C>ObjectOfComplex(C,i)</C>.
+  </Returns>
+  <Description>
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="BoundariesOfComplex" Arg="C,i" />
+  <Description>
+    Arguments: <Arg>C</Arg> -- a complex, <Arg>i</Arg> -- an integer. <Br />
+  </Description>
+  <Returns> The <Math>i</Math>-boundary of the complex, that is the
+  projection of <C>ObjectOfComplex(C,i)</C> onto the subobject
+  <Math>\mathrm{Im}(d_{i+1})</Math>.
+  </Returns>
+  <Description>
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="HomologyOfComplex" Arg="C,i" />
+  <Description>
+    Arguments:  <Arg>C</Arg> -- a complex, <Arg>i</Arg> -- an integer.<Br />
+  </Description>
+  <Returns> The <Math>i</Math>th homology of the complex, that
+  is, <Math>\mathrm{Ker}(d_i)/\mathrm{Im}(d_{i+1})</Math>.
+  </Returns>
+  <Description>
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="IsExactInDegree" Arg="C,i" />
+  <Description>
+    Arguments: <Arg>C</Arg> -- a complex, <Arg>i</Arg> -- an integer.<Br />
+  </Description>
+  <Returns><C>true</C> if <Arg>C</Arg> is exact at position <Arg>i</Arg>.
+  </Returns>
+  <Description>
+  </Description>
+</ManSection>
+
+<Example><![CDATA[
+gap> ]]>
+</Example>
+
+</Section>
+
+<Section>
+<Heading>Shift operations</Heading>
+
+<ManSection>
+  <Oper Name="Shift" Arg="C, i" />
+  <Description>
+    Arguments: <Arg>C</Arg> -- a complex, <Arg>i</Arg> -- an integer.<Br />
+  </Description>
+  <Returns>A new complex, which is a shift of <Arg>C</Arg>.
+  </Returns>
+  <Description>If <Arg>i</Arg> &gt; 0, the complex is shifted to the
+  left. If <Arg>i</Arg> &lt; 0, the complex is shifted to the
+  right. Note that shifting might change the differentials: In the
+  shifted complex, <Math>d_{new}</Math> is defined to
+  be <Math>(-1)^i d_{old}</Math>.
+  </Description>
+</ManSection>
+
+<Example><![CDATA[
+gap> ]]>
+</Example>
+
+<ManSection>
+  <Oper Name="ShiftUnsigned" Arg="C, i" />
+  <Description>
+    Arguments: <Arg>C</Arg> -- a complex, <Arg>i</Arg> -- an integer.<Br />
+  </Description>
+  <Returns>A new complex, which is a shift of <Arg>C</Arg>.
+  </Returns>
+  <Description>Does the same as <C>Shift</C>, except it does not
+  change the sign of the differential. Although this is a
+  non-mathematical definition of shift, it is still useful for
+  technical purposes, when manipulating and creating complexes.
+  </Description>
+</ManSection>
+
+</Section>
+
+<Section>
+<Heading>Combining complexes</Heading>
+
+<ManSection>
+  <Oper Name="YonedaProduct" Arg="C, D" />
+  <Description>
+    Arguments: <Arg>C</Arg>, <Arg>D</Arg> -- complexes.<Br />
+  </Description>
+  <Returns>The Yoneda product of the two complexes, which is a complex.
+  </Returns>
+  <Description>To compute the Yoneda product, <Arg>C</Arg>
+  and <Arg>D</Arg> must be such that the object in
+  degree <C>LowerBound(C)</C> equals the object in
+  degree <C>UpperBound(D)</C>, that is
+    <Display>
+      \ldots \rightarrow C_{i+1} \rightarrow C_{i} \rightarrow A
+      \rightarrow 0 \rightarrow \ldots
+    </Display>
+    <Display>
+      \ldots \rightarrow 0 \rightarrow A \rightarrow D_{j} \rightarrow D_{j-1}
+      \rightarrow \ldots
+    </Display>
+    The product is of this form:
+    <Display>
+      \ldots \rightarrow C_{i+1} \rightarrow C_{i} \rightarrow D_{j}
+      \rightarrow D_{j-1} \rightarrow \ldots
+    </Display>
+    where the map <Math>C_{i} \rightarrow D_{j}</Math> is the
+    composition of the maps <Math>C_{i} \rightarrow A</Math>
+    and <Math>A \rightarrow D_{j}</Math>. Also, the
+    object <Math>D_{j}</Math> is in degree <Math>j</Math>.
+  </Description>
+</ManSection>
+
+<Example><![CDATA[
+gap> ]]>
+</Example>
+
+</Section>
+
+<Section>
 <Heading>Mapping cone</Heading>
 
 <ManSection>
