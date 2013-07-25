@@ -302,35 +302,23 @@ function( K )
     end;
 
     kernel := function( f )
-        local ker;
+        local ker, basis;
         if not morphInCat( f ) then
             Error( "morphism is not in the category" );
         fi;
-        ker := Kernel(f);
-        if IsEmpty(BasisVectors(Basis(ker))) then
-            return ZeroMapping( ker, Source(f) );
+        ker := Kernel( f );
+        basis := BasisVectors( Basis( ker ) );
+        if IsEmpty( basis ) then
+            return ZeroMapping( ker, Source( f ) );
         fi;
-        return LeftModuleHomomorphismByMatrix( Basis(ker), BasisVectors(CanonicalBasis(ker)), Basis(Source(f)) );
+        return LeftModuleHomomorphismByImages( ker, Source( f ), basis, basis );
     end;
 
     cokernel := function( f )
-        local mat, b, cok;
         if not morphInCat( f ) then
             Error( "morphism is not in the category" );
         fi;
-
-        mat := [];
-
-        for b in BasisVectors(Basis(Range(f))) do
-            if IsEmpty( PreImages( f, b ) ) then
-                Add(mat, b);
-            fi;
-        od;
-        if IsEmpty( mat ) then
-            return ZeroMapping( Range(f), TrivialSubspace( Range(f) ) );
-        fi;
-        cok := Subspace(Range(f), mat);
-        return LeftModuleHomomorphismByMatrix( Basis(Range(f)), TransposedMat(BasisVectors(CanonicalBasis(cok))) , Basis(cok) );
+        return NaturalHomomorphismBySubspace( Range( f ), Image( f ) );
     end;
 
     kernelFactorization := function( f, g ) # V --g--> U --f--> W, fg = 0
