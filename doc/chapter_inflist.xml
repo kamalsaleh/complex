@@ -158,10 +158,21 @@ such objects.
 <Section Label="Infinite numbers">
 <Heading>Infinite numbers</Heading>
 
+We need values representing positive and negative infinity for use as
+return values from operations for different kinds of upper and lower
+bounds (see for example <Ref Oper="LowestKnownPosition"/> and <Ref
+Oper="LowerBound" Label="for inflist"/>).  &GAP; has the value
+<Code>infinity</Code> for positive infinity, but no representation of
+negative infinity.  Since we need both positive and negative infinity,
+we have made our own implementation.  The <Code>infinity</Code> value
+from &GAP; is not used in the &Complex; package.
+
 <ManSection>
   <Filt Type="Category" Name="IsInfiniteNumber"/>
   <Description>
-    A category for infinite numbers.
+    A category for infinite numbers.  There are exactly two objects in
+    this category, and they are stored in the variables <Ref
+    Filt="PositiveInfinity"/> and <Ref Filt="NegativeInfinity"/>.
   </Description>
 </ManSection>
 
@@ -177,6 +188,34 @@ such objects.
     integers. They belong to the <C>IsInfiniteNumber</C> category.
   </Description>
 </ManSection>
+
+The only operations which are defined for infinite numbers are
+comparisons (with <Code>&lt;</Code>, <Code>&gt;</Code> and
+<Code>=</Code>) and printing.  In particular, no arithmetic operations
+are defined, so expressions like
+<Code>PositiveInfinity+PositiveInfinity</Code> and
+<Code>0-PositiveInfinity</Code> are not allowed.
+
+The following example shows how the two infinite values work.
+<Example><![CDATA[
+gap> PositiveInfinity;
++inf
+gap> NegativeInfinity;
+-inf
+gap> IsInt(PositiveInfinity);   
+false
+gap> IsInfiniteNumber(PositiveInfinity);
+true
+gap> 100 < PositiveInfinity;
+true
+gap> NegativeInfinity < PositiveInfinity;
+true
+gap> NegativeInfinity < -10000;
+true
+gap> NegativeInfinity > -10000;
+false
+]]></Example>
+
 
 </Section>
 
@@ -664,7 +703,7 @@ gap> inflist2^0; inflist2^5; inflist2^6; inflist2^-1; inflist2^-4;
 </ManSection>
 
 <ManSection>
-  <Oper Name="UpperBound" Arg="list" />
+  <Oper Name="UpperBound" Label="for inflist" Arg="list" />
   <Description>
     Arguments: <A>list</A> -- an infinite list. <Br />
   </Description>
@@ -675,7 +714,7 @@ gap> inflist2^0; inflist2^5; inflist2^6; inflist2^-1; inflist2^-4;
 </ManSection>
 
 <ManSection>
-  <Oper Name="LowerBound" Arg="list" />
+  <Oper Name="LowerBound" Label="for inflist" Arg="list" />
   <Description>
     Arguments: <A>list</A> -- an infinite list. <Br />
   </Description>
