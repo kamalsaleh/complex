@@ -17,7 +17,7 @@ DeclareOperation( "BoundariesOfComplex", [ IsComplex, IsInt ] );
 DeclareOperation( "HomologyOfComplex", [ IsComplex, IsInt ] );
 DeclareOperation( "UpperBound", [ IsComplex ] );
 DeclareOperation( "LowerBound", [ IsComplex ] );
-DeclareOperation( "IsFiniteComplex", [ IsComplex ] );
+DeclareOperation( "IsBoundedComplex", [ IsComplex ] );
 DeclareOperation( "LengthOfComplex", [ IsComplex ] );
 DeclareOperation( "HighestKnownDegree", [ IsComplex ] );
 DeclareOperation( "LowestKnownDegree", [ IsComplex ] );
@@ -43,7 +43,7 @@ DeclareOperation( "Complex", [ IsAbelianCat, IsInt, IsList, IsObject, IsObject ]
 # Complex( cat, basePosition, differentials, [ "pos", function( C, i ) ... end,  ], "zero" );
 # - If positive or negative is "zero", then middle must be nonempty.
 
-DeclareOperation( "FiniteComplex", [ IsAbelianCat, IsInt, IsList ] );
+DeclareOperation( "BoundedComplex", [ IsAbelianCat, IsInt, IsList ] );
 DeclareOperation( "ZeroComplex", [ IsAbelianCat ] );
 DeclareOperation( "StalkComplex", [ IsAbelianCat, IsObject, IsInt ] );
 DeclareOperation( "ShortExactSequence", [ IsAbelianCat, IsObject, IsObject ] );
