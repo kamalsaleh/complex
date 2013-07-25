@@ -34,8 +34,8 @@ for common special cases:
 <Item><Ref Func="StalkComplex"/></Item>
 <Item><Ref Func="FiniteComplex"/></Item>
 <Item><Ref Func="ShortExactSequence"/></Item>
+<Item><Ref Oper="ComplexByDifferentialList" /></Item>
 </List>
-<!-- TODO: ComplexByDifferentialList -->
 
 <ManSection>
 <Func Name="Complex"
@@ -206,6 +206,20 @@ gap> Ms := StalkComplex(cat, M, 3);
 gap> ses := ShortExactSequence(cat, f, g);
 0 -> 1:(0,0,1,0) -> 0:(0,1,1,1) -> -1:(0,1,0,1) -> 0 ]]>
 </Example>
+
+<ManSection>
+  <Oper Name="ComplexByDifferentialList" Arg="cat, differentials" />
+  <Description>
+    Arguments: <A>cat</A> -- an abelian category, <A>differentials</A> -- an infinite list.<Br />
+  </Description>
+  <Returns>A newly created complex.
+  </Returns>
+  <Description>
+    The <M>i</M>th differential of the returned complex is the value
+    at position <M>i</M> of <A>differentials</A>.  Note that this
+    operation <E>does not</E> check that this actually gives a complex.
+  </Description>
+</ManSection>
 
 </Section>
 
