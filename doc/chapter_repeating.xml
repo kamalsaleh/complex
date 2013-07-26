@@ -8,79 +8,248 @@ Bounded and repeating complexes
 
 The chain complexes it is easiest to get information about are those
 where all differentials can be looked up without compuations.  The
-only method for constructing half infinite lists (and hence;
-complexes) which fulfills this requirement is the ``repeating''
-method.  By a repeating complex we mean a complex where both the
-negative and positive part is repeating. <P />
+only kind of complexes fulfilling this requirement are the repeating
+complexes, that is, complexes with positive and negative parts of the
+``repeat'' type.  <P />
 
-A special type of repeating complexes are the <E>bounded
-complexes</E>.  A complex <M>C</M> is <E>bounded above</E>
-(resp. <E>bounded below</E>) if there is a bound <M>b</M> such that
-<M>C_i = 0</M> for all <M>i > b</M> (resp. for all <M>i &lt; b</M>). We
-say that a chain complex is bounded if it is both bounded above and
-bounded below. <P />
+A special type of repeating complexes are the bounded
+complexes.  A complex <M>C</M> is <E>bounded above</E>
+(resp. <E>bounded below</E>) if there is a bound <M>b</M>
+(resp. <M>b'</M>) such that <M>C_i = 0</M> for all <M>i > b</M>
+(resp. for all <M>i &lt; b'</M>). We say that a chain complex is
+<E>bounded</E> if it is both bounded above and bounded below. <P />
 
-Note that any complex constructed by <Ref Func="ZeroComplex" />, <Ref
+Any complex constructed by <Ref Func="ZeroComplex" />, <Ref
 Func="StalkComplex" />, <Ref Func="BoundedComplex" /> and <Ref
-Func="ShortExactSequence" /> are bounded complexes.  
+Func="ShortExactSequence" /> are bounded complexes.  When constructing
+a complex by using one of these functions, the actual bounds <M>b</M>
+and <M>b'</M> of the complex coincide with the returned values of <Ref
+Oper="UpperBound" Label="for complex"/> and <Ref Oper="LowerBound"
+Label="for complex" />, respectively.  This even holds for the case
+where we add zero differentials to the ends of the differential list
+sent as argument to <C>BoundedComplex</C>. <P />
 
-(Noe mer her)
+That a complex is not repeating does not mean that it is not
+bounded.  For instance, a complex can have a positive part of the
+``next'' type.  It can happen that after some time, the differentials
+computed are always zero.  However, the complex does not know this,
+and a call to <Ref Oper="UpperBound" Label="for complex"/> will fail.
+There are ways of avoiding this when the user know that the complex is
+bounded, see <Ref Sect="cut" />.
 
 </Section>
 
 <Section>
-<Heading>Determining whether a complex is bounded or repeating</Heading>
+<Heading>Determining whether a complex is bounded or
+repeating</Heading>
 
-Sjekke UpperBound og LowerBound??
+A complex can be repeating/bounded above without being
+repeating/bounded below, and vice versa.
+
+<ManSection>
+  <Heading>Tests for repeating</Heading>
+  <Oper Name="IsPositiveRepeating" Arg="C" />
+  <Oper Name="IsNegativeRepeating" Arg="C" />
+  <Description>
+    Arguments: <Arg>C</Arg> -- a complex.<Br />
+  </Description>
+  <Returns><C>true</C> if the positive (resp. negative) part of <Arg>C</Arg> is
+  repeating, <C>false</C> otherwise.
+  </Returns>
+  <Description>
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="UpperBound" Label="for complex" Arg="C" />
+  <Description>
+    Arguments: <A>C</A> -- a complex. <Br />
+  </Description>
+  <Returns>If the complex is known to be bounded above, then it
+  returns the upper bound.  If the positive part of the complex is of
+  type ``pos'' or ``next'', it fails.  If the positive part of the
+  complex is repeating but not with zeros, it returns <M>\infty</M>.
+  </Returns>
+  <Description>Any complex constructed by <Ref Func="ZeroComplex" />,
+  <Ref Func="StalkComplex" />, <Ref Func="BoundedComplex" /> and <Ref
+  Func="ShortExactSequence" /> are known to be bounded above.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="LowerBound" Label="for complex" Arg="C" />
+  <Description>
+    Arguments: <A>C</A> -- a complex. <Br />
+  </Description>
+  <Returns>If the complex is known to be bounded below, then it
+  returns the lower bound.  If the negative part of the complex is of
+  type ``pos'' or ``next'', it fails.  If the negative part of the
+  complex is repeating but not with zeros, it returns <M>-\infty</M>.
+  </Returns>
+  <Description>Any complex constructed by <Ref Func="ZeroComplex" />,
+  <Ref Func="StalkComplex" />, <Ref Func="BoundedComplex" /> and <Ref
+  Func="ShortExactSequence" /> are known to be bounded below.
+  </Description>
+</ManSection>
 
 <ManSection>
   <Oper Name="IsBoundedComplex" Arg="C" />
   <Description>
     Arguments: <Arg>C</Arg> -- a complex.<Br />
   </Description>
-  <Returns><C>true</C> if <Arg>C</Arg> is a bounded complex, false otherwise.
+  <Returns><C>true</C> if <Arg>C</Arg> both <C>UpperBound( C )</C> and
+  <C>LowerBound( C )</C> returns integers, <C>false</C> if both
+  returns infinite numbers.  Otherwise it fails.
+  </Returns>
+  <Description>Any complex constructed by <Ref Func="ZeroComplex" />,
+  <Ref Func="StalkComplex" />, <Ref Func="BoundedComplex" /> and <Ref
+  Func="ShortExactSequence" /> are known to be bounded.
+  </Description>
+</ManSection>
+
+
+<Example><![CDATA[
+gap> # example with repeating complex
+gap> C;
+--- -> [ 3:(1,0,1,0) -> 2:(1,1,0,0) -> 1:(0,1,1,0) -> ] 0:(1,0,1,0) -> 
+-1:(1,0,0,0) -> 0
+gap> LowerBound( C );
+-1
+gap> UpperBound( C );
++inf 
+gap> IsBoundedComplex( C );
+false 
+gap> IsPositiveRepeating( C );
+true
+gap> IsNegativeRepeating( C );
+true ]]>  
+</Example>
+
+</Section>
+
+<Section>
+<Heading>Tests on repeating complexes</Heading>
+
+The operations of this section are meant for repeating complexes.  
+
+<ManSection>
+  <Oper Name="LengthOfComplex" Arg="C" />
+  <Description>
+    Arguments: <A>C</A> -- a complex. <Br />
+  </Description>
+  <Returns>If <A>C</A> is bounded, it returns the length of the
+  non-zero part of <A>C</A> (i.e. <C>UpperBound - LowerBound + 1</C>).
   </Returns>
   <Description>
+    If <A>C</A> is repeating but not bounded, it returns
+    <M>\infty</M>.  If <A>C</A> is not repeating, it fails.
   </Description>
 </ManSection>
 
 <ManSection>
-  <Oper Name="IsPositiveRepeating" Arg="C" />
+  <Oper Name="ForEveryDegree" Arg="C, func" />
   <Description>
-    Arguments: <Arg>C</Arg> -- a complex.<Br />
+    Arguments: <A>C</A> -- a complex, <A>func</A> -- a function
+    operating on to consecutive differentials, returning either
+    <C>true</C> or <C>false</C>. <Br />
   </Description>
-  <Returns><C>true</C> if the positive part of <Arg>C</Arg> is repeating.
+  <Returns>
+    <C>true</C> if <M><A>func</A>(d_i, d_{i+1})</M> is true for all
+    <M>i</M>.
   </Returns>
   <Description>
+    Fails if the complex is not repeating.
   </Description>
 </ManSection>
 
 <ManSection>
-  <Oper Name="IsNegativeRepeating" Arg="C" />
+  <Oper Name="IsExactSequence" Arg="C" />
   <Description>
-    Arguments: <Arg>C</Arg> -- a complex.<Br />
+    Arguments: <A>C</A> -- a complex. <Br />
   </Description>
-  <Returns><C>true</C> if the negative part of <Arg>C</Arg> is repeating.
+  <Returns>
+    <C>true</C> if <A>C</A> is an exact sequence.
   </Returns>
   <Description>
+    Fails if the complex is not repeating.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="IsShortExactSequence" Arg="C" />
+  <Description>
+    Arguments: <A>C</A> -- a complex. <Br />
+  </Description>
+  <Returns>
+    <C>true</C> if <A>C</A> is a short exact sequence.
+  </Returns>
+  <Description>
+    Fails if the complex is not repeating.
   </Description>
 </ManSection>
 
 </Section>
 
-<Section>
-<Heading>Tests on repeating or bounded complexes</Heading>
-ForEveryDegree
-IsExactSequence
-LengthOfComplex
-
-</Section>
-
-<Section>
+<Section Label="cut">
 <Heading>Cutting complexes</Heading> 
 
-CutComplexAbove, CutComplexBelow, nb: trunkeringene som klipper i
-begge ender … Hvordan fungerer de??
+Assume that you have a complex which is not repeating, and yet you
+know that the complex is bounded.  An example of such a situation is
+the following: Assume that you have a method for computing the
+projective resolution of an object <M>X</M> of the category, and that
+the category has finite global dimension.  The resolution is stored
+with a ``func'' positive part, so &GAP; can not determine whether the
+complex is bounded -- although <E>you</E> know for a fact that it
+is. <P />
+
+If you also happen to know the projective dimension of <M>X</M>, then
+you can use <Ref Oper="BrutalTruncationAbove" /> to create an
+identical complex which returns true on <Ref Oper="IsBoundedComplex"
+/>.  However, if you do not know the projective dimension of <M>X</M>,
+you can use the following operation.
+
+<ManSection>
+  <Oper Name="CutComplexAbove" Arg="C" />
+  <Description>
+    Arguments: <A>C</A> -- a complex which is bounded above in the
+    mathematical sense. <Br />
+  </Description>
+  <Returns>
+    A new complex with the same differentials and objects as <A>C</A>,
+    which was constructed as a bounded above complex.
+  </Returns>
+  <Description>
+    Warning: If you try to perform this on a complex which is not
+    bounded above, then the operation will run until it is out of
+    space.  Also, the operation will ``cut'' the complex as soon as it
+    finds a zero object -- hence the operation will not give the
+    wanted result if the complex is bounded above but also has zero
+    objects in degrees lower than the bound.  In this case, use <Ref
+    Oper="BrutalTruncationAbove" /> instead.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="CutComplexBelow" Arg="C" />
+  <Description>
+    Arguments: <A>C</A> -- a complex which is bounded below in the
+    mathematical sense. <Br />
+  </Description>
+  <Returns>
+    A new complex with the same differentials and objects as <A>C</A>,
+    which was constructed as a bounded below complex.
+  </Returns>
+  <Description>
+    Warning: If you try to perform this on a complex which is not
+    bounded below, then the operation will run until it is out of space.
+    Also, the operation will ``cut'' the complex as soon as it finds a
+    zero object -- hence the operation will not give the wanted result
+    if the complex is bounded below but also has zero objects in
+    degrees lower than the bound.  In this case, use <Ref
+    Oper="BrutalTruncationBelow" /> instead.
+  </Description>
+</ManSection>
+
 </Section>
 
 
