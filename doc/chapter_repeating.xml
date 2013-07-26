@@ -163,7 +163,7 @@ The operations of this section are meant for repeating complexes.
 </ManSection>
 
 <ManSection>
-  <Oper Name="IsExactSequence" Arg="C" />
+  <Prop Name="IsExactSequence" Arg="C" />
   <Description>
     Arguments: <A>C</A> -- a complex. <Br />
   </Description>
@@ -176,7 +176,7 @@ The operations of this section are meant for repeating complexes.
 </ManSection>
 
 <ManSection>
-  <Oper Name="IsShortExactSequence" Arg="C" />
+  <Prop Name="IsShortExactSequence" Arg="C" />
   <Description>
     Arguments: <A>C</A> -- a complex. <Br />
   </Description>
