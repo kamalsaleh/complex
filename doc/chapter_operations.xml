@@ -4,8 +4,8 @@
 <Section>
 <Heading>Homology operations</Heading>
 
-See also <Ref Oper="IsExactSequence" /> and <Ref
-Oper="IsShortExactSequence" />.
+See also <Ref Prop="IsExactSequence" /> and <Ref
+Prop="IsShortExactSequence" />.
 
 <ManSection>
   <Oper Name="CyclesOfComplex" Arg="C, i" />
@@ -153,6 +153,19 @@ gap> ]]>
     projection of <C>cone</C> onto <C>Range(<A>f</A>)</C>.
     </Returns>
     <Description>
+    </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="IsQuasiIsomorphism" Arg="f" />
+    <Description>
+      Arguments: <Arg>f</Arg> -- a chain map. <Br />
+    </Description>
+    <Returns><C>true</C> if <A>f</A> is a quasi-isomorphism.
+    </Returns>
+    <Description>If the mapping cone of <A>f</A> is not a bounded
+    complex, this method will run out of time.  In this case, use <Ref
+    Oper="IsExactInDegree" /> on the mapping cone instead.
     </Description>
 </ManSection>
 
