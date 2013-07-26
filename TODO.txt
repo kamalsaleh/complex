@@ -18,17 +18,27 @@ GJORT:
 - Til slutt en gang: Sjekk om noe må endres i derivedcat.g* i QPA. Jeg
   tror egentlig dette er i orden nå. Andre feil i den filen, derimot …
 
+- MappingCone fungerer tålelig greit nå, men elegant er det ikke.
+
+- Image og IsExact, samt homologi, fungerer fint nå.
+
 GJØR:
 
-- MappingCone er full av ræl. Særlig når det gjelder å "huske" direkte
-  summer, se kommentarer i koden.  Hvordan fikser vi dette?  Skal vi
-  også prøve å endre i QPA??
-
-- Image og IsExact? Dukker opp i koden noen steder.
-
-- HomologyOfComplex funker dårlig.
+- Lage egen «versjon» av MappingCone som opererer på endelige
+  komplekser. Ikke nok å bare kutte, for da blir det tull med
+  avbildningene. Men forhåpentligvis kan koden som finnes brukes til å
+  skrive dette spesialtilfellet rimelig kjapt (inne i MappingCone).
 
 - Projektiv oppløsning etc. er nå i QPA. Bør dette implementeres i
   Complex, hva gjør vi med projektive objekter? Egen kategori
   "IsAbelianCatWithEnoughProjectives"??
 
+- Andre ting som kan lages:
+  - Langeksakt sekvens i homologi
+  - Kjedekomplekser over en abelsk kategori, som en abelsk kategori
+    (trenger da kjerner og sånn)
+  - Totale komplekser
+
+- QIS-testen fungerer ok, men går det an å gjøre noe med MappingCone
+  sånn at den funker på repeterende komplekser generelt? Da kan man
+  teste mer for QIS også.
