@@ -74,7 +74,7 @@ function( identity, name, properties )
     fi;
 
     if not "isExact" in givenProps then
-        properties.isExact := function( f,g ) #  f: A ---> B , g: B ---> C
+        properties.isExact := function( g,f ) #  f: A ---> B , g: B ---> C
             local h, cok;
             h := properties.kernelFactorization( g, properties.image( f ) );
             cok := properties.codomain( properties.cokernel( h ) );

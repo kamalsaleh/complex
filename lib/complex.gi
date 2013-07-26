@@ -507,8 +507,8 @@ end );
 InstallMethod( IsExactInDegree,
 [ IsComplex, IsInt ],
 function( C, i )
-    return CatOfComplex( C ).isExact( DifferentialOfComplex( C, i + 1 ),
-                                      DifferentialOfComplex( C, i ) );
+    return CatOfComplex( C ).isExact( DifferentialOfComplex( C, i ),
+                                      DifferentialOfComplex( C, i + 1 ) );
 end );
 
 #######################################################################
