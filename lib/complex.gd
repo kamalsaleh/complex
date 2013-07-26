@@ -36,6 +36,7 @@ DeclareOperation( "YonedaProduct", [ IsComplex, IsComplex ] );
 
 DeclareOperation( "CutComplexAbove", [ IsComplex ] );
 DeclareOperation( "CutComplexBelow", [ IsComplex ] );
+DeclareOperation( "CutComplex", [ IsComplex ] );
 
 DeclareOperation( "Complex", [ IsAbelianCat, IsInt, IsList, IsObject, IsObject ] );
 # Complex( cat, basePosition, differentials, [ "repeat", [ f, g, h ] ], "zero" );

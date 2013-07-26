@@ -212,7 +212,7 @@ you can use the following operation.
   <Oper Name="CutComplexAbove" Arg="C" />
   <Description>
     Arguments: <A>C</A> -- a complex which is bounded above in the
-    mathematical sense. <Br />
+    mathematical sense, and bounded below even in the &GAP; sense. <Br />
   </Description>
   <Returns>
     A new complex with the same differentials and objects as <A>C</A>,
@@ -233,7 +233,7 @@ you can use the following operation.
   <Oper Name="CutComplexBelow" Arg="C" />
   <Description>
     Arguments: <A>C</A> -- a complex which is bounded below in the
-    mathematical sense. <Br />
+    mathematical sense, and bounded above even in the &GAP; sense. <Br />
   </Description>
   <Returns>
     A new complex with the same differentials and objects as <A>C</A>,
@@ -247,6 +247,27 @@ you can use the following operation.
     if the complex is bounded below but also has zero objects in
     degrees lower than the bound.  In this case, use <Ref
     Oper="BrutalTruncationBelow" /> instead.
+  </Description>
+</ManSection>
+
+<ManSection>
+  <Oper Name="CutComplex" Arg="C" />
+  <Description>
+    Arguments: <A>C</A> -- a complex which is bounded in the
+    mathematical sense. <Br />
+  </Description>
+  <Returns>
+    A new complex with the same differentials and objects as <A>C</A>,
+    which was constructed as a bounded complex.
+  </Returns>
+  <Description>
+    Warning: If you try to perform this on a complex which is not
+    bounded, then the operation will run until it is out of space.
+    Also, the operation will ``cut'' the complex as soon as it finds a
+    zero object -- hence the operation will not give the wanted result
+    if the complex is bounded below but also has zero objects in
+    degrees lower than the bound.  In this case, use <Ref
+    Oper="BrutalTruncation" /> instead.
   </Description>
 </ManSection>
 

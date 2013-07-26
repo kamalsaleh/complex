@@ -839,7 +839,7 @@ function( C )
        i := UpperBound(C);
        while true do
            obj := ObjectOfComplex(C, i);
-           if IsZero( cat, obj ) then
+           if IsZeroObject( cat, obj ) then
                return BrutalTruncationBelow(C, i+1);
            fi;
            i := i-1;
@@ -847,6 +847,51 @@ function( C )
    fi;
 
 end );               
+
+
+#######################################################################
+##
+#O  CutComplex( <C> ) 
+##
+##  For a bounded complex C which is stored as an infinite complex,
+##  but is known to be finite. Returns the same complex, but represented
+##  as a finite complex.
+##
+InstallMethod( CutComplex,
+[IsComplex],
+function( C )
+    local cat, cutBelow, cutAbove, diffs, i, j, obj;
+    cat := CatOfComplex( C );
+    cutBelow := 0;
+    cutAbove := 0;
+    if IsInt( LowerBound( C ) ) then
+        return CutComplexAbove( C );
+    elif IsInt( UpperBound( C ) ) then
+        return CutComplexBelow( C );
+    else
+        diffs := DifferentialsOfComplex( C );
+        i := MiddleStart( diffs );
+        while true do
+           obj := ObjectOfComplex(C, i);
+           if IsZeroObject( cat, obj ) then
+               cutBelow := i+1;
+               break;
+           fi;
+           i := i-1;
+       od;
+       j := MiddleEnd( diffs );
+       while true do
+           obj := ObjectOfComplex(C, j);
+           if IsZeroObject( cat, obj ) then
+               cutAbove := j-1;
+               break;
+           fi;
+           j := j+1;
+       od;
+       return BrutalTruncation( C, cutAbove, cutBelow );
+   fi;
+end );
+      
 
 #######################################################################
 ##

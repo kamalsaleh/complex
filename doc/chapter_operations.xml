@@ -4,6 +4,9 @@
 <Section>
 <Heading>Homology operations</Heading>
 
+See also <Ref Oper="IsExactSequence" /> and <Ref
+Oper="IsShortExactSequence" />.
+
 <ManSection>
   <Oper Name="CyclesOfComplex" Arg="C, i" />
   <Description>
