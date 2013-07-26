@@ -263,7 +263,7 @@ function( cat, basePosition, middle, positive, negative )
     fi;
     if negative = "zero" then
         # add zero object at the end if necessary:
-        if not IsZeroObject( cat, lastMiddleObj ) then
+        if not IsZeroObject( cat, firstMiddleObj ) then
             middleL := Concatenation( [ ZeroMorphism( cat, firstMiddleObj, ZeroObject( cat ) ) ],
                                       middleL );
             basePositionL := basePositionL - 1;
