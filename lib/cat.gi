@@ -77,7 +77,7 @@ function( identity, name, properties )
         properties.isExact := function( f,g ) #  f: A ---> B , g: B ---> C
             local h, cok;
             h := properties.kernelFactorization( g, properties.image( f ) );
-            cok := properties.codomain( cat.cokernel( h ) );
+            cok := properties.codomain( properties.cokernel( h ) );
             return properties.isomorphic( properties.zeroObj, cok );
 
         end;
