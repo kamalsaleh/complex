@@ -1,53 +1,51 @@
-DeclareCategory( "IsComplex", IsObject );
-DeclareCategoryFamily( "IsComplex" );
+DeclareCategory( "IsChainComplex", IsObject );
 
-DeclareCategory( "IsZeroComplex", IsComplex );
+DeclareGlobalVariable( "ComplexSingleAssertions" );
+DeclareGlobalVariable( "ComplexDoubleAssertions" );
 
-DeclareRepresentation( "IsComplexDefaultRep",
-                       IsComponentObjectRep and IsAttributeStoringRep,
-                       [ "differentials" ] );
-
-DeclareAttribute( "CatOfComplex", IsComplex );
-DeclareOperation( "ObjectOfComplex", [ IsComplex, IsInt ] );
-DeclareOperation( "DifferentialOfComplex", [ IsComplex, IsInt ] );
-DeclareOperation( "\^", [ IsComplex, IsInt ] );
-DeclareAttribute( "DifferentialsOfComplex", IsComplex );
-DeclareOperation( "CyclesOfComplex", [ IsComplex, IsInt ] );
-DeclareOperation( "BoundariesOfComplex", [ IsComplex, IsInt ] );
-DeclareOperation( "HomologyOfComplex", [ IsComplex, IsInt ] );
-DeclareOperation( "UpperBound", [ IsComplex ] );
-DeclareOperation( "LowerBound", [ IsComplex ] );
-DeclareOperation( "IsBoundedComplex", [ IsComplex ] );
-DeclareOperation( "LengthOfComplex", [ IsComplex ] );
-DeclareOperation( "HighestKnownDegree", [ IsComplex ] );
-DeclareOperation( "LowestKnownDegree", [ IsComplex ] );
-DeclareProperty( "IsExactSequence", IsComplex );
-DeclareOperation( "IsExactInDegree", [ IsComplex, IsInt ] );
-DeclareProperty( "IsShortExactSequence", IsComplex );
-DeclareOperation( "ForEveryDegree", [ IsComplex, IsFunction ] );
-DeclareOperation( "IsPositiveRepeating", [ IsComplex ] );
-DeclareOperation( "IsNegativeRepeating", [ IsComplex ] );
-DeclareOperation( "PositiveRepeatDegrees", [ IsComplex ] );
-DeclareOperation( "NegativeRepeatDegrees", [ IsComplex ] );
-
-DeclareOperation( "Shift", [ IsComplex, IsInt ] );
-DeclareOperation( "ShiftUnsigned", [ IsComplex, IsInt ] );
-DeclareOperation( "YonedaProduct", [ IsComplex, IsComplex ] );
-
-DeclareOperation( "CutComplexAbove", [ IsComplex ] );
-DeclareOperation( "CutComplexBelow", [ IsComplex ] );
-DeclareOperation( "CutComplex", [ IsComplex ] );
-
-DeclareOperation( "Complex", [ IsAbelianCat, IsInt, IsList, IsObject, IsObject ] );
-# Complex( cat, basePosition, differentials, [ "repeat", [ f, g, h ] ], "zero" );
-# Complex( cat, basePosition, differentials, [ "next", function( d ) ... end ], "zero" );
-# Complex( cat, basePosition, differentials, [ "pos", function( C, i ) ... end,  ], "zero" );
-# - If positive or negative is "zero", then middle must be nonempty.
-
-DeclareOperation( "BoundedComplex", [ IsAbelianCat, IsInt, IsList ] );
+DeclareOperation( "ComplexByDifferentialList", [ IsAbelianCat, IsZList, IsBool ] );
+DeclareOperation( "ComplexByDifferentialList", [ IsAbelianCat, IsZList ] );
+DeclareOperation( "FiniteComplex", [ IsAbelianCat, IsDenseList ] );
+DeclareOperation( "StalkComplex", [ IsAbelianCat, IsObject ] );
 DeclareOperation( "ZeroComplex", [ IsAbelianCat ] );
-DeclareOperation( "StalkComplex", [ IsAbelianCat, IsObject, IsInt ] );
 DeclareOperation( "ShortExactSequence", [ IsAbelianCat, IsObject, IsObject ] );
-DeclareOperation( "ComplexByDifferentialList", [ IsAbelianCat, IsInfList ] );
+DeclareOperation( "InductiveComplex", [ IsAbelianCat, IsObject, IsFunction ] );
+DeclareOperation( "Resolution", [ IsAbelianCat, IsObject, IsFunction ] );
+DeclareOperation( "Coresolution", [ IsAbelianCat, IsObject, IsFunction ] );
 
+DeclareOperation( "Shift", [ IsChainComplex, IsInt ] );
+DeclareOperation( "ShiftUnsigned", [ IsChainComplex, IsInt ] );
+DeclareOperation( "YonedaProduct", [ IsChainComplex, IsChainComplex ] );
 
+DeclareOperation( "GoodTruncationBelow", [ IsChainComplex, IsInt ] );
+DeclareOperation( "GoodTruncationAbove", [ IsChainComplex, IsInt ] );
+DeclareOperation( "GoodTruncation", [ IsChainComplex, IsInt, IsInt ] );
+DeclareOperation( "BrutalTruncationBelow", [ IsChainComplex, IsInt ] );
+DeclareOperation( "BrutalTruncationAbove", [ IsChainComplex, IsInt ] );
+DeclareOperation( "BrutalTruncation", [ IsChainComplex, IsInt, IsInt ] );
+DeclareOperation( "SyzygyTruncation", [ IsChainComplex, IsInt ] );
+DeclareOperation( "CosyzygyTruncation", [ IsChainComplex, IsInt ] );
+DeclareOperation( "SyzygyCosyzygyTruncation", [ IsChainComplex, IsInt, IsInt ] );
+#DeclareOperation( "CutComplexAbove", [ IsChainComplex ] );
+#DeclareOperation( "CutComplexBelow", [ IsChainComplex ] );
+
+DeclareAttribute( "CatOfComplex", IsChainComplex );
+DeclareOperation( "ObjectOfComplex", [ IsChainComplex, IsInt ] );
+DeclareOperation( "DifferentialOfComplex", [ IsChainComplex, IsInt ] );
+DeclareOperation( "\^", [ IsChainComplex, IsInt ] );
+DeclareOperation( "\[\]", [ IsChainComplex, IsInt ] );
+DeclareAttribute( "DifferentialsOfComplex", IsChainComplex );
+DeclareOperation( "CyclesOfComplex", [ IsChainComplex, IsInt ] );
+DeclareOperation( "BoundariesOfComplex", [ IsChainComplex, IsInt ] );
+DeclareOperation( "HomologyOfComplex", [ IsChainComplex, IsInt ] );
+DeclareOperation( "UpperBound", [ IsChainComplex ] );
+DeclareOperation( "LowerBound", [ IsChainComplex ] );
+#DeclareOperation( "IsFiniteComplex", [ IsChainComplex ] );
+DeclareOperation( "IsBoundedComplex", [ IsChainComplex ] );
+DeclareOperation( "LengthOfComplex", [ IsChainComplex ] );
+DeclareOperation( "HighestKnownDegree", [ IsChainComplex ] );
+DeclareOperation( "LowestKnownDegree", [ IsChainComplex ] );
+DeclareProperty( "IsExactSequence", IsChainComplex );
+DeclareOperation( "IsExactInDegree", [ IsChainComplex, IsInt ] );
+DeclareProperty( "IsShortExactSequence", IsChainComplex );
+DeclareOperation( "ForEveryDegree", [ IsChainComplex, IsFunction ] );

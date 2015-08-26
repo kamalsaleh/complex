@@ -1,35 +1,13 @@
-#######################################################################
-##
-#V  PositiveInfinity 
-##
-##  A global variable representing positive infinity.  Has the prop-
-##  erty that it is greater than any given integer.
-##  
 InstallValue( PositiveInfinity,
               Objectify( NewType( FamilyObj(0),
                                   IsInfiniteNumber and IsPositionalObjectRep ),
                          [] ) );
 
-#######################################################################
-##
-#V  NegativeInfinity 
-##
-##  A global variable representing positive infinity.  Has the prop-
-##  erty that it is smaller than any given integer.
-##  
 InstallValue( NegativeInfinity,
               Objectify( NewType( FamilyObj(0),
                                   IsInfiniteNumber and IsPositionalObjectRep ),
                          [] ) );
 
-#######################################################################
-##
-#M  \=( <x>, <y> )
-##
-##  Equality test for infinite numbers.  Two infinite numbers are
-##  the same if they are the same object, and one infinite number is
-##  never equal to any other object than itself.
-##  
 InstallMethod( \=,
     [ IsInfiniteNumber, IsInfiniteNumber ],
     IsIdenticalObj );
@@ -40,16 +18,6 @@ InstallMethod( \=,
     [ IsObject, IsInfiniteNumber ],
     ReturnFalse );
 
-#######################################################################
-##
-#M  \<( <x>, <y> )
-##
-##  Comparison test for infinite number vs. integer.  If <x> = Negative
-##  Infinity and <y> is an integer, then return TRUE.  If <y> = Positive
-##  Infinity and <x> is an integer, then return TRUE.  If <x> = Negative
-##  Infinity and <y> = PositiveInfinity, then return TRUE.  In all other
-##  cases return FALSE.
-##  
 InstallMethod( \<,
 [ IsInfiniteNumber, IsInt ],
 function( infnum, num )
@@ -66,946 +34,1368 @@ function( n1, n2 )
         return n1 = NegativeInfinity and n2 = PositiveInfinity;
     end );
 
-#######################################################################
-##
-#M  PrintObj( <n> )
-##
-##  Prints an infinite number (as "+inf" or "-inf").
-##  
-InstallMethod( PrintObj,
-[ IsInfiniteNumber ],
+InstallMethod( PrintObj, [ IsInfiniteNumber ],
 function( n )
-        if n = PositiveInfinity then
-            Print( "+inf" );
-	else
-            Print( "-inf" );
-	fi;
-    end );
+  if n = PositiveInfinity then
+    Print( "+inf" );
+  else
+    Print( "-inf" );
+  fi;
+end );
 
-#######################################################################
-##
-#M  MakeHalfInfList( <start>, <direction>, <typeWithArgs>, <callback> )
-##
-##  Creates a IsHalfInfList with start index <start>, <direction> is
-##  -1 for negative or 1 for positive, <typeWithArgs> is a list of either
-##  two or three arguments describing the nature of the infinite list
-##  (see the documentation), and <callback> is a function which is called
-##  whenever a new list element is computed.
-##  
-InstallMethod( MakeHalfInfList,
-[ IsInt, IsInt, IsList, IsObject ],
-function( start, direction, typeWithArgs, callback )
-    local type, repeatingList, func, initialValue, storeValues, data, list;
 
-    if not direction in [ 1, -1 ] then
-        Error( "direction of HalfInfList must be either 1 or -1" );
-    fi;
-    if Length( typeWithArgs ) < 2 or Length( typeWithArgs ) > 3 then
-        Error( "Third argument to MakeHalfInfList must be a list of length 2 or 3" );
-    fi;
-    if not ( IsFunction( callback ) or callback = false ) then
-        Error( "callback argument must be either a function or false" );
-    fi;
+DeclareRepresentation( "IsInfListRep",
+                       IsComponentObjectRep and IsAttributeStoringRep,
+                       [ "imp" ] );
 
-    type := typeWithArgs[ 1 ];
-    if not type in [ "repeat", "next", "pos" ] then
-        Error( "Invalid type \"", type, "\" for HalfInfList ",
-               "(should be one of \"repeat\", \"next\", \"pos\")" );
-    fi;
-    if type = "repeat" and Length( typeWithArgs ) > 2 then
-        Error( "Invalid type specification ", typeWithArgs, " for HalfInfList ",
-               "(\"repeat\" type takes exactly one argument)" );
-    fi;
-    if type = "next" and Length( typeWithArgs ) < 3 then
-        Error( "Invalid type specification ", typeWithArgs, " for HalfInfList ",
-               "(\"next\" type takes two arguments)" );
-    fi;
-    if type = "repeat" and not IsList( typeWithArgs[ 2 ] ) then
-        Error( "Invalid type specification ", typeWithArgs, " for HalfInfList ",
-               "(\"repeat\" type needs a list as argument)" );
-    fi;
-    if ( type = "next" or type = "pos" ) and not IsFunction( typeWithArgs[ 2 ] ) then
-        Error( "Invalid type specification ", typeWithArgs, " for HalfInfList ",
-               "(\"", type, "\" type needs a function as argument)" );
-    fi;
-    if type = "pos" and Length( typeWithArgs ) = 3 and not IsBool( typeWithArgs[ 3 ] ) then
-        Error( "Invalid type specification ", typeWithArgs, " for HalfInfList ",
-               "(second argument for \"pos\" type must be boolean)" );
-    fi;
+                       # [ "rep_type",
+                       #   "init_val",
+                       #   "values",
+                       #   "base_list",
+                       #   "cat_list",
+                       #   "cut_index",
+                       #   "lists",
+                       #   "map_function" ] );
 
-    if type = "repeat" then
-        repeatingList := typeWithArgs[ 2 ];
-        func := fail;
-        storeValues := false;
+BindGlobal( "FamilyOfInfLists",
+            NewFamily( "infinite lists" ) );
+
+DeclareRepresentation( "IsInfListImpRep",
+                       IsComponentObjectRep and IsAttributeStoringRep,
+                       [ "users", "better_implementation",
+                         "single_assertions", "double_assertions" ] );
+DeclareRepresentation( "IsNListImpRep",
+                       IsInfListImpRep,
+                       [ "values" ] );
+DeclareRepresentation( "IsZListImpRep",
+                       IsInfListImpRep,
+                       [ "base",
+                         "positive", "middle", "negative",
+                         "repeat" ] );
+
+BindGlobal( "FamilyOfInfListImps",
+            NewFamily( "infinite list implementations" ) );
+
+InstallMethod( MakeInfList, [ IsInfListImp ],
+function( imp )
+  local cat, type, L;
+  if IsNListImp( imp ) then
+    cat := IsNList;
+  else
+    cat := IsZList;
+  fi;
+  type := NewType( FamilyOfInfLists, cat and IsInfListRep );
+  L := Objectify( type, rec( ) );
+  SetImplementation( L, imp );
+  return L;
+end );
+
+InstallMethod( Implementation, [ IsInfList ],
+function( L )
+  return L!.imp;
+end );
+
+InstallMethod( SetImplementation, [ IsInfList, IsInfListImp ],
+function( L, imp )
+  local copy_attrs, a;
+  L!.imp := imp;
+  # TODO: is this sensible?
+  copy_attrs := [ IsInductive, IsEventuallyInductive, InductiveFromIndex, InductionFunction,
+                  IsRepeating, IsEventuallyRepeating, RepeatingFromIndex, RepeatingList ];
+  for a in copy_attrs do
+    if Tester( a )( imp ) then
+      Setter( a )( L, a( imp ) );
+    fi;
+  od;
+  # if HasInductivePart( imp ) then
+  #   SetInductivePart( L, MakeInfList( InductivePart( imp ) ) );
+  # fi;
+  # if HasRepeatingPart( imp ) then
+  #   SetRepeatingPart( L, MakeInfList( RepeatingPart( imp ) ) );
+  # fi;
+  NotifyBetterImplementation( imp, L );
+end );
+
+InstallMethod( BetterImplementationAvailable, [ IsInfList, IsInfListImp ],
+function( L, imp )
+  if IsIdenticalObj( imp, L!.imp ) then
+    SetImplementation( L, BetterImplementation( imp ) );
+  fi;
+end );
+
+InstallMethod( AddAssertion, [ IsInfList, IsInfListAssertion ],
+function( L, A )
+  AddAssertion( Implementation( L ), A );
+end );
+
+InstallMethod( String, [ IsInfListImp ],
+function( L )
+  return Concatenation( "8i[ ", InfListString( L ), " ]" );
+end );
+
+InstallMethod( SetString, [ IsInfListImp, IsString ],
+               function( L, str ) end );
+
+InstallMethod( InfListString, [ IsInfList ],
+function( L )
+  return InfListString( Implementation( L ) );
+end );
+
+InstallMethod( String, [ IsInfList ],
+function( L )
+  return Concatenation( "8[ ", InfListString( L ), " ]" );
+end );
+
+InstallMethod( SetString, [ IsInfList, IsString ],
+               function( L, str ) end );
+
+InstallMethod( MakeInfListImp, [ IsOperation, IsRecord, IsDenseList ],
+function( C, obj, attributes )
+  local type;
+  type := NewType( FamilyOfInfListImps, C and IsInfListImpRep );
+  obj.users := WeakPointerObj( [] );
+  obj.better_implementation := fail;
+  obj.single_assertions := [];
+  obj.double_assertions := [];
+  if not IsBound( obj.values ) then
+    obj.values := [];
+  fi;
+  CallFuncList( ObjectifyWithAttributes,
+                Concatenation( [ obj, type ], attributes ) );
+  return obj;
+end );
+
+InstallMethod( NotifyBetterImplementation, [ IsInfListImp, IsObject ],
+function( L, obj )
+  if HasBetterImplementation( L ) then
+    BetterImplementationAvailable( obj, L );
+  else
+    SetElmWPObj( L!.users,
+                 LengthWPObj( L!.users ) + 1,
+                 obj );
+  fi;
+end );
+
+InstallMethod( SetBetterImplementation, [ IsInfListImp, IsObject ],
+function( L, obj )
+  Error( "Value of BetterImplementation attribute must be an IsInfListImp object" );
+end );
+
+InstallMethod( SetBetterImplementation, [ IsInfListImp, IsInfListImp ],
+function( L, BL )
+  local i, u;
+  if L!.better_implementation <> fail then
+    return;
+  fi;
+  Info( InfoInfList, 1,
+        "SetBetterImplementation( ", L, ", ", BL, ")" );
+  L!.better_implementation := BL;
+  SetFilterObj( L, HasBetterImplementation );
+  for i in [ 1 .. LengthWPObj( L!.users ) ] do
+    u := ElmWPObj( L!.users, i );
+    if u <> fail then
+      BetterImplementationAvailable( u, L );
+      UnbindElmWPObj( L!.users, i );
+    fi;
+  od;
+end );
+
+InstallMethod( BetterImplementation, "for InfListImp",
+               [ IsInfListImp and IsInfListImpRep ],
+               GETTER_FLAGS + 1, # to override system getter
+function( L )
+  if L!.better_implementation <> fail then
+    return L!.better_implementation;
+  fi;
+  TryNextMethod();
+end );
+
+InstallMethod( AddAssertion, [ IsInfListImp, IsInfListSingleAssertion ],
+function( L, A )
+  local values, i;
+  # remember the assertion for checking values that are computed later:
+  Add( L!.single_assertions, A );
+  # check the values that have been computed:
+  values := L!.values;
+  for i in [ 1 .. Length( values ) ] do
+    if IsBound( values[ i ] ) then
+      CheckAssertion( A, i, values[ i ] );
+    fi;
+  od;
+end );
+
+InstallMethod( AddAssertion, [ IsInfListImp, IsInfListDoubleAssertion ],
+function( L, A )
+  local i, values;
+  # remember the assertion for checking values that are computed later:
+  Add( L!.double_assertions, A );
+  # check the values that have been computed:
+  values := L!.values;
+  for i in [ 1 .. Length( values ) - 1 ] do
+    if IsBound( values[ i ] ) and IsBound( values[ i + 1 ] ) then
+      CheckAssertion( A, i, values[ i ], values[ i + 1 ] );
+    fi;
+  od;
+end );
+
+InstallMethod( CheckSingleAssertions, [ IsInfListImp, IsInt, IsObject ],
+function( L, i, elem )
+  local A;
+  for A in L!.single_assertions do
+    CheckAssertion( A, i, elem );
+  od;
+end );
+
+InstallMethod( CheckDoubleAssertions, [ IsInfListImp, IsInt, IsObject, IsObject ],
+function( L, i, elem1, elem2 )
+  local A;
+  for A in L!.double_assertions do
+    CheckAssertion( A, i, elem1, elem2 );
+  od;
+end );
+
+InstallMethod( InfListString, [ IsNListImp ],
+function( L )
+  return InfListString( L, false );
+end );
+
+InstallMethod( InfListString, [ IsNListImp, IsPosInt ],
+function( L, i )
+  return InfListString( L, i, false );
+end );
+
+InstallMethod( InfListString, [ IsNListImp, IsDenseList ],
+function( L, indices )
+  return InfListString( L, indices, false );
+end );
+
+InstallMethod( InfListString, [ IsNListImp, IsPosInt, IsDenseList ],
+function( L, start_index, indices )
+  return InfListString( L, start_index, indices, false );
+end );
+
+InstallMethod( InfListString, [ IsNListImp, IsBool ],
+function( L, reversed )
+  return InfListString( L, 1, reversed );
+end );
+
+InstallMethod( InfListString, [ IsNListImp, IsPosInt, IsBool ],
+function( L, i, reversed )
+  return InfListString( CutImp( L, i - 1 ), reversed );
+end );
+
+InstallMethod( InfListString, [ IsNListImp, IsDenseList, IsBool ],
+function( L, indices, reversed )
+  if IsEmpty( indices ) then
+    return "...";
+  else
+    return InfListString( L, indices[ 1 ], indices, reversed );
+  fi;
+end );
+
+InstallMethod( InfListString, [ IsNListImp, IsPosInt, IsDenseList, IsBool ],
+function( L, start_index, indices, reversed )
+  local str, add_str, add_commas, i, next_i, j;
+  if not IsSSortedList( indices ) or not ForAll( indices, IsPosInt ) then
+    Error( "List of indices must be a strictly sorted list of positive integers" );
+  fi;
+  indices := Filtered( indices, i -> i >= start_index );
+  if IsEmpty( indices ) then
+    return "...";
+  fi;
+  str := "";
+  add_str := function( s )
+    if reversed then
+      str := Concatenation( String( s ), str );
     else
-        repeatingList := fail;
-        func := typeWithArgs[ 2 ];
-        storeValues := true;
+      str := Concatenation( str, String( s ) );
     fi;
-    initialValue := fail;
-    if type = "next" then
-        initialValue := typeWithArgs[ 3 ];
-    elif type = "pos" and Length( typeWithArgs ) = 3 then
-        storeValues := typeWithArgs[ 3 ];
-    fi;
-
-    data := rec( values := [],
-                 start := start,
-                 direction := direction,
-                 type := type,
-                 func := func,
-                 repeatingList := repeatingList,
-                 storingValues := storeValues,
-                 initialValue := initialValue,
-                 callback := callback );
-
-    list := Objectify( NewType( NewFamily( "HalfInfListsFamily" ),
-                                IsHalfInfList and IsHalfInfListDefaultRep ),
-                       data );
-
-    return list;
-
+  end;
+  add_commas := function( n )
+    add_str( Concatenation( RepeatedString( ',', n ), " " ) );
+  end;
+  if indices[ 1 ] > start_index then
+    add_str( RepeatedString( ',', indices[ 1 ] - start_index ) );
+    if not reversed then add_str( " " ); fi;
+  fi;
+  for j in [ 1 .. Length( indices ) - 1 ] do
+    i := indices[ j ];
+    next_i := indices[ j + 1 ];
+    add_str( LookupInfListImp( L, i ) );
+    add_commas( next_i - i );
+  od;
+  add_str( LookupInfListImp( L, indices[ Length( indices ) ] ) );
+  add_str( ", " );
+  add_str( "..." );
+  return str;
 end );
 
-#######################################################################
-##
-#M  PrintObj( <list> )
-##
-##  Implementation of Print for IsHalfInfList objects.
-##  
-InstallMethod( PrintObj,
-[ IsHalfInfList ],
+InstallMethod( InductiveList, [ IsObject, IsFunction ],
+function( init, f )
+  return MakeInfList( InductiveListImp( init, f ) );
+end );
+
+InstallMethod( InductiveListImp, [ IsObject, IsFunction ],
+function( init, f )
+  return MakeInfListImp( IsInductiveNListImp,
+                         rec( values := [ init ] ),
+                         [ InitialValue, init,
+                           InductionFunction, f ] );
+end );
+
+InstallMethod( LookupInfListImp, [ IsInductiveNListImp, IsPosInt ],
+function( list, i )
+  local v, f, l;
+  v := list!.values;
+  f := InductionFunction( list );
+  while i > Length( v ) do
+    l := Length( v );
+    v[ l + 1 ] := f( v[ l ] );
+    CheckSingleAssertions( list, l + 1, v[ l + 1 ] );
+    CheckDoubleAssertions( list, l, v[ l ], v[ l + 1 ] );
+    if l mod 2 = 1 then
+      if v[ l + 1 ] = v[ ( l + 1 ) / 2 ] then
+        SetBetterImplementation( list, Repeatify( list, ( l + 1 ) / 2, l + 1 ) );
+        return LookupInfListImp( BetterImplementation( list ), i );
+      fi;
+    fi;
+  od;
+  return v[ i ];
+end );
+
+InstallMethod( KnownIndicesImp, [ IsInductiveNListImp ],
+function( L )
+  return [ 1 .. Length( L!.values ) ];
+end );
+
+InstallMethod( InfListString, [ IsInductiveNListImp, IsPosInt, IsBool ],
+function( L, i, reversed )
+  local str_values, values;
+  values := L!.values;
+  if i > Length( values ) then
+    return "...";
+  fi;
+  str_values := Concatenation( List( values{ [ i .. Length( values ) ] }, String ),
+                               [ "..." ] );
+  if reversed then
+    str_values := Reversed( str_values );
+  fi;
+  return JoinStringsWithSeparator( str_values, ", " );
+end );
+
+InstallMethod( Repeatify,
+               [ IsInductiveNListImp, IsPosInt, IsPosInt ],
+function( list, collisionIndex1, collisionIndex2 )
+  local values, i1, i2, i, repeatStartIndex, repeatEndIndex,
+        tail, repeatedList, newList;
+  values := list!.values;
+  i1 := collisionIndex1;
+  i2 := collisionIndex2;
+  while i1 > 0 and values[ i1 ] = values[ i2 ] do
+    i1 := i1 - 1;
+    i2 := i2 - 1;
+  od;
+  repeatStartIndex := i1 + 1;
+  i := repeatStartIndex + 1;
+  while values[ i ] <> values[ repeatStartIndex ] do
+    i := i + 1;
+  od;
+  repeatEndIndex := i - 1;
+  tail := values{ [ 1 .. ( repeatStartIndex - 1 ) ] };
+  repeatedList := values{ [ repeatStartIndex .. repeatEndIndex ] };
+  newList := ConcatenateImp( tail, RepeatListImp( repeatedList ) );
+  return newList;
+end );
+
+InstallMethod( RepeatList, [ IsDenseList ],
 function( list )
-    Print( "<HalfInfList with range " );
-    if Direction( list ) = 1 then
-        Print( "[", String( StartPosition( list ) ), ",inf)" );
-    else
-        Print( "(-inf,", String( StartPosition( list ) ), "]" );
-    fi;
-    Print( ", type " );
-    if InfListType( list ) = "repeat" then
-        Print( "repeat(", String( Length( RepeatingList( list ) ) ), ")" );
-    elif InfListType( list ) = "pos" then
-        Print( "pos" );
-        if not IsStoringValues( list ) then
-            Print( " (not storing values)" );
-        fi;
-    elif InfListType( list ) = "next" then
-        Print( "next" );
-    else
-        Print( "unknown" ); # this should never happen
-    fi;
-    Print( ">" );
+  return MakeInfList( RepeatListImp( list ) );
 end );
 
-#######################################################################
-##
-#M  StartPosition( <list> )
-##
-##  Returns the start position of a IsHalfInfList <list>.
-##  
-InstallMethod( StartPosition,
-[ IsHalfInfList ],
+InstallMethod( RepeatListImp, [ IsDenseList ],
 function( list )
-    return list!.start;
+  return MakeInfListImp( IsRepeatingNListImp,
+                         rec(),
+                         [ RepeatingList, list ] );
 end );
 
-#######################################################################
-##
-#M  Direction( <list> )
-##
-##  Returns the direction of a IsHalfInfList <list>.
-##  
-InstallMethod( Direction,
-[ IsHalfInfList ],
-function( list )
-    return list!.direction;
+InstallMethod( LookupInfListImp, [ IsRepeatingNListImp, IsPosInt ],
+function( list, i )
+  local r, l, v;
+  r := RepeatingList( list );
+  l := Length( r );
+  v := r[ ( ( i - 1 ) mod l ) + 1 ];
+  return v;
 end );
 
-#######################################################################
-##
-#M  InfListType( <list> )
-##
-##  Returns the type of a IsHalfInfList <list>.
-##  
-InstallMethod( InfListType,
-[ IsHalfInfList ],
-function( list )
-    return list!.type;
+InstallMethod( KnownIndicesImp, [ IsRepeatingNListImp ],
+function( L )
+  return PositiveIntegersList;
 end );
 
-#######################################################################
-##
-#M  RepeatingList( <list> )
-##
-##  Returns the repeatingList of a IsHalfInfList <list>.
-##  
-InstallMethod( RepeatingList,
-[ IsHalfInfList ],
-function( list )
-    return list!.repeatingList;
+InstallMethod( InfListString, [ IsRepeatingNListImp, IsBool ],
+function( L, reversed )
+  local str, list;
+  list := RepeatingList( L );
+  if reversed then list := Reversed( list ); fi;
+  str := JoinStringsWithSeparator( List( list, String ), ", " );
+  if reversed then
+    return Concatenation( "*( ", str, " )" );
+  else
+    return Concatenation( "( ", str, " )*" );
+  fi;
 end );
 
-#######################################################################
-##
-#M  ElementFunction( <list> )
-##
-##  Returns the element-function of a IsHalfInfList <list>.
-##  
-InstallMethod( ElementFunction,
-[ IsHalfInfList ],
-function( list )
-    return list!.func;
+InstallMethod( AddAssertion, [ IsRepeatingNListImp, IsInfListSingleAssertion ],
+function( L, A )
+  # can check all assertions immediately, since all the objects are already known
+  local i, rep_list;
+  rep_list := RepeatingList( L );
+  for i in [ 1 .. Length( rep_list ) ] do
+    CheckAssertion( A, i, rep_list[ i ] );
+  od;
 end );
 
-#######################################################################
-##
-#M  IsStoringValues( <list> )
-##
-##  Returns the value of the (boolean) storingValues of a 
-##  IsHalfInfList <list>.
-##  
-InstallMethod( IsStoringValues,
-[ IsHalfInfList ],
-function( list )
-    return list!.storingValues;
+InstallMethod( AddAssertion, [ IsRepeatingNListImp, IsInfListDoubleAssertion ],
+function( L, A )
+  local rep_list, n, i;
+  rep_list := RepeatingList( L );
+  n := Length( rep_list );
+  for i in [ 1 .. n - 1 ] do
+    CheckAssertion( A, i, rep_list[ i ], rep_list[ i + 1 ] );
+  od;
+  CheckAssertion( A, n, rep_list[ n ], rep_list[ 1 ] );
 end );
 
-#######################################################################
-##
-#M  NewValueCallback( <list> )
-##
-##  Returns the callback function of a IsHalfInfList <list>.
-##  
-InstallMethod( NewValueCallback,
-[ IsHalfInfList ],
-function( list )
-    return list!.callback;
+InstallMethod( PositionalList, [ IsFunction ],
+function( f )
+  return PositionalList( f, false );
 end );
 
-#######################################################################
-##
-#M  IsRepeating( <list> )
-##
-##  Returns true if the type of the IsHalfInfList <list> is "repeat",
-##  false otherwise.
-##  
-InstallMethod( IsRepeating,
-[ IsHalfInfList ],
-function( list )
-    return list!.type = "repeat";
+InstallMethod( PositionalList, [ IsFunction, IsBool ],
+function( f, store )
+  return MakeInfList( PositionalListImp( f, store ) );
 end );
 
-#######################################################################
-##
-#M  InitialValue( <list> )
-##
-##  Returns the initial value of a IsHalfInfList <list>.
-##  
-InstallMethod( InitialValue,
-[ IsHalfInfList ],
-function( list )
-    return list!.initialValue;
+InstallMethod( PositionalListImp, [ IsFunction, IsBool ],
+function( f, store )
+  return MakeInfListImp( IsPositionalNListImp,
+                         rec( values := [] ),
+                         [ ElementFunction, f,
+                           IsStoringValues, store ] );
 end );
 
-#######################################################################
-##
-#M  \^( <list>, <pos> )
-##
-##  Returns the stored value at index <pos> in the IsHalfInfList
-##  <list>.
-##  
-InstallMethod( \^,
-[ IsHalfInfList and IsHalfInfListDefaultRep, IsInt ],
-function( list, pos )
-    local index, i, callCallbackFunction;
-
-    index := (pos - StartPosition( list )) * Direction( list );
-    
-    if index < 0 then
-        Error( "illegal half inf list position ", pos, "\n" );
+InstallMethod( LookupInfListImp, [ IsPositionalNListImp, IsPosInt ],
+function( L, i )
+  local values, f, v;
+  values := L!.values;
+  if IsBound( values[ i ] ) then
+    return values[ i ];
+  fi;
+  f := ElementFunction( L );
+  v := f( i );
+  CheckSingleAssertions( L, i, v );
+  if IsStoringValues( L ) then
+    values[ i ] := v;
+    if i > 1 and IsBound( values[ i - 1 ] ) then
+      CheckDoubleAssertions( L, i - 1, values[ i - 1 ], values[ i ] );
     fi;
+  fi;
+  return v;
+end );
 
-    callCallbackFunction := function( index )
-        local pos, cb;
-        pos := StartPosition( list ) + index * Direction( list );
-        cb := NewValueCallback( list );
-        if IsFunction( cb ) then
-            cb( pos, Direction( list ), InfListType( list ) );
-        fi;
-    end;
+InstallMethod( KnownIndicesImp, [ IsPositionalNListImp ],
+function( L )
+  return BoundPositions( L!.values );
+end );
 
-    if InfListType( list ) = "repeat" then
-        index := index mod Length( RepeatingList( list ) );
-        return RepeatingList( list )[ index + 1 ];
-    elif InfListType( list ) = "next" then
-        if Length( list!.values ) = 0 then
-            list!.values[ 1 ] := ElementFunction( list )( InitialValue( list ) );
-            callCallbackFunction( 0 );
-        fi;
-        for i in [ Length( list!.values ) .. index ] do
-            list!.values[ i + 1 ] := ElementFunction( list )( list!.values[ i ] );
-            callCallbackFunction( i );
-        od;
-        return list!.values[ index + 1 ];
-    elif InfListType( list ) = "pos" then
-        if IsStoringValues( list ) then
-            for i in [ Length( list!.values ) .. index ] do
-                list!.values[ i + 1 ]
-                  := ElementFunction( list )( StartPosition( list )
-                                              + i * Direction( list ) );
-                callCallbackFunction( i );
-            od;
-            return list!.values[ index + 1 ];
-        else
-            return ElementFunction( list )( pos );
-        fi;
+InstallMethod( InfListString, [ IsPositionalNListImp, IsPosInt, IsBool ],
+function( L, i, reversed )
+  return InfListString( L, i, KnownIndicesImp( L ), reversed );
+end );
+
+InstallMethod( ArithmeticSequence, [ IsInt, IsInt ],
+function( init, incr )
+  return MakeInfList( ArithmeticSequenceImp( init, incr ) );
+end );
+
+InstallMethod( ArithmeticSequenceImp, [ IsInt, IsInt ],
+function( init, incr )
+  return MakeInfListImp( IsArithmeticNListImp,
+                         rec(),
+                         [ InitialValue, init,
+                           Increment, incr ] );
+end );
+
+InstallMethod( BetterImplementationAvailable, [ IsArithmeticNListImp, IsNListImp ],
+function( L, BL ) end );
+
+InstallMethod( LookupInfListImp, [ IsArithmeticNListImp, IsPosInt ],
+function( L, i )
+  return InitialValue( L ) + ( i - 1 ) * Increment( L );
+end );
+
+InstallMethod( KnownIndicesImp, [ IsArithmeticNListImp ],
+function( L )
+  return PositiveIntegersList;
+end );
+
+InstallMethod( InfListString, [ IsArithmeticNListImp, IsBool ],
+function( L, reversed )
+  return InfListString( L, [ 1, 2, 3 ], reversed );
+end );
+
+InstallMethod( Concatenate, [ IsDenseList, IsNList ],
+function( tail, base_list )
+  return MakeInfList( ConcatenateImp( tail, Implementation( base_list ) ) );
+end );
+
+InstallMethod( MakeConcatNListImp, [ IsDenseList, IsNListImp ],
+function( tail, base_list )
+  local L;
+  L := MakeInfListImp( IsConcatNListImp,
+                       rec(),
+                       [ BaseList, base_list,
+                         ConcatList, tail ] );
+  NotifyBetterImplementation( base_list, L );
+  return L;
+end );
+
+InstallMethod( ConcatenateImp, [ IsDenseList, IsNListImp ],
+               MakeConcatNListImp );
+
+InstallMethod( ConcatenateImp, [ IsDenseList, IsConcatNListImp ],
+function( tail, base_list )
+  return ConcatenateImp( Concatenation( tail, ConcatList( base_list ) ),
+                         BaseList( base_list ) );
+end );
+
+InstallMethod( ConcatenateImp, [ IsDenseList and IsEmpty, IsNListImp ],
+function( tail, base_list )
+  return base_list;
+end );
+
+InstallMethod( ConcatenateImp, [ IsDenseList, IsRepeatingNListImp ],
+function( tail, base_list )
+  local rep, rep_len, overlap_len, tail_len;
+  rep := RepeatingList( base_list );
+  rep_len := Length( rep );
+  overlap_len := 0;
+  tail_len := Length( tail );
+  while overlap_len < tail_len
+    and tail[ tail_len - overlap_len ] = rep[ rep_len - overlap_len mod rep_len ] do
+    overlap_len := overlap_len + 1;
+  od;
+  if overlap_len > 0 then
+    tail := tail{ [ 1 .. tail_len - overlap_len ] };
+    rep := RotateRight( rep, overlap_len );
+    return ConcatenateImp( tail, RepeatListImp( rep ) );
+  else
+    return MakeConcatNListImp( tail, base_list );
+  fi;
+end );
+
+InstallMethod( BetterImplementationAvailable, [ IsConcatNListImp, IsNListImp ],
+function( L, BL )
+  if IsIdenticalObj( BL, BaseList( L ) ) then
+    SetBetterImplementation( L, ConcatenateImp( ConcatList( L ),
+                                                BetterImplementation( BL ) ) );
+  fi;
+end );
+                         
+
+# InstallMethod( Normalized, [ IsConcatInfListImp ],
+# function( L )
+#   local c, b;
+#   c := ConcatList( L );
+#   b := BaseList( L );
+#   bi := Implementation( b );
+#   if Length( c ) = 0 then
+#     return Normalized( CopyInfListImp( b ) );
+#   elif IsConcatInfListImp( bi ) then
+#     return Normalized( Concatenate( Concatenation( c, ConcatList( bi ) ),
+#                                     BaseList( b ) ) );
+#   else
+# end );
+
+InstallMethod( LookupInfListImp, [ IsConcatNListImp, IsPosInt ],
+function( list, i )
+  local l, v;
+  l := Length( ConcatList( list ) );
+  if i <= l then
+    return ConcatList( list )[ i ];
+  else
+    return LookupInfListImp( BaseList( list ), i - l );
+  fi;
+end );
+
+InstallMethod( KnownIndicesImp, [ IsConcatNListImp ],
+function( L )
+  local concat_len;
+  concat_len := Length( ConcatList( L ) );
+  return Concatenation( [ 1 .. concat_len ],
+                        KnownIndicesImp( BaseList( L ) ) + concat_len );
+end );
+
+InstallMethod( InfListString, [ IsConcatNListImp, IsPosInt, IsBool ],
+function( L, i, reversed )
+  local list, str1, str2;
+  list := ConcatList( L );
+  if reversed then list := Reversed( list ); fi;
+  str1 := JoinStringsWithSeparator( list, ", " );
+  str2 := InfListString( BaseList( L ), reversed );
+  if reversed then
+    return Concatenation( str2, ", ", str1 );
+  else
+    return Concatenation( str1, ", ", str2 );
+  fi;
+end );
+
+InstallMethod( AddAssertion, [ IsConcatNListImp, IsInfListSingleAssertion ],
+function( L, A )
+  local list, n, i;
+  list := ConcatList( L );
+  n := Length( list );
+  AddAssertion( BaseList( L ), Shift( A, n ) );
+  for i in [ 1 .. n ] do
+    CheckAssertion( A, i, list[ i ] );
+  od;
+end );
+
+InstallMethod( AddAssertion, [ IsConcatNListImp, IsInfListDoubleAssertion ],
+function( L, A )
+  local list, n, i;
+  list := ConcatList( L );
+  n := Length( list );
+  AddAssertion( BaseList( L ), Shift( A, n ) );
+  for i in [ 1 .. n - 1 ] do
+    CheckAssertion( A, i, list[ i ], list[ i + 1 ] );
+  od;
+  CheckAssertion( A, n, list[ n ], LookupInfListImp( BaseList( L ), 1 ) );
+end );
+
+InstallMethod( Cut, [ IsNList, IsInt ],
+function( list, i )
+  return MakeInfList( CutImp( Implementation( list ), i ) );
+end );
+
+InstallMethod( CutImp, [ IsNListImp, IsPosInt ],
+function( list, i )
+  local L;
+  L := MakeInfListImp( IsCutNListImp,
+                       rec(),
+                       [ BaseList, list,
+                         CutIndex, i ] );
+  NotifyBetterImplementation( list, L );
+  return L;
+end );
+
+InstallMethod( CutImp, [ IsNListImp, IsInt and IsZero ],
+function( list, i )
+  return list;
+end );
+
+InstallMethod( CutImp, [ IsCutNListImp, IsPosInt ],
+function( list, i )
+  return CutImp( BaseList( list ),
+                 CutIndex( list ) + i );
+end );
+
+InstallMethod( CutImp, [ IsConcatNListImp, IsPosInt ],
+function( list, i )
+  local tail;
+  tail := ConcatList( list );
+  if i < Length( tail ) then
+    return ConcatenateImp( tail{ [ ( i + 1 ) .. Length( tail ) ] },
+                           BaseList( list ) );
+  elif i = Length( tail ) then
+    return BaseList( list );
+  else
+    return CutImp( BaseList( list ), i - Length( tail ) );
+  fi;
+end );
+
+InstallMethod( CutImp, [ IsRepeatingNListImp, IsPosInt ],
+function( list, i )
+  local rep_list;
+  rep_list := RepeatingList( list );
+  rep_list := RotateLeft( rep_list,
+                          i mod Length( rep_list ) );
+  return RepeatListImp( rep_list );
+end );
+
+InstallMethod( CutImp, [ IsMapNListImp, IsPosInt ],
+function( list, i )
+  return MapImp( CutImp( BaseList( list ), i ),
+                 MapFunction( list ) );
+end );
+
+InstallMethod( CutImp, [ IsArithmeticNListImp, IsPosInt ],
+function( L, i )
+  return ArithmeticSequence( BasePosition( L ) + i * Increment( L ),
+                             Increment( L ) );
+end );
+
+InstallMethod( BetterImplementationAvailable, [ IsCutNListImp, IsNListImp ],
+function( L, BL )
+  if IsIdenticalObj( BL, BaseList( L ) ) then
+    SetBetterImplementation( L, CutImp( BetterImplementation( BL ), CutIndex( L ) ) );
+  fi;
+end );
+
+InstallMethod( LookupInfListImp, [ IsCutNListImp, IsPosInt ],
+function( L, i )
+  return LookupInfListImp( BaseList( L ), i + CutIndex( L ) );
+end );
+
+InstallMethod( KnownIndicesImp, [ IsCutNListImp ],
+function( L )
+  return Filtered( KnownIndicesImp( BaseList( L ) ) - CutIndex( L ),
+                   IsPosInt );
+end );
+
+InstallMethod( InfListString, [ IsCutNListImp, IsPosInt, IsBool ],
+function( L, i, reversed )
+  return InfListString( BaseList( L ), i + CutIndex( L ), reversed );
+end );
+
+InstallMethod( AddAssertion, [ IsCutNListImp, IsInfListAssertion ],
+function( L, A )
+  AddAssertion( BaseList( L ), Shift( A, - CutIndex( L ) ) );
+end );
+
+InstallMethod( Map, [ IsInfList, IsFunction ],
+function( list, f )
+  return MakeInfList( MapImp( Implementation( list ), f ) );
+end );
+
+InstallMethod( MapImp, [ IsNListImp, IsFunction ],
+function( list, f )
+  local L;
+  L := MakeInfListImp( IsMapNListImp,
+                       rec(),
+                       [ BaseList, list,
+                         MapFunction, f ] );
+  NotifyBetterImplementation( list, L );
+  return L;
+end );
+
+InstallMethod( MapImp, [ IsRepeatingNListImp, IsFunction ],
+function( list, f )
+  return RepeatListImp( List( RepeatingList( list ), f ) );
+end );
+
+InstallMethod( MapImp, [ IsConcatNListImp, IsFunction ],
+function( list, f )
+  return ConcatenateImp( List( ConcatList( list ), f ),
+                         MapImp( BaseList( list ), f ) );
+end );
+
+InstallMethod( BetterImplementationAvailable, [ IsMapNListImp, IsNListImp ],
+function( L, BL )
+  if IsIdenticalObj( BL, BaseList( L ) ) then
+    SetBetterImplementation( L, MapImp( BetterImplementation( BL ),
+                                        MapFunction( L ) ) );
+  fi;
+end );
+
+InstallMethod( LookupInfListImp, [ IsMapNListImp, IsPosInt ],
+function( L, i )
+  return MapFunction( L )( LookupInfListImp( BaseList( L ), i ) );
+end );
+
+InstallMethod( KnownIndicesImp, [ IsMapNListImp ],
+function( L )
+  return KnownIndicesImp( BaseList( L ) );
+end );
+
+InstallMethod( InfListString, [ IsMapNListImp, IsBool ],
+function( L, reversed )
+  return Concatenation( "f( ", InfListString( BaseList( L ), reversed ), " )" );
+end );
+
+InstallMethod( Combine, [ IsDenseList ],
+function( lists )
+  return MakeInfList( CombineImp( List( lists, Implementation ) ) );
+end );
+
+InstallMethod( CombineImp, [ IsDenseList ],
+function( lists )
+  local L, list, i, cut_index, rep_len, rep_list;
+  if ForAny( lists, IsConcatNListImp ) then
+    cut_index := 0;
+    for i in [ 1 .. Length( lists ) ] do
+      if IsConcatNListImp( lists[ i ] ) then
+        cut_index := Maximum( cut_index,
+                              Length( ConcatList( lists[ i ] ) ) );
+      fi;
+    od;
+    return ConcatenateImp( List( [ 1 .. cut_index ],
+                                 i -> List( lists, l -> LookupInfListImp( l, i ) ) ),
+                           CombineImp( List( lists, l -> CutImp( l, cut_index ) ) ) );
+  fi;
+  if ForAll( lists, IsRepeatingNListImp ) then
+    rep_len := Lcm( List( lists, l -> Length( RepeatingList( l ) ) ) );
+    rep_list := List( [ 1 .. rep_len ],
+                      i -> List( lists, l -> LookupInfListImp( l, i ) ) );
+    return RepeatListImp( rep_list );
+  fi;
+  L := MakeInfListImp( IsCombinationNListImp,
+                       rec(),
+                       [ Lists, lists ] );
+  for list in lists do
+    NotifyBetterImplementation( list, L );
+  od;
+  return L;
+end );
+
+InstallMethod( BetterImplementationAvailable, [ IsCombinationNListImp, IsNListImp ],
+function( L, BL )
+  local i, lists, change;
+  lists := ShallowCopy( Lists( L ) );
+  change := false;
+  for i in [ 1 .. Length( lists ) ] do
+    if IsIdenticalObj( BL, lists[ i ] ) then
+      lists[ i ] := BetterImplementation( BL );
+      change := true;
     fi;
-    
+  od;
+  if change then
+    SetBetterImplementation( L, CombineImp( lists ) );
+  fi;
 end );
 
-#######################################################################
-##
-#M  LowestKnownPosition( <list> )
-##
-##  Returns the lowest index of the list where the value is known
-##  without computation.
-##  
-InstallMethod( LowestKnownPosition,
-[ IsHalfInfList ],
-function( list )
-    if Direction( list ) = 1 then
-        if Length( list!.values ) = 0 and InfListType( list ) <> "repeat" then
-            return "none";
-        else
-            return StartPosition( list );
-        fi;
-    else
-        if InfListType( list ) = "repeat" then
-            return NegativeInfinity;
-        elif Length( list!.values ) = 0 and InfListType( list ) <> "repeat" then
-            return "none";
-        else
-            return StartPosition( list ) - (Length( list!.values ) - 1);
-        fi;
+InstallMethod( LookupInfListImp, [ IsCombinationNListImp, IsPosInt ],
+function( L, i )
+  return List( Lists( L ), l -> LookupInfListImp( l, i ) );
+end );
+
+InstallMethod( KnownIndicesImp, [ IsCombinationNListImp ],
+function( L )
+  return Intersection( List( Lists( L ), KnownIndicesImp ) );
+end );
+
+InstallMethod( InfListString, [ IsCombinationNListImp, IsPosInt, IsBool ],
+function( L, i, reversed )
+  return InfListString( L, i, KnownIndicesImp( L ), reversed );
+end );
+
+InstallMethod( LiftList, [ IsObject, IsNList, IsFunction ],
+function( init, L, f )
+  return MakeInfList( LiftListImp( [ init ], Implementation( L ), f ) );
+end );
+
+InstallMethod( LiftListImp, [ IsDenseList, IsNListImp, IsFunction ],
+function( init_list, BL, f )
+  local L;
+  L := MakeInfListImp( IsLiftingNListImp,
+                       rec( values := ShallowCopy( init_list ) ),
+                       [ BaseList, BL,
+                         InitialValues, init_list,
+                         LiftingFunction, f ] );
+  NotifyBetterImplementation( BL, L );
+  return L;
+end );
+
+InstallMethod( LiftListImp, [ IsDenseList, IsConcatNListImp, IsFunction ],
+function( init_list, BL, f )
+  local tail, new_tail, new_init_list, l;
+  tail := ConcatList( BL );
+  if Length( tail ) < Length( init_list ) then
+    new_tail := init_list{ [ 1 .. Length( tail ) ] };
+    new_init_list := init_list{ [ Length( tail ) + 1 .. Length( init_list ) ] };
+  else
+    new_tail := init_list;
+    while Length( new_tail ) < Length( tail ) do
+      l := Length( new_tail );
+      new_tail[ l + 1 ] := f( new_tail[ l ], tail[ l + 1 ] );
+    od;
+    new_init_list := [ f( new_tail[ Length( new_tail ) ],
+                          LookupInfListImp( BaseList( BL ), 1 ) ) ];
+  fi;
+  return ConcatenateImp( new_tail, LiftListImp( new_init_list, BaseList( BL ), f ) );
+end );
+
+InstallMethod( BetterImplementationAvailable, [ IsLiftingNListImp, IsNListImp ],
+function( L, BL )
+  if IsIdenticalObj( BL, BaseList( L ) ) then
+    SetBetterImplementation( L, LiftListImp( L!.values, BetterImplementation( BL ),
+                                             LiftingFunction( L ) ) );
+  fi;
+end );
+
+InstallMethod( LookupInfListImp, [ IsLiftingNListImp, IsPosInt ],
+function( L, i )
+  local v, f, l, m, check_repeating, i1, i2;
+  v := L!.values;
+  f := LiftingFunction( L );
+  if IsRepeatingNListImp( BaseList( L ) ) then
+    m := Length( RepeatingList( BaseList( L ) ) );
+    check_repeating := true;
+  else
+    m := 0;
+    check_repeating := false;
+  fi;
+  while i > Length( v ) do
+    l := Length( v );
+    v[ l + 1 ] := f( v[ l ], LookupInfListImp( BaseList( L ), l + 1 ) );
+    if check_repeating
+       and ( l mod m ) = 0
+       and ( l / m ) mod 2 = 1 then
+      i1 := ( l + m ) / 2 - m + 1;
+      i2 := l + 1;
+      if v[ i1 ] = v[ i2 ] then
+        SetBetterImplementation( L, Repeatify( L, i1, i2 ) );
+        return LookupInfListImp( BetterImplementation( L ), i );
+      fi;
     fi;
+  od;
+  return v[ i ];
 end );
 
-#######################################################################
-##
-#M  HighestKnownPosition( <list> )
-##
-##  Returns the highest index of the list where the value is known
-##  without computation.
-##  
-InstallMethod( HighestKnownPosition,
-[ IsHalfInfList ],
-function( list )
-    if Direction( list ) = -1 then
-        if Length( list!.values ) = 0 and InfListType( list ) <> "repeat" then
-            return "none";
-        else
-            return StartPosition( list );
-        fi;
-    else
-        if InfListType( list ) = "repeat" then
-            return PositiveInfinity;
-        elif Length( list!.values ) = 0 and InfListType( list ) <> "repeat" then
-            return "none";
-        else
-            return StartPosition( list ) + (Length( list!.values ) - 1);
-        fi;
-    fi;
+InstallMethod( Repeatify, [ IsLiftingNListImp, IsPosInt, IsPosInt ],
+function( L, collisionIndex1, collisionIndex2 )
+  local m, values, i1, i2, i, repeatStartIndex, repeatEndIndex,
+        tail, repeatedList, newList;
+  m := Length( RepeatingList( BaseList( L ) ) );
+  values := L!.values;
+  i1 := collisionIndex1;
+  i2 := collisionIndex2;
+  while i1 > 0 and values[ i1 ] = values[ i2 ] do
+    i1 := i1 - 1;
+    i2 := i2 - 1;
+  od;
+  repeatStartIndex := i1 + 1;
+  i := repeatStartIndex + m;
+  while values[ i ] <> values[ repeatStartIndex ] do
+    i := i + m;
+  od;
+  repeatEndIndex := i - 1;
+  tail := values{ [ 1 .. ( repeatStartIndex - 1 ) ] };
+  repeatedList := values{ [ repeatStartIndex .. repeatEndIndex ] };
+  newList := ConcatenateImp( tail, RepeatListImp( repeatedList ) );
+  return newList;
+end );
+
+InstallMethod( KnownIndicesImp, [ IsLiftingNListImp ],
+function( L )
+  return [ 1 .. Length( L!.values ) ];
+end );
+
+InstallMethod( InfListString, [ IsLiftingNListImp, IsPosInt, IsBool ],
+function( L, i, reversed )
+  return InfListString( L, i, KnownIndicesImp( L ), reversed );  
+end );
+
+InstallMethod( Sublist, [ IsNList, IsPosInt, IsPosInt ],
+function( L, a, b )
+  return SublistImp( Implementation( L ), a, b );
+end );
+
+InstallMethod( SublistImp, [ IsNListImp, IsPosInt, IsPosInt ],
+function( L, a, b )
+  return List( [ a .. ( b - 1 ) ], i -> LookupInfListImp( L, i ) );
+end );
+
+InstallMethod( Sublist, [ IsZList, IsInt, IsInt ],
+function( L, a, b )
+  return SublistImp( Implementation( L ), a, b );
+end );
+
+InstallMethod( SublistImp, [ IsZListImp, IsInt, IsInt ],
+function( L, a, b )
+  return List( [ a .. ( b - 1 ) ], i -> LookupInfListImp( L, i ) );
+end );
+
+InstallMethod( \[\], [ IsNList, IsPosInt ],
+function( list, i )
+  return LookupInfListImp( Implementation( list ), i );
+end );
+
+InstallMethod( \[\], [ IsZList, IsInt ],
+function( list, i )
+  return LookupInfListImp( Implementation( list ), i );
+end );
+
+# InstallValue( IntegersList, FunctionInfList( IdFunc ) );
+
+InstallValue( PositiveIntegersList, ArithmeticSequence( 1, 1 ) );
+
+# TODO implement \in
+
+InstallMethod( \in, [ IsObject, IsInfList ],
+function( obj, L )
+  if IsIdenticalObj( L, PositiveIntegersList ) then
+    return IsPosInt( obj );
+  fi;
+  TryNextMethod();
+end );
+
+InstallMethod( Intersection2, [ IsList, IsNList ],
+function( list, inflist )
+  if IsIdenticalObj( inflist, PositiveIntegersList ) then
+    return Filtered( list, IsPosInt );
+  fi;
+  TryNextMethod();
+end );
+
+InstallMethod( Intersection2, [ IsNList, IsList ],
+function( inflist, list )
+  if IsIdenticalObj( inflist, PositiveIntegersList ) then
+    return Filtered( list, IsPosInt );
+  fi;
+  TryNextMethod();
+end );
+
+InstallMethod( Intersection2, [ IsNList, IsNList ],
+function( L1, L2 )
+  if IsIdenticalObj( L1, L2 ) then
+    return L1;
+  fi;
+  TryNextMethod();
+end );
+
+# InstallMethod( Union2, [ IsList, IsNList ],
+# function( list, inflist )
+#   if IsIdenticalObj( inflist, PositiveIntegersList ) then
+#     return PositiveIntegersList
+#   fi;
+#   TryNextMethod();
+# end );
+
+# InstallMethod( Union2, [ IsNList, IsList ],
+# function( inflist, list )
+#   if IsIdenticalObj( inflist, PositiveIntegersList ) then
+#     return Filtered( list, IsPosInt );
+#   fi;
+#   TryNextMethod();
+# end );
+
+# InstallMethod( Union2, [ IsNList, IsNList ],
+# function( L1, L2 )
+#   if IsIdenticalObj( L1, L2 ) then
+#     return L1;
+#   fi;
+#   TryNextMethod();
+# end );
+
+
+InstallMethod( RotateLeft, [ IsList, IsInt ],
+function( list, n )
+  n := n mod Length( list );
+  return Concatenation( list{ [ ( n + 1 ) .. Length( list ) ] },
+                        list{ [ 1 .. n ] } );
+end );
+
+InstallMethod( RotateRight, [ IsList, IsInt ],
+function( list, n )
+  return RotateLeft( list, -n );
+end );
+
+InstallMethod( IsInductive, [ IsNList ],
+               L -> IsInductive( Implementation( L ) ) );
+
+InstallMethod( IsEventuallyInductive, [ IsNList ],
+               L -> IsEventuallyInductive( Implementation( L ) ) );
+
+InstallMethod( InductiveFromIndex, [ IsNList ],
+               L -> InductiveFromIndex( Implementation( L ) ) );
+
+InstallMethod( InductivePart, [ IsNList ],
+               L -> MakeInfList( InductivePart( Implementation( L ) ) ) );
+
+InstallMethod( InductivePart, [ IsNList and IsInductive ],
+               IdFunc );
+
+InstallMethod( InductionFunction, [ IsNList ],
+               L -> InductionFunction( Implementation( L ) ) );
+
+InstallTrueMethod( IsInductive, IsNListImp and HasInductionFunction );
+InstallTrueMethod( IsEventuallyInductive, IsNListImp and IsInductive );
+
+InstallMethod( InductiveFromIndex, [ IsNListImp ],
+function( L )
+  if IsInductive( L ) then return 1; fi;
+  TryNextMethod();
+end );
+
+InstallMethod( InductivePart, [ IsNListImp ],
+function( L )
+  if IsInductive( L ) then return L; fi;
+  TryNextMethod();
+end );
+
+InstallMethod( IsRepeating, [ IsNList ],
+               L -> IsRepeating( Implementation( L ) ) );
+
+InstallMethod( IsEventuallyRepeating, [ IsNList ],
+               L -> IsEventuallyRepeating( Implementation( L ) ) );
+
+InstallMethod( RepeatingFromIndex, [ IsNList ],
+               L -> RepeatingFromIndex( Implementation( L ) ) );
+
+InstallMethod( RepeatingPart, [ IsNList ],
+               L -> MakeInfList( RepeatingPart( Implementation( L ) ) ) );
+
+InstallMethod( RepeatingPart, [ IsNList and IsRepeating ],
+               IdFunc );
+
+InstallMethod( RepeatingList, [ IsNList ],
+               L -> RepeatingList( Implementation( L ) ) );
+
+InstallTrueMethod( IsRepeating, IsNListImp and HasRepeatingList );
+InstallTrueMethod( IsEventuallyRepeating, IsNListImp and IsRepeating );
+
+InstallMethod( RepeatingFromIndex, [ IsNListImp ],
+function( L )
+  if IsRepeating( L ) then return 1; fi;
+  TryNextMethod();
+end );
+
+InstallMethod( RepeatingPart, [ IsNListImp ],
+function( L )
+  if IsRepeating( L ) then return L; fi;
+  TryNextMethod();
 end );
 
 
-#######################################################################
-##
-#M  MakeInfList( <basePosition>, <middle>, <positive>, <negative>,
-##               <callback> )
-##
-##  Creates an IsInfList object.  <basePostition> tells in which index
-##  the values should be put, <middle> is a list of known values,
-##  <positive> is a list describing the positive part of the infinite
-##  list, and <negative> part is a list describing the negative part
-##  of the list.  <callback> is a function to be called whenever a 
-##  new value of the infinite list is computed.
-##  
-InstallMethod( MakeInfList,
-[ IsInt, IsList, IsList, IsList, IsObject ],
-function( basePosition, middle, positive, negative, callback )
-    local posList, negList;
 
-    # TODO: automatic initialValue for "next" parts if middle is nonempty
 
-    # TODO: allow empty positive/negative?
+# ZList
 
-    posList := MakeHalfInfList( basePosition + Length( middle ),
-                                1, positive, callback );
-    negList := MakeHalfInfList( basePosition - 1,
-                                -1, negative, callback );
-
-    return MakeInfListFromHalfInfLists( basePosition, middle, posList, negList );
-
-end );
-
-#######################################################################
-##
-#M  PrintObj( <list> )
-##
-##  Implementation of Print for IsInfList objects.
-##  
-InstallMethod( PrintObj,
-[ IsInfList ],
-function( list )
-    local pos, neg, mid;
-
-    pos := PositivePart( list );
-    neg := NegativePart( list );
-    mid := MiddlePart( list );
-
-    Print( "<InfList: " );
-
-    # negative part:
-    if neg = fail then
-        Print( "(-inf,", String( MiddleStart( list ) - 1 ), "]:empty" );
-    else
-        Print( "(-inf,", String( StartPosition( neg ) ), "]:" );
-        if InfListType( neg ) = "repeat" then
-            Print( "repeat(", String( Length( RepeatingList( neg ) ) ), ")" );
-        elif InfListType( neg ) = "pos" then
-            Print( "pos" );
-        elif InfListType( neg ) = "next" then
-            Print( "next" );
-        else
-            Print( "unknown" ); # this should never happen
-        fi;
-    fi;
-    Print( ", " );
-
-    # middle part:
-    Print( "[", MiddleStart( list ), ",", MiddleEnd( list ), "]:" );
-    Print( mid );
-    Print( ", " );
-
-    # positive part:
-    if pos = fail then
-        Print( "[", String( MiddleEnd( list ) + 1 ), ",inf):empty" );
-    else
-        Print( "[", String( StartPosition( pos ) ), ",inf):" );
-        if InfListType( pos ) = "repeat" then
-            Print( "repeat(", String( Length( RepeatingList( pos ) ) ), ")" );
-        elif InfListType( pos ) = "pos" then
-            Print( "pos" );
-        elif InfListType( pos ) = "next" then
-            Print( "next" );
-        else
-            Print( "unknown" ); # this should never happen
-        fi;
-    fi;
-
-    Print( ">" );
-
-end );
-
-#######################################################################
-##
-#M  MakeInfListFromHalfInfLists( <basePosition>, <middle>, <positive>,
-##                                <negative> )
-##  
-##  Creates an IsInfList from a middle part (a list) and two IsHalfInfLists
-##  <positive> and <negative>.
-##
-InstallMethod( MakeInfListFromHalfInfLists,
-[ IsInt, IsList, IsObject, IsObject ],
-function( basePosition, middle, positive, negative )
-    local list;
-
-    if negative <> fail and not IsHalfInfList( negative ) then
-        Error( "negative list must be either a HalfInfList or fail" );
-    fi;
-    if positive <> fail and not IsHalfInfList( positive ) then
-        Error( "positive list must be either a HalfInfList or fail" );
-    fi;
-
-    if negative <> fail and basePosition <> StartPosition( negative ) + 1 then
-        Error( "negative list starts at incorrect position" );
-    fi;
-    if positive <> fail and basePosition + Length( middle ) <> StartPosition( positive ) then
-        Error( "positive list starts at incorrect position" );
-    fi;
-
-    list := Objectify( NewType( NewFamily( "InfListsFamily" ),
-                                IsInfList and IsInfListDefaultRep ),
-                       rec( basePosition := basePosition,
-                            middle := middle,
-                            positive := positive,
-                            negative := negative ) );
-
-    return list;
-
-end );
-
-#######################################################################
-##
-#M  FunctionInfList( <func> )
-##  
-##  Creates an IsInfList where all list entries are described by a 
-##  function.
-##
-InstallMethod( FunctionInfList,
-[ IsFunction ],
-function( func )
-    local positiveNegativeList;
-    positiveNegativeList := [ "pos", func, false ];
-    return MakeInfList( 0, [], positiveNegativeList, positiveNegativeList, false );
-end );
-
-#######################################################################
-##
-#M  ConstantInfList( <value> )
-##  
-##  Creates an IsInfList with <value> in each position.
-##
-InstallMethod( ConstantInfList,
-[ IsObject ],
-function( value )
-    return MakeInfList( 0, [], [ "repeat", [ value ] ], [ "repeat", [ value ] ], false );
-end );
-
-#######################################################################
-##
-#M  FiniteInfList( <basePosition>, <list> )
-##  
-##  Creates an IsInfList which is finite.  Only indexes in the interval
-##  [basePostition, basePosition + length(<list>) - 1] is allowed.
-##
-InstallMethod( FiniteInfList,
-[ IsInt, IsList ],
-function( basePosition, list )
-    return MakeInfListFromHalfInfLists( basePosition, list, fail, fail );
-end );
-
-#######################################################################
-##
-#M  MiddleStart( <list> )
-##  
-##  Returns the first index of the middle part, or the basePosition,
-##  of the IsInfList <list>.
-##
-InstallMethod( MiddleStart,
-[ IsInfList ],
-function( list )
-    return list!.basePosition;
-end );
-
-#######################################################################
-##
-#M  MiddleEnd( <list> )
-##  
-##  Returns the last index of the middle part of the IsInfList <list>.
-##
-InstallMethod( MiddleEnd,
-[ IsInfList ],
-function( list )
-    return list!.basePosition + Length( list!.middle ) - 1;
-end );
-
-#######################################################################
-##
-#M  MiddlePart( <list> )
-##  
-##  Returns the middle part of the IsInfList <list>, as a list.
-##
-InstallMethod( MiddlePart,
-[ IsInfList ],
-function( list )
-    return list!.middle;
-end );
-
-#######################################################################
-##
-#M  PositivePart( <list> )
-##  
-##  Returns the positive part of the IsInfList <list>, as an IsHalfInfList.
-##
-InstallMethod( PositivePart,
-[ IsInfList ],
-function( list )
-    return list!.positive;
-end );
-
-#######################################################################
-##
-#M  NegativePart( <list> )
-##  
-##  Returns the negative part of the IsInfList <list>, as an IsHalfInfList.
-##
-InstallMethod( NegativePart,
-[ IsInfList ],
-function( list )
-    return list!.negative;
-end );
-
-#######################################################################
-##
-#M  LowestKnownPosition( <list> )
-##  
-##  Returns the lowest index where the value of the IsInfList <list>
-##  is computed or otherwise known. 
-##
-InstallMethod( LowestKnownPosition,
-[ IsInfList ],
-function( list )
-    if NegativePart( list ) <> fail
-       and LowestKnownPosition( NegativePart( list ) ) <> "none" then
-        return LowestKnownPosition( NegativePart( list ) );
-    elif Length( MiddlePart( list ) ) > 0 then
-        return MiddleStart( list );
-    else
-        return LowestKnownPosition( PositivePart( list ) );
-    fi;
-end );
-
-#######################################################################
-##
-#M  HighestKnownPosition( <list> )
-##  
-##  Returns the highest index where the value of the IsInfList <list>
-##  is computed or otherwise known. 
-##
-InstallMethod( HighestKnownPosition,
-[ IsInfList ],
-function( list )
-    if PositivePart( list ) <> fail
-       and HighestKnownPosition( PositivePart( list ) ) <> "none" then
-        return HighestKnownPosition( PositivePart( list ) );
-    elif Length( MiddlePart( list ) ) > 0 then
-        return MiddleEnd( list );
-    else
-        return HighestKnownPosition( NegativePart( list ) );
-    fi;
-end );
-
-#######################################################################
-##
-#M  UpperBound( <list> )
-##  
-##  Returns the highest index where the value of the IsInfList <list>
-##  exists (but is not necessarily known).
-##
-InstallMethod( UpperBound,
-[ IsInfList ],
-function( list )
-    if PositivePart( list ) <> fail then
-        return PositiveInfinity;
-    elif Length( MiddlePart( list ) ) > 0 then
-        return MiddleEnd( list );
-    elif NegativePart( list ) <> fail then
-        return StartPosition( NegativePart( list ) );
-    else
-        return NegativeInfinity;
-    fi;
-end );
-
-#######################################################################
-##
-#M  LowerBound( <list> )
-##  
-##  Returns the smallest index where the value of the IsInfList <list>
-##  exists (but is not necessarily known).
-##
-InstallMethod( LowerBound,
-[ IsInfList ],
-function( list )
-    if NegativePart( list ) <> fail then
-        return NegativeInfinity;
-    elif Length( MiddlePart( list ) ) > 0 then
-        return MiddleStart( list );
-    elif PositivePart( list ) <> fail then
-        return StartPosition( PositivePart( list ) );
-    else
-        return PositiveInfinity;
-    fi;
-end );
-
-#######################################################################
-##
-#M  \^( <list>, <pos> )
-##  
-##  Returns the value of the IsInfList <list> at the index <pos>.
-##
-InstallMethod( \^,
-[ IsInfList, IsInt ],
-function( list, pos )
-    local positive, negative;
-    positive := PositivePart( list );
-    negative := NegativePart( list );
-    if pos >= MiddleStart( list ) and pos <= MiddleEnd( list ) then
-        return MiddlePart( list )[ pos - MiddleStart( list ) + 1 ];
-    elif positive <> fail and pos >= StartPosition( positive ) then
-        return positive^pos;
-    elif negative <> fail and pos <= StartPosition( negative ) then
-        return negative^pos;
-    else
-        Error( "position ", pos, " outside index range of inflist ", list, "\n" );
-    fi;
-end );
-
-#######################################################################
-##
-#M  Shift( <list>, <shift> )
-##  
-##  <list> is an IsHalfInfList.  The method shifts the list <shift> 
-##  positions; to the right if <shift> is positive or to the left if
-##  <shift> is negative.
-##
-InstallMethod( Shift,
-[ IsHalfInfList, IsInt ],
-function( list, shift )
-
-    if IsRepeating( list ) then
-        return MakeHalfInfList( StartPosition( list ) - shift, Direction( list ),
-                                [ "repeat", RepeatingList( list ) ], false );
-    else
-        return MakeHalfInfList( StartPosition( list ) - shift, Direction( list ),
-                                [ "pos", i -> list^(i + shift) ], false );
-    fi;
-
-end );
-
-#######################################################################
-##
-#M  Shift( <list>, <shift> )
-##  
-##  <list> is an IsInfList.  The method shifts the list <shift> 
-##  positions; to the right if <shift> is positive or to the left if
-##  <shift> is negative.
-##
-InstallMethod( Shift,
-[ IsInfList and IsInfListDefaultRep, IsInt ],
-function( list, shift )
-    return MakeInfListFromHalfInfLists
-           ( MiddleStart( list ) - shift,
-             MiddlePart( list ),
-             Shift( PositivePart( list ), shift ),
-             Shift( NegativePart( list ), shift ) );
-    end );
-
-#######################################################################
-##
-#M  FinitePartAsList( <list>, <startPos>, <endPos> )
-##  
-##  <list> is an IsInfList.  The part of the list starting at index
-##  <startPos> and ending at index <endPos> is returned as a list.
-##  Note that <endPos> > <startPos>.
-##
-InstallMethod( FinitePartAsList,
-[ IsInfList, IsInt, IsInt ],
-function( list, startPos, endPos )
-    return List( [ startPos .. endPos ], i -> list^i );
-end );
-
-#######################################################################
-##
-#M  Cut( <list>, <pos> )
-##
-##  Returns a new IsHalfInfList which the old IsHalfInfList except
-##  that the positions with indeces smaller than <pos> is removed.
-##  
-InstallMethod( Cut,
-[ IsHalfInfList, IsInt ],
-function( list, pos )
-    local middle, half, middleLength, middlePositions, newStartPos;
-
-    if Direction( list ) = 1 and pos < StartPosition( list )
-       or Direction( list ) = -1 and pos > StartPosition( list ) then
-        Error( "position outside range of list" );
-    fi;
-    if pos = StartPosition( list ) then
-        middle := [];
-        half := list;
-    elif InfListType( list ) = "repeat" then
-        middleLength := ((StartPosition( list ) - pos) * Direction( list ))
-                        mod Length( RepeatingList( list ) );
-        if Direction( list ) = 1 then
-            middlePositions := [ pos .. pos + middleLength - 1 ];
-        else
-            middlePositions := [ pos - middleLength + 1 .. pos ];
-        fi;
-        middle := List( middlePositions, i -> list^i );
-        newStartPos := pos + middleLength * Direction( list );
-        half := Shift( list, StartPosition( list ) - newStartPos );
-    else
-        middle := [];
-        half := MakeHalfInfList( pos, Direction( list ),
-                                 [ "pos", i -> list^i ],
-                                 false );
-    fi;
-
-    if Direction( list ) = 1 then
-        return MakeInfListFromHalfInfLists( pos, middle, half, fail );
-    else
-        return MakeInfListFromHalfInfLists( pos + 1 - Length( middle ),
-                                            middle, fail, half );
-    fi;
-
-end );
-
-#######################################################################
-##
-#M  PositivePartFrom( <list>, <pos> )
-##
-##  Returns a new IsInfList with only the positions with indeces 
-##  greater than or equal to <pos>.
-##  
-InstallMethod( PositivePartFrom,
-[ IsInfList, IsInt ],
-function( list, pos )
-    local middle, positiveStart;
-
-    positiveStart := StartPosition( PositivePart( list ) );
-    if pos >= positiveStart then
-        return Cut( PositivePart( list ), pos );
-    else
-        middle := FinitePartAsList( list, pos, positiveStart - 1 );
-        return MakeInfListFromHalfInfLists( pos, middle, PositivePart( list ), fail );
-    fi;
-
-end );
-
-#######################################################################
-##
-#M  NegativePartFrom( <list>, <pos> )
-##
-##  Returns a new IsInfList with only the positions with indeces 
-##  smaller than or equal to <pos>.
-##  
-InstallMethod( NegativePartFrom,
-[ IsInfList, IsInt ],
-function( list, pos )
-    local middle, negativeStart;
-
-    negativeStart := StartPosition( NegativePart( list ) );
-    if pos <= negativeStart then
-        return Cut( NegativePart( list ), pos );
-    else
-        middle := FinitePartAsList( list, negativeStart + 1, pos );
-        return MakeInfListFromHalfInfLists( negativeStart + 1, middle, fail,
-                                            NegativePart( list ) );
-    fi;
-
-end );
-
-#######################################################################
-##
-#M  Splice( <positiveList>, <negativeList>, <joinPosition> )
-##
-##  Returns a new IsInfList which is identical to <positiveList> for
-##  indeces greater than <joinPosition> and identical to <negativeList>
-##  for indeces smaller than or equal to <joinPosition>.
-##  
-InstallMethod( Splice,
-[ IsInfList, IsInfList, IsInt ],
-function( positiveList, negativeList, joinPosition )
-    local positiveCut, negativeCut, middle;
-
-    positiveCut := PositivePartFrom( positiveList, joinPosition + 1 );
-    negativeCut := NegativePartFrom( negativeList, joinPosition );
-    middle := Concatenation( MiddlePart( negativeCut ), MiddlePart( positiveCut ) );
-
-    return MakeInfListFromHalfInfLists( MiddleStart( negativeCut ),
-                                        middle,
-                                        PositivePart( positiveCut ),
-                                        NegativePart( negativeCut ) );
-
-end );
-
-#######################################################################
-##
-#F  InfConcatenation( <arg> )
-##
-##  <arg> is a list of IsInfLists. The method creates a new IsInfList
-##  where the middle part is the middle parts of the respective lists
-##  of <arg>, the positive part is the positive part of the first list
-##  and the negative part is the negative part of the last list.
-##  
-InstallGlobalFunction( InfConcatenation,
+InstallGlobalFunction( Concat,
 function( arg )
-    local middle, basePosition, positive, negative;
-
-    # TODO: error if arguments are of wrong type
-
-    if Length( arg ) = 0 then
-        return FiniteInfList( 0, [] );
-    elif Length( arg ) = 1 then
-        return arg[ 1 ];
-    fi;
-
-    middle := CallFuncList( Concatenation, List( Reversed( arg ), MiddlePart ) );
-    basePosition := MiddleEnd( arg[ 1 ] ) - Length( middle ) + 1;
-    positive := PositivePart( arg[ 1 ] );
-    negative := NegativePart( arg[ Length( arg ) ] );
-    if negative <> fail then
-        # Want to have StartPosition( negative ) = basePosition - 1
-        negative := Shift( negative, StartPosition( negative ) - basePosition + 1 );
-    fi;
-
-    return MakeInfListFromHalfInfLists( basePosition, middle, positive, negative );
-
+  local first_list, middle_lists, last_list, all_but_first;
+  if IsEmpty( arg ) then
+    Error( "Needs at least one argument" );
+  fi;
+  first_list := arg[ 1 ];
+  middle_lists := arg{ [ 2 .. Length( arg ) - 1 ] };
+  last_list := arg[ Length( arg ) ];
+  if not IsNList( last_list ) then
+    Error( "Last argument must be N-list" );
+  elif not ( IsNList( first_list ) or IsDenseList( first_list ) ) then
+    Error( "First argument must be either N-list or dense list" );
+  elif not ForAll( middle_lists, IsDenseList ) then
+    Error( "All arguments except first and last must be dense lists" );
+  fi;
+  if Length( arg ) = 1 then
+    return first_list;
+  fi;
+  all_but_first := Concatenate( Concatenation( middle_lists ),
+                                last_list );
+  return Concatenate( first_list, all_but_first );
 end );
 
-#######################################################################
-##
-#M  InfList( <list>, <func> )
-##
-##  <list> is an InfList and <func> is a function which can take 
-##  elements of <list> as argument.  The method returns a new list
-##  where the elements are the elements of <list> with <func> applied
-##  to them.
-##  
-InstallMethod( InfList,
-[ IsInfList, IsFunction ],
-function( list, func )
-
-    return MakeInfListFromHalfInfLists
-           ( MiddleStart( list ),
-             List( MiddlePart( list ), func ),
-             HalfInfList( PositivePart( list ), func ),
-             HalfInfList( NegativePart( list ), func ) );
-
+InstallMethod( Concatenate, [ IsNList, IsDenseList, IsNList ],
+function( L1, middle, L2 )
+  return MakeInfList( ConcatenateImp( Implementation( L1 ),
+                                      middle,
+                                      Implementation( L2 ) ) );
 end );
 
-#######################################################################
-##
-#M  HalfInfList( <list>, <func> )
-##
-##  <list> is a HalfInfList and <func> is a function which can take 
-##  elements of <list> as argument.  The method returns a new list
-##  where the elements are the elements of <list> with <func> applied
-##  to them.
-##  
-InstallMethod( HalfInfList,
-[ IsHalfInfList, IsFunction ],
-function( list, func )
-
-    if IsRepeating( list ) then
-        return MakeHalfInfList( StartPosition( list ), Direction( list ),
-                                [ "repeat", List( RepeatingList( list ), func ) ],
-                                false );
-    else
-        return MakeHalfInfList( StartPosition( list ), Direction( list ),
-                                [ "pos", i -> func( list^i ) ],
-                                false );
-    fi;
-
+InstallMethod( Concatenate, [ IsNList, IsNList ],
+function( L1, L2 )
+  return Concatenate( L1, [], L2 );
 end );
 
-#######################################################################
-##
-#V  IntegersList
-##
-##  An IsInfList with the integer i at position i.
-##
-InstallValue( IntegersList, FunctionInfList( IdFunc ) );
+InstallMethod( MakeConcatZListImp, [ IsNListImp, IsDenseList, IsNListImp, IsInt ],
+function( neg, mid, pos, base )
+  local L;
+  L := MakeInfListImp( IsConcatZListImp,
+                       rec(),
+                       [ BasePosition, base,
+                         NegativeList, neg,
+                         MiddleList, mid,
+                         PositiveList, pos ] );
+  NotifyBetterImplementation( neg, L );
+  NotifyBetterImplementation( pos, L );
+  return L;
+end );
 
+InstallMethod( ConcatenateImp, [ IsNListImp, IsDenseList, IsNListImp ],
+function( neg, mid, pos )
+  return MakeConcatZListImp( neg, mid, pos, 0 );
+end );
+
+InstallMethod( ConcatenateImp, [ IsConcatNListImp, IsDenseList, IsNListImp ],
+function( L1, middle, L2 )
+  local middle_extra, C;
+  middle_extra := Reversed( ConcatList( L1 ) );
+  C := ConcatenateImp( BaseList( L1 ),
+                       Concatenation( middle_extra, middle ),
+                       L2 );
+  return ShiftImp( C, Length( middle_extra ) );
+end );
+
+InstallMethod( ConcatenateImp, [ IsNListImp, IsDenseList, IsConcatNListImp ],
+function( L1, middle, L2 )
+  local middle_extra, C;
+  middle_extra := ConcatList( L2 );
+  return ConcatenateImp( L1, Concatenation( middle, middle_extra ),
+                         BaseList( L2 ) );
+  # return ShiftImp( C, -Length( middle_extra ) );
+end );
+
+InstallMethod( BetterImplementationAvailable, [ IsConcatZListImp, IsNListImp ],
+function( L, NL )
+  local pos, neg, change;
+  pos := PositiveList( L );
+  neg := NegativeList( L );
+  change := false;
+  if IsIdenticalObj( NL, pos ) then
+    pos := BetterImplementation( NL );
+    change := true;
+  fi;
+  if IsIdenticalObj( NL, neg ) then
+    neg := BetterImplementation( NL );
+    change := true;
+  fi;
+  if change then
+    SetBetterImplementation( L, ConcatenateImp( neg, MiddleList( L ), pos ) );
+  fi;
+end );
+
+InstallMethod( LookupInfListImp, [ IsConcatZListImp, IsInt ],
+function( L, i )
+  local b, mid;
+  b := BasePosition( L );
+  mid := MiddleList( L );
+  if i >= b + Length( mid ) then
+    return LookupInfListImp( PositiveList( L ),
+                             i - ( b + Length( mid ) ) + 1 );
+  elif i >= b then
+    return mid[ i - b + 1 ];
+  else
+    return LookupInfListImp( NegativeList( L ), b - i );
+  fi;
+  # if i >= b then
+  #   return LookupInfListImp( PositiveList( L ),
+  #                            i - b + 1 );
+  # elif i >= b - Length( mid ) then
+  #   return mid[ i - b + Length( mid ) + 1 ];
+  # else
+  #   return LookupInfListImp( NegativeList( L ),
+  #                            b - Length( mid ) - i );
+  # fi;
+end );
+
+InstallMethod( KnownIndicesImp, [ IsConcatZListImp ],
+function( L )
+  return []; #TODO
+end );
+
+InstallMethod( InfListString, [ IsConcatZListImp ],
+function( L )
+  local middle;
+  if IsEmpty( MiddleList( L ) ) then
+    middle := ", ";
+  else
+    middle := Concatenation( ", ", JoinStringsWithSeparator( MiddleList( L ), ", " ),
+                             ", " );
+  fi;
+  return Concatenation( InfListString( NegativeList( L ), true ),
+                        middle,
+                        InfListString( PositiveList( L ) ) );
+end );
+
+InstallMethod( Shift, [ IsZList, IsInt ],
+function( L, i )
+  return MakeInfList( ShiftImp( Implementation( L ), i ) );
+end );
+
+InstallMethod( ShiftImp, [ IsConcatZListImp, IsInt ],
+function( L, i )
+  return MakeConcatZListImp( NegativeList( L ), MiddleList( L ), PositiveList( L ),
+                             BasePosition( L ) - i );
+end );
+
+InstallMethod( ZRepeatList, [ IsDenseList ],
+function( list )
+  return MakeInfList( ZRepeatListImp( list ) );
+end );
+
+InstallMethod( ZRepeatListImp, [ IsDenseList ],
+function( list )
+  return MakeInfListImp( IsRepeatingZListImp,
+                         rec(),
+                         [ BasePosition, 0,
+                           RepeatingList, list ] );
+end );
+
+InstallMethod( BetterImplementationAvailable, [ IsRepeatingZListImp, IsNListImp ],
+function( L, NL ) end );
+
+InstallMethod( LookupInfListImp, [ IsRepeatingZListImp, IsInt ],
+function( L, i )
+  local rep_list, base;
+  rep_list := RepeatingList( L );
+  base := BasePosition( L );
+  return rep_list[ ( i - base ) mod Length( rep_list ) + 1 ];
+end );
+
+InstallMethod( KnownIndicesImp, [ IsRepeatingZListImp ],
+function( L )
+  return []; # TODO return IntegersList
+end );
+
+InstallMethod( InfListString, [ IsRepeatingZListImp ],
+function( L )
+  local list, str;
+  list := RepeatingList( L );
+  str := JoinStringsWithSeparator( List( list, String ), ", " );
+  return Concatenation( "*( ", str, " )*" );
+end );
+
+InstallMethod( ShiftImp, [ IsRepeatingZListImp, IsInt ],
+function( L, i )
+  return ZRepeatListImp( RotateLeft( RepeatingList( L ), i ) );
+end );
+
+InstallMethod( ShiftImp, [ IsRepeatingZListImp, IsInt and IsZero ],
+function( L, i )
+  return L;
+end );
+
+InstallValue( AlternatingSignList, ZRepeatList( [ 1, -1 ] ) );
+
+InstallMethod( ZArithmeticSequence, [ IsInt, IsInt ],
+function( init, incr )
+  return MakeInfList( ZArithmeticSequenceImp( init, incr ) );
+end );
+
+InstallMethod( ZArithmeticSequenceImp, [ IsInt, IsInt ],
+function( init, incr )
+  return MakeInfListImp( IsArithmeticZListImp,
+                         rec(),
+                         [ InitialValue, init,
+                           Increment, incr ] );
+end );
+
+InstallMethod( BetterImplementationAvailable, [ IsArithmeticZListImp, IsZListImp ],
+function( L, BL ) end );
+
+InstallMethod( LookupInfListImp, [ IsArithmeticZListImp, IsInt ],
+function( L, i )
+  return InitialValue( L ) + i * Increment( L );
+end );
+
+InstallMethod( KnownIndicesImp, [ IsArithmeticZListImp ],
+function( L )
+  return PositiveIntegersList;
+end );
+
+InstallMethod( InfListString, [ IsArithmeticZListImp ],
+function( L )
+  local str;
+  str := JoinStringsWithSeparator( List( SublistImp( L, -2, 3 ), String ), ", " );
+  return Concatenation( "..., ", str, ", ..." );
+end );
+
+InstallMethod( ShiftImp, [ IsArithmeticZListImp, IsInt ],
+function( L, i )
+  return ZArithmeticSequenceImp( InitialValue( L ) + i * Increment( L ),
+                                 Increment( L ) );
+end );
+
+InstallValue( IntegersList, ZArithmeticSequence( 0, 1 ) );
