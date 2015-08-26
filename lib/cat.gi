@@ -176,7 +176,7 @@ function( cat, X )
     return cat.identityMorph( X );
 end );
 
-InstallMethod( IsIsomorphism,
+InstallMethod( MorphismIsIsomorphism,
 [ IsCat, IsObject ],
 function( cat, f )
     return cat.isIsomorphism( f );

@@ -17,7 +17,7 @@ DeclareOperation( "DomainOfMorphism", [ IsCat, IsObject ] );
 DeclareOperation( "CodomainOfMorphism", [ IsCat, IsObject ] );
 DeclareOperation( "Compose", [ IsCat, IsObject, IsObject ] );
 DeclareOperation( "IdentityMorphism", [ IsCat, IsObject ] );
-DeclareOperation( "IsIsomorphism", [ IsCat, IsObject ] );
+DeclareOperation( "MorphismIsIsomorphism", [ IsCat, IsObject ] );
 DeclareOperation( "Inverse", [ IsCat, IsObject ] );
 DeclareOperation( "Isomorphic", [ IsCat, IsObject, IsObject ] );
 DeclareOperation( "Isomorphism", [ IsCat, IsObject, IsObject ] );
