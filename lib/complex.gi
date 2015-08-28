@@ -128,3 +128,25 @@ end );
 #                    InductiveList( d1, next_d ) );
 #   return ComplexByDifferentialList( cat, diffs );
 # end );
+
+InstallMethod( String, [ IsChainComplex ],
+function( C )
+  local cat, opt;
+  cat := CatOfComplex( C );
+  opt := rec( format_value :=
+              function( i, d )
+                return Concatenation( String( i ), ":",
+                                      ObjectAsString( cat, DomainOfMorphism( cat, d ) ),
+                                      " ->" );
+              end,
+              separator := " ",
+              repeat_start_left := "[ ",
+              repeat_start_right := " ]",
+              repeat_end_left := "[ ",
+              repeat_end_right := " ]",
+              ellipsis := "..." );
+  return InfListString( opt, DifferentialsOfComplex( C ), true );
+end );
+
+InstallMethod( SetString, [ IsChainComplex, IsString ],
+               function( L, str ) end );
