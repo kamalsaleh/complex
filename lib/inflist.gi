@@ -141,6 +141,16 @@ function( L )
   return InfListString( Implementation( L ) );
 end );
 
+InstallMethod( InfListString, [ IsRecord, IsInfList ],
+function( opt, L )
+  return InfListString( opt, Implementation( L ) );
+end );
+
+InstallMethod( InfListString, [ IsRecord, IsInfList, IsBool ],
+function( opt, L, reversed )
+  return InfListString( opt, Implementation( L ), reversed );
+end );
+
 InstallMethod( String, [ IsInfList ],
 function( L )
   return Concatenation( "8[ ", InfListString( L ), " ]" );
@@ -254,79 +264,106 @@ function( L, i, elem1, elem2 )
   od;
 end );
 
-InstallMethod( InfListString, [ IsNListImp ],
+InstallValue( InfListStringDefaultOptions,
+              rec( format_value := function( i, v )
+                     return Concatenation( String( i ), ":", String( v ) );
+                   end,
+                   separator := ", ",
+                   repeat_start_left := "( ",
+                   repeat_start_right := " )",
+                   repeat_end_left := "*( ",
+                   repeat_end_right := " )*",
+                   ellipsis := "..." ) );
+
+InstallMethod( InfListString, [ IsInfListImp ],
 function( L )
-  return InfListString( L, false );
+  return InfListString( InfListStringDefaultOptions, L );
 end );
 
-InstallMethod( InfListString, [ IsNListImp, IsPosInt ],
-function( L, i )
-  return InfListString( L, i, false );
+InstallMethod( InfListString, [ IsRecord, IsInfListImp ],
+function( opt, L )
+  return InfListString( opt, L, false, 0, 1 );
 end );
 
-InstallMethod( InfListString, [ IsNListImp, IsDenseList ],
-function( L, indices )
-  return InfListString( L, indices, false );
+InstallMethod( InfListString, [ IsRecord, IsNListImp, IsPosInt ],
+function( opt, L, i )
+  return InfListString( opt, L, i, false, 0, 1 );
 end );
 
-InstallMethod( InfListString, [ IsNListImp, IsPosInt, IsDenseList ],
-function( L, start_index, indices )
-  return InfListString( L, start_index, indices, false );
+InstallMethod( InfListString, [ IsRecord, IsNListImp, IsDenseList ],
+function( opt, L, indices )
+  return InfListString( opt, L, indices, false, 0, 1 );
 end );
 
-InstallMethod( InfListString, [ IsNListImp, IsBool ],
-function( L, reversed )
-  return InfListString( L, 1, reversed );
+InstallMethod( InfListString, [ IsRecord, IsNListImp, IsPosInt, IsDenseList ],
+function( opt, L, start_index, indices )
+  return InfListString( opt, L, start_index, indices, false, 0, 1 );
 end );
 
-InstallMethod( InfListString, [ IsNListImp, IsPosInt, IsBool ],
-function( L, i, reversed )
-  return InfListString( CutImp( L, i - 1 ), reversed );
+InstallMethod( InfListString, [ IsRecord, IsInfListImp, IsBool ],
+function( opt, L, reversed )
+  return InfListString( opt, L, reversed, 0, 1 );
 end );
 
-InstallMethod( InfListString, [ IsNListImp, IsDenseList, IsBool ],
-function( L, indices, reversed )
+InstallMethod( InfListString, [ IsRecord, IsNListImp, IsBool, IsInt, IsInt ],
+function( opt, L, reversed, shift, incr )
+  return InfListString( opt, L, 1, reversed, shift, incr );
+end );
+
+InstallMethod( InfListString, [ IsRecord, IsNListImp, IsPosInt, IsBool, IsInt, IsInt ],
+function( opt, L, i, reversed, shift, incr )
+  return InfListString( opt, CutImp( L, i - 1 ), reversed, shift, incr );
+end );
+
+InstallMethod( InfListString, [ IsRecord, IsNListImp, IsDenseList, IsBool, IsInt, IsInt ],
+function( opt, L, indices, reversed, shift, incr )
   if IsEmpty( indices ) then
-    return "...";
+    return opt.ellipsis;
   else
-    return InfListString( L, indices[ 1 ], indices, reversed );
+    return InfListString( opt, L, indices[ 1 ], indices, reversed, shift, incr );
   fi;
 end );
 
-InstallMethod( InfListString, [ IsNListImp, IsPosInt, IsDenseList, IsBool ],
-function( L, start_index, indices, reversed )
-  local str, add_str, add_commas, i, next_i, j;
+InstallMethod( InfListString, [ IsRecord, IsNListImp, IsPosInt, IsDenseList, IsBool, IsDenseList ],
+function( opt, L, start_index, indices, reversed, shift_and_incr )
+  local shift, incr, str, add_str, add_commas, i, j;
+  shift := shift_and_incr[ 1 ];
+  incr := shift_and_incr[ 2 ];
   if not IsSSortedList( indices ) or not ForAll( indices, IsPosInt ) then
     Error( "List of indices must be a strictly sorted list of positive integers" );
   fi;
   indices := Filtered( indices, i -> i >= start_index );
   if IsEmpty( indices ) then
-    return "...";
+    return opt.ellipsis;
   fi;
   str := "";
   add_str := function( s )
     if reversed then
-      str := Concatenation( String( s ), str );
+      str := Concatenation( s, str );
     else
-      str := Concatenation( str, String( s ) );
+      str := Concatenation( str, s );
     fi;
   end;
   add_commas := function( n )
     add_str( Concatenation( RepeatedString( ',', n ), " " ) );
   end;
   if indices[ 1 ] > start_index then
-    add_str( RepeatedString( ',', indices[ 1 ] - start_index ) );
-    if not reversed then add_str( " " ); fi;
+    add_str( opt.ellipsis );
+    add_str( opt.separator );
   fi;
   for j in [ 1 .. Length( indices ) - 1 ] do
     i := indices[ j ];
-    next_i := indices[ j + 1 ];
-    add_str( LookupInfListImp( L, i ) );
-    add_commas( next_i - i );
+    add_str( opt.format_value( i * incr + shift, LookupInfListImp( L, i ) ) );
+    add_str( opt.separator );
+    if indices[ j + 1 ] > 1 + i then
+      add_str( opt.ellipsis );
+      add_str( opt.separator );
+    fi;
   od;
-  add_str( LookupInfListImp( L, indices[ Length( indices ) ] ) );
-  add_str( ", " );
-  add_str( "..." );
+  i := indices[ Length( indices ) ];
+  add_str( opt.format_value( i * incr + shift, LookupInfListImp( L, i ) ) );
+  add_str( opt.separator );
+  add_str( opt.ellipsis );
   return str;
 end );
 
@@ -368,19 +405,22 @@ function( L )
   return [ 1 .. Length( L!.values ) ];
 end );
 
-InstallMethod( InfListString, [ IsInductiveNListImp, IsPosInt, IsBool ],
-function( L, i, reversed )
-  local str_values, values;
+InstallMethod( InfListString, [ IsRecord, IsInductiveNListImp, IsPosInt, IsBool, IsInt, IsInt ],
+function( opt, L, i, reversed, shift, incr )
+  local values, len, str_values;
   values := L!.values;
-  if i > Length( values ) then
-    return "...";
+  len := Length( values );
+  if i > len then
+    return opt.ellipsis;
   fi;
-  str_values := Concatenation( List( values{ [ i .. Length( values ) ] }, String ),
-                               [ "..." ] );
+  str_values := Concatenation( ListN( [ i .. len ] * incr + shift,
+                                      values{ [ i .. len ] },
+                                      opt.format_value ),
+                               [ opt.ellipsis ] );
   if reversed then
     str_values := Reversed( str_values );
   fi;
-  return JoinStringsWithSeparator( str_values, ", " );
+  return JoinStringsWithSeparator( str_values, opt.separator );
 end );
 
 InstallMethod( Repeatify,
@@ -433,16 +473,19 @@ function( L )
   return PositiveIntegersList;
 end );
 
-InstallMethod( InfListString, [ IsRepeatingNListImp, IsBool ],
-function( L, reversed )
-  local str, list;
+InstallMethod( InfListString, [ IsRecord, IsRepeatingNListImp, IsBool, IsInt, IsInt ],
+function( opt, L, reversed, shift, incr )
+  local list, str_list, str;
   list := RepeatingList( L );
-  if reversed then list := Reversed( list ); fi;
-  str := JoinStringsWithSeparator( List( list, String ), ", " );
+  str_list := ListN( [ 1 .. Length( list ) ] * incr + shift,
+                     list,
+                     opt.format_value );
+  if reversed then str_list := Reversed( str_list ); fi;
+  str := JoinStringsWithSeparator( str_list, opt.separator );
   if reversed then
-    return Concatenation( "*( ", str, " )" );
+    return Concatenation( opt.repeat_end_left, str, opt.repeat_start_right );
   else
-    return Concatenation( "( ", str, " )*" );
+    return Concatenation( opt.repeat_start_left, str, opt.repeat_end_right );
   fi;
 end );
 
@@ -509,9 +552,9 @@ function( L )
   return BoundPositions( L!.values );
 end );
 
-InstallMethod( InfListString, [ IsPositionalNListImp, IsPosInt, IsBool ],
-function( L, i, reversed )
-  return InfListString( L, i, KnownIndicesImp( L ), reversed );
+InstallMethod( InfListString, [ IsRecord, IsPositionalNListImp, IsPosInt, IsBool, IsInt, IsInt ],
+function( opt, L, i, reversed, shift, incr )
+  return InfListString( opt, L, i, KnownIndicesImp( L ), reversed, [ shift, incr ] );
 end );
 
 InstallMethod( ArithmeticSequence, [ IsInt, IsInt ],
@@ -540,9 +583,9 @@ function( L )
   return PositiveIntegersList;
 end );
 
-InstallMethod( InfListString, [ IsArithmeticNListImp, IsBool ],
-function( L, reversed )
-  return InfListString( L, [ 1, 2, 3 ], reversed );
+InstallMethod( InfListString, [ IsRecord, IsArithmeticNListImp, IsBool, IsInt, IsInt ],
+function( opt, L, reversed, shift, incr )
+  return InfListString( opt, L, [ 1, 2, 3 ], reversed, shift, incr );
 end );
 
 InstallMethod( Concatenate, [ IsDenseList, IsNList ],
@@ -637,17 +680,20 @@ function( L )
                         KnownIndicesImp( BaseList( L ) ) + concat_len );
 end );
 
-InstallMethod( InfListString, [ IsConcatNListImp, IsPosInt, IsBool ],
-function( L, i, reversed )
-  local list, str1, str2;
+InstallMethod( InfListString, [ IsRecord, IsConcatNListImp, IsPosInt, IsBool, IsInt, IsInt ],
+function( opt, L, i, reversed, shift, incr )
+  local list, str_list, str1, str2;
   list := ConcatList( L );
-  if reversed then list := Reversed( list ); fi;
-  str1 := JoinStringsWithSeparator( list, ", " );
-  str2 := InfListString( BaseList( L ), reversed );
+  str_list := ListN( [ 1 .. Length( list ) ] * incr + shift,
+                     list,
+                     opt.format_value );
+  if reversed then str_list := Reversed( str_list ); fi;
+  str1 := JoinStringsWithSeparator( str_list, opt.separator );
+  str2 := InfListString( opt, BaseList( L ), reversed, shift + incr * Length( list ), incr );
   if reversed then
-    return Concatenation( str2, ", ", str1 );
+    return Concatenation( str2, opt.separator, str1 );
   else
-    return Concatenation( str1, ", ", str2 );
+    return Concatenation( str1, opt.separator, str2 );
   fi;
 end );
 
@@ -754,9 +800,10 @@ function( L )
                    IsPosInt );
 end );
 
-InstallMethod( InfListString, [ IsCutNListImp, IsPosInt, IsBool ],
-function( L, i, reversed )
-  return InfListString( BaseList( L ), i + CutIndex( L ), reversed );
+InstallMethod( InfListString, [ IsRecord, IsCutNListImp, IsPosInt, IsBool, IsInt, IsInt ],
+function( opt, L, i, reversed, shift, incr )
+  return InfListString( opt, BaseList( L ), i + CutIndex( L ),
+                        reversed, shift - incr * CutIndex( L ), incr );
 end );
 
 InstallMethod( AddAssertion, [ IsCutNListImp, IsInfListAssertion ],
@@ -809,9 +856,9 @@ function( L )
   return KnownIndicesImp( BaseList( L ) );
 end );
 
-InstallMethod( InfListString, [ IsMapNListImp, IsBool ],
-function( L, reversed )
-  return Concatenation( "f( ", InfListString( BaseList( L ), reversed ), " )" );
+InstallMethod( InfListString, [ IsRecord, IsMapNListImp, IsBool, IsInt, IsInt ],
+function( opt, L, reversed, shift, incr )
+  return Concatenation( "f( ", InfListString( opt, BaseList( L ), reversed, shift, incr ), " )" );
 end );
 
 InstallMethod( Combine, [ IsDenseList ],
@@ -875,9 +922,9 @@ function( L )
   return Intersection( List( Lists( L ), KnownIndicesImp ) );
 end );
 
-InstallMethod( InfListString, [ IsCombinationNListImp, IsPosInt, IsBool ],
-function( L, i, reversed )
-  return InfListString( L, i, KnownIndicesImp( L ), reversed );
+InstallMethod( InfListString, [ IsRecord, IsCombinationNListImp, IsPosInt, IsBool, IsInt, IsInt ],
+function( opt, L, i, reversed, shift, incr )
+  return InfListString( opt, L, i, KnownIndicesImp( L ), reversed, [ shift, incr ] );
 end );
 
 InstallMethod( LiftList, [ IsObject, IsNList, IsFunction ],
@@ -982,9 +1029,9 @@ function( L )
   return [ 1 .. Length( L!.values ) ];
 end );
 
-InstallMethod( InfListString, [ IsLiftingNListImp, IsPosInt, IsBool ],
-function( L, i, reversed )
-  return InfListString( L, i, KnownIndicesImp( L ), reversed );  
+InstallMethod( InfListString, [ IsRecord, IsLiftingNListImp, IsPosInt, IsBool, IsInt, IsInt ],
+function( opt, L, i, reversed, shift, incr )
+  return InfListString( opt, L, i, KnownIndicesImp( L ), reversed, [ shift, incr ] );
 end );
 
 InstallMethod( Sublist, [ IsNList, IsPosInt, IsPosInt ],
@@ -1285,18 +1332,30 @@ function( L )
   return []; #TODO
 end );
 
-InstallMethod( InfListString, [ IsConcatZListImp ],
-function( L )
-  local middle;
+InstallMethod( InfListString, [ IsRecord, IsConcatZListImp, IsBool, IsInt, IsInt ],
+function( opt, L, reversed, shift, incr )
+  local b, mid_len, mid_str_list, mid, neg, pos;
+  b := BasePosition( L );
+  mid_len := Length( MiddleList( L ) );
   if IsEmpty( MiddleList( L ) ) then
-    middle := ", ";
+    mid := opt.separator;
   else
-    middle := Concatenation( ", ", JoinStringsWithSeparator( MiddleList( L ), ", " ),
-                             ", " );
+    mid_str_list := ListN( [ b .. ( b + mid_len - 1 ) ] * incr + shift,
+                           MiddleList( L ),
+                           opt.format_value );
+    if reversed then mid_str_list := Reversed( mid_str_list ); fi;
+    mid := JoinStringsWithSeparator( mid_str_list, opt.separator );
+    mid := Concatenation( opt.separator, mid, opt.separator );
   fi;
-  return Concatenation( InfListString( NegativeList( L ), true ),
-                        middle,
-                        InfListString( PositiveList( L ) ) );
+  neg := InfListString( opt, NegativeList( L ), not reversed,
+                        b + shift, -incr );
+  pos := InfListString( opt, PositiveList( L ), reversed,
+                        b + incr * ( mid_len - 1 ) + shift, incr );
+  if reversed then
+    return Concatenation( pos, mid, neg );
+  else
+    return Concatenation( neg, mid, pos );
+  fi;
 end );
 
 InstallMethod( Shift, [ IsZList, IsInt ],
@@ -1339,12 +1398,18 @@ function( L )
   return []; # TODO return IntegersList
 end );
 
-InstallMethod( InfListString, [ IsRepeatingZListImp ],
-function( L )
-  local list, str;
+InstallMethod( InfListString, [ IsRecord, IsRepeatingZListImp, IsBool, IsInt, IsInt ],
+function( opt, L, reversed, shift, incr )
+  local b, list, len, str_list, str;
+  b := BasePosition( L );
   list := RepeatingList( L );
-  str := JoinStringsWithSeparator( List( list, String ), ", " );
-  return Concatenation( "*( ", str, " )*" );
+  len := Length( list );
+  str_list := ListN( [ b .. ( b + len - 1 ) ] * incr + shift,
+                     list,
+                     opt.format_value );
+  if reversed then str_list := Reversed( str_list ); fi;
+  str := JoinStringsWithSeparator( str_list, opt.separator );
+  return Concatenation( opt.repeat_end_left, str, opt.repeat_end_right );
 end );
 
 InstallMethod( ShiftImp, [ IsRepeatingZListImp, IsInt ],
@@ -1385,11 +1450,17 @@ function( L )
   return PositiveIntegersList;
 end );
 
-InstallMethod( InfListString, [ IsArithmeticZListImp ],
-function( L )
-  local str;
-  str := JoinStringsWithSeparator( List( SublistImp( L, -2, 3 ), String ), ", " );
-  return Concatenation( "..., ", str, ", ..." );
+InstallMethod( InfListString, [ IsRecord, IsArithmeticZListImp, IsBool, IsInt, IsInt ],
+function( opt, L, reversed, shift, incr )
+  local str_list, str;
+  str_list := ListN( [ -2 .. 3 ] * incr + shift,
+                     SublistImp( L, -2, 3 ),
+                     opt.format_value );
+  if reversed then str_list := Reversed( str_list ); fi;
+  str := JoinStringsWithSeparator( str_list, opt.separator );
+  return Concatenation( opt.ellipsis, opt.separator,
+                        str,
+                        opt.separator, opt.ellipsis );
 end );
 
 InstallMethod( ShiftImp, [ IsArithmeticZListImp, IsInt ],

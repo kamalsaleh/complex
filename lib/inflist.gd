@@ -27,15 +27,20 @@ DeclareOperation( "\[\]", [ IsZList, IsInt ] );
 DeclareOperation( "LookupInfListImp", [ IsNListImp, IsPosInt ] );
 DeclareOperation( "LookupInfListImp", [ IsZListImp, IsInt ] );
 
+DeclareGlobalVariable( "InfListStringDefaultOptions" );
 DeclareOperation( "InfListString", [ IsInfList ] );
 DeclareOperation( "InfListString", [ IsInfListImp ] );
-DeclareOperation( "InfListString", [ IsNListImp, IsPosInt ] );
-DeclareOperation( "InfListString", [ IsNListImp, IsDenseList ] );
-DeclareOperation( "InfListString", [ IsNListImp, IsPosInt, IsDenseList ] );
-DeclareOperation( "InfListString", [ IsNListImp, IsBool ] );
-DeclareOperation( "InfListString", [ IsNListImp, IsPosInt, IsBool ] );
-DeclareOperation( "InfListString", [ IsNListImp, IsDenseList, IsBool ] );
-DeclareOperation( "InfListString", [ IsNListImp, IsPosInt, IsDenseList, IsBool ] );
+DeclareOperation( "InfListString", [ IsRecord, IsInfList ] );
+DeclareOperation( "InfListString", [ IsRecord, IsInfList, IsBool ] );
+DeclareOperation( "InfListString", [ IsRecord, IsInfListImp ] );
+DeclareOperation( "InfListString", [ IsRecord, IsNListImp, IsPosInt ] );
+DeclareOperation( "InfListString", [ IsRecord, IsNListImp, IsDenseList ] );
+DeclareOperation( "InfListString", [ IsRecord, IsNListImp, IsPosInt, IsDenseList ] );
+DeclareOperation( "InfListString", [ IsRecord, IsInfListImp, IsBool ] );
+DeclareOperation( "InfListString", [ IsRecord, IsInfListImp, IsBool, IsInt, IsInt ] );
+DeclareOperation( "InfListString", [ IsRecord, IsNListImp, IsPosInt, IsBool, IsInt, IsInt ] );
+DeclareOperation( "InfListString", [ IsRecord, IsNListImp, IsDenseList, IsBool, IsInt, IsInt ] );
+DeclareOperation( "InfListString", [ IsRecord, IsNListImp, IsPosInt, IsDenseList, IsBool, IsDenseList ] );
 
 DeclareOperation( "MakeInfList", [ IsInfListImp ] );
 DeclareOperation( "Implementation", [ IsInfList ] );
