@@ -51,6 +51,50 @@ function( cat, diffs, make_assertions )
   return C;
 end );
 
+InstallMethod( DifferentialOfComplex, [ IsChainComplex, IsInt ],
+function( C, i )
+  return DifferentialsOfComplex( C )[ i ];
+end );
+
+InstallMethod( \^, [ IsChainComplex, IsInt ],
+function( C, i )
+  return DifferentialOfComplex( C, i );
+end );
+
+InstallMethod( ObjectOfComplex, [ IsChainComplex, IsInt ],
+function( C, i )
+  return DomainOfMorphism( CatOfComplex( C ), DifferentialOfComplex( C, i ) );
+end );
+
+InstallMethod( \[\], [ IsChainComplex, IsInt ],
+function( C, i )
+  return ObjectOfComplex( C, i );
+end );
+
+InstallMethod( CyclesOfComplex, [ IsChainComplex, IsInt ],
+function( C, i )
+  local cat;
+  cat := CatOfComplex( C );
+  return KernelOfMorphism( cat, DifferentialOfComplex( C, i ) );
+end );
+
+InstallMethod( BoundariesOfComplex, [ IsChainComplex, IsInt ],
+function( C, i )
+  local cat;
+  cat := CatOfComplex( C );
+  return ImageOfMorphism( cat, DifferentialOfComplex( C, i + 1 ) );
+end );
+
+InstallMethod( HomologyOfComplex, [ IsChainComplex, IsInt ],
+function( C, i )
+  local cat, im, d, inc;
+  cat := CatOfComplex( C );
+  im := BoundariesOfComplex( C, i );
+  d := DifferentialOfComplex( C, i );
+  inc := KernelFactorization( cat, d, im );
+  return CodomainOfMorphism( cat, CokernelOfMorphism( cat, inc ) );
+end );
+
 InstallMethod( ZeroComplex, [ IsAbelianCat ],
 function( cat )
   local zero_map;
@@ -129,6 +173,23 @@ end );
 #   return ComplexByDifferentialList( cat, diffs );
 # end );
 
+InstallMethod( Shift, [ IsChainComplex, IsInt ],
+function( C, i )
+  local newDifferentials;
+  newDifferentials := Shift( DifferentialsOfComplex( C ), i );
+  if i mod 2 = 1 then
+    newDifferentials := Map( newDifferentials, d -> -d );
+  fi;
+  return ComplexByDifferentialList( CatOfComplex( C ), newDifferentials );
+end );
+
+InstallMethod( ShiftUnsigned, [ IsChainComplex, IsInt ],
+function( C, i )
+  local newDifferentials;
+  newDifferentials := Shift( DifferentialsOfComplex( C ), i );
+  return ComplexByDifferentialList( CatOfComplex( C ), newDifferentials );
+end );
+
 InstallMethod( String, [ IsChainComplex ],
 function( C )
   local cat, opt;
@@ -144,9 +205,11 @@ function( C )
               repeat_start_right := " ]",
               repeat_end_left := "[ ",
               repeat_end_right := " ]",
-              ellipsis := "..." );
+              ellipsis := "---" );
   return InfListString( opt, DifferentialsOfComplex( C ), true );
 end );
 
 InstallMethod( SetString, [ IsChainComplex, IsString ],
                function( L, str ) end );
+
+
