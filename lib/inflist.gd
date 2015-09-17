@@ -138,8 +138,11 @@ DeclareOperation( "LiftListImp", [ IsDenseList, IsNListImp, IsFunction ] );
 DeclareOperation( "Sublist", [ IsNList, IsPosInt, IsPosInt ] );
 DeclareOperation( "SublistImp", [ IsNListImp, IsPosInt, IsPosInt ] );
 DeclareOperation( "Sublist", [ IsZList, IsInt, IsInt ] );
-DeclareOperation( "Sublist", [ IsZList, IsInt, IsInfiniteNumber ] );
+#DeclareOperation( "Sublist", [ IsZList, IsInt, IsInfiniteNumber ] );
 DeclareOperation( "SublistImp", [ IsZListImp, IsInt, IsInt ] );
+
+DeclareOperation( "PositivePartFrom", [ IsZList, IsInt ] );
+DeclareOperation( "NegativePartFrom", [ IsZList, IsInt ] );
 
 DeclareCategory( "IsConcatZListImp", IsZListImp );
 DeclareCategory( "IsRepeatingZListImp", IsZListImp );
