@@ -92,4 +92,39 @@ gap> IsConcatNListImp( l4i );
 true
 gap> IsConcatNListImp( l4i ) and IsRepeatingNListImp( BaseList( l4i ) );
 true
+
+# making a ZList of concat type with two repeating lists
+gap> neg := RepeatList( [ 20, 21, 22 ] );;
+gap> pos := RepeatList( [ 11, 12 ] );;
+gap> L := Concatenate( neg, [ 5, 6, 7 ], pos );;
+gap> L[ 0 ] = 5;
+true
+gap> L[ 1 ] = 6;
+true
+gap> L[ 2 ] = 7;
+true
+gap> L[ 3 ] = 11;
+true
+gap> L[ 4 ] = 12;
+true
+gap> L[ 5 ] = 11;
+true
+gap> L[ -1 ] = 20;
+true
+gap> L[ -2 ] = 21;
+true
+gap> L[ -3 ] = 22;
+true
+gap> L[ -4 ] = 20;
+true
+gap> IsConcatZListImp( Implementation( L ) );
+true
+gap> BasePosition( Implementation( L ) ) = 0;
+true
+gap> PositiveList( Implementation( L ) ) = Implementation( pos );
+true
+gap> NegativeList( Implementation( L ) ) = Implementation( neg );
+true
+
+#
 gap> STOP_TEST( "inflist.tst", 10000 );

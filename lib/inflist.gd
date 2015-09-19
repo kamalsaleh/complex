@@ -118,6 +118,8 @@ DeclareOperation( "ArithmeticSequenceImp", [ IsInt, IsInt ] );
 DeclareOperation( "ZArithmeticSequence", [ IsInt, IsInt ] );
 DeclareOperation( "ZArithmeticSequenceImp", [ IsInt, IsInt ] );
 DeclareOperation( "Concatenate", [ IsDenseList, IsNList ] );
+# concatenate to ZList.
+# middle list is placed in degrees [0, 1, ...]
 DeclareOperation( "Concatenate", [ IsNList, IsDenseList, IsNList ] );
 DeclareOperation( "Concatenate", [ IsNList, IsNList ] );
 DeclareOperation( "ConcatenateImp", [ IsDenseList, IsNListImp ] );
