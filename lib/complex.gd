@@ -3,15 +3,15 @@ DeclareCategory( "IsChainComplex", IsObject );
 DeclareGlobalVariable( "ComplexSingleAssertions" );
 DeclareGlobalVariable( "ComplexDoubleAssertions" );
 
-DeclareOperation( "ComplexByDifferentialList", [ IsAbelianCat, IsZList, IsBool ] );
-DeclareOperation( "ComplexByDifferentialList", [ IsAbelianCat, IsZList ] );
-DeclareOperation( "FiniteComplex", [ IsAbelianCat, IsDenseList ] );
-DeclareOperation( "StalkComplex", [ IsAbelianCat, IsObject ] );
-DeclareOperation( "ZeroComplex", [ IsAbelianCat ] );
-DeclareOperation( "ShortExactSequence", [ IsAbelianCat, IsObject, IsObject ] );
-DeclareOperation( "InductiveComplex", [ IsAbelianCat, IsObject, IsFunction ] );
-DeclareOperation( "Resolution", [ IsAbelianCat, IsObject, IsFunction ] );
-DeclareOperation( "Coresolution", [ IsAbelianCat, IsObject, IsFunction ] );
+DeclareOperation( "ComplexByDifferentialList", [ IsAbelianCategory, IsZList, IsBool ] );
+DeclareOperation( "ComplexByDifferentialList", [ IsAbelianCategory, IsZList ] );
+DeclareOperation( "FiniteComplex", [ IsAbelianCategory, IsDenseList ] );
+DeclareOperation( "StalkComplex", [ IsAbelianCategory, IsObject ] );
+DeclareOperation( "ZeroComplex", [ IsAbelianCategory ] );
+DeclareOperation( "ShortExactSequence", [ IsAbelianCategory, IsObject, IsObject ] );
+DeclareOperation( "InductiveComplex", [ IsAbelianCategory, IsObject, IsFunction ] );
+DeclareOperation( "Resolution", [ IsAbelianCategory, IsObject, IsFunction ] );
+DeclareOperation( "Coresolution", [ IsAbelianCategory, IsObject, IsFunction ] );
 
 DeclareOperation( "Shift", [ IsChainComplex, IsInt ] );
 DeclareOperation( "ShiftUnsigned", [ IsChainComplex, IsInt ] );

@@ -6,28 +6,30 @@ BindGlobal( "FamilyOfChainComplexes",
             NewFamily( "chain complexes" ) );
 
 InstallValue( ComplexSingleAssertions,
-[ [ function( C, i, d ) return MorphismInCat( CatOfComplex( C ), d ); end,
+[ [ function( C, i, d )
+      return MorphismFilter( CatOfComplex( C ) )( d );
+    end,
     "differentials must be morphisms in the category" ] ] );
 InstallValue( ComplexDoubleAssertions,
 [ [ function( C, i, d0, d1 )
       local cat;
       cat := CatOfComplex( C );
-      return CodomainOfMorphism( cat, d1 ) = DomainOfMorphism( cat, d0 );
+      return Range( d1 ) = Source( d0 );
     end,
     "differentials must be composable" ],
   [ function( C, i, d0, d1 )
       local cat;
       cat := CatOfComplex( C );
-      return IsZeroMorphism( cat, Compose( cat, d0, d1 ) );
+      return IsZeroForMorphisms( PostCompose( d0, d1 ) );
     end,
     "differentials must compose to zero" ] ] );
 
-InstallMethod( ComplexByDifferentialList, [ IsAbelianCat, IsZList ],
+InstallMethod( ComplexByDifferentialList, [ IsAbelianCategory, IsZList ],
 function( cat, diffs )
   return ComplexByDifferentialList( cat, diffs, true );
 end );
 
-InstallMethod( ComplexByDifferentialList, [ IsAbelianCat, IsZList, IsBool ],
+InstallMethod( ComplexByDifferentialList, [ IsAbelianCategory, IsZList, IsBool ],
 function( cat, diffs, make_assertions )
   local type, C, assertion, f, msg;
   type := NewType( FamilyOfChainComplexes,
@@ -63,7 +65,7 @@ end );
 
 InstallMethod( ObjectOfComplex, [ IsChainComplex, IsInt ],
 function( C, i )
-  return DomainOfMorphism( CatOfComplex( C ), DifferentialOfComplex( C, i ) );
+  return Source( CatOfComplex( C ), DifferentialOfComplex( C, i ) );
 end );
 
 InstallMethod( \[\], [ IsChainComplex, IsInt ],
@@ -75,14 +77,14 @@ InstallMethod( CyclesOfComplex, [ IsChainComplex, IsInt ],
 function( C, i )
   local cat;
   cat := CatOfComplex( C );
-  return KernelOfMorphism( cat, DifferentialOfComplex( C, i ) );
+  return KernelEmb( DifferentialOfComplex( C, i ) );
 end );
 
 InstallMethod( BoundariesOfComplex, [ IsChainComplex, IsInt ],
 function( C, i )
   local cat;
   cat := CatOfComplex( C );
-  return ImageOfMorphism( cat, DifferentialOfComplex( C, i + 1 ) );
+  return ImageEmbedding( DifferentialOfComplex( C, i + 1 ) );
 end );
 
 InstallMethod( HomologyOfComplex, [ IsChainComplex, IsInt ],
@@ -91,82 +93,82 @@ function( C, i )
   cat := CatOfComplex( C );
   im := BoundariesOfComplex( C, i );
   d := DifferentialOfComplex( C, i );
-  inc := KernelFactorization( cat, d, im );
-  return CodomainOfMorphism( cat, CokernelOfMorphism( cat, inc ) );
+  inc := KernelLift( d, im );
+  return Cokernel( inc );
 end );
 
-InstallMethod( ZeroComplex, [ IsAbelianCat ],
+InstallMethod( ZeroComplex, [ IsAbelianCategory ],
 function( cat )
   local zero_map;
-  zero_map := ZeroMorphism( cat, ZeroObject( cat ), ZeroObject( cat ) );
+  zero_map := ZeroMorphism( ZeroObject( cat ), ZeroObject( cat ) );
   return ComplexByDifferentialList( cat, ZRepeatList( [ zero_map ] ), false );
 end );
 
-InstallMethod( FiniteComplex, [ IsAbelianCat, IsDenseList ],
+InstallMethod( FiniteComplex, [ IsAbelianCategory, IsDenseList ],
 function( cat, diffs )
   local zero, zero_map, zero_part, n;
   zero := ZeroObject( cat );
-  zero_map := ZeroMorphism( cat, zero, zero );
+  zero_map := ZeroMorphism( zero, zero );
   zero_part := RepeatList( [ zero_map ] );
   n := Length( diffs );
-  if not IsZeroObject( cat, DomainOfMorphism( cat, diffs[ n ] ) ) then
+  if not IsZeroForObjects( Source( diffs[ n ] ) ) then
     diffs := Concatenation( diffs,
-                            [ ZeroMorphism( cat, zero, DomainOfMorphism( cat, diffs[ n ] ) ) ] );
+                            [ ZeroMorphism( zero, Source( diffs[ n ] ) ) ] );
   fi;
-  if not IsZeroObject( cat, CodomainOfMorphism( cat, diffs[ 1 ] ) ) then
-    diffs := Concatenation( [ ZeroMorphism( cat, CodomainOfMorphism( cat, diffs[ 1 ] ), zero ) ],
+  if not IsZeroForObjects( Range( diffs[ 1 ] ) ) then
+    diffs := Concatenation( [ ZeroMorphism( Range( diffs[ 1 ] ), zero ) ],
                             diffs );
   fi;
   return ComplexByDifferentialList( cat, Concat( zero_part, diffs, zero_part ) );
 end );
 
-InstallMethod( StalkComplex, [ IsAbelianCat, IsObject ],
+InstallMethod( StalkComplex, [ IsAbelianCategory, IsObject ],
 function( cat, obj )
   return FiniteComplex( cat,
-                        [ ZeroMorphism( cat, obj, ZeroObject( cat ) ),
-                          ZeroMorphism( cat, ZeroObject( cat ), obj ) ] );
+                        [ ZeroMorphism( obj, ZeroObject( cat ) ),
+                          ZeroMorphism( ZeroObject( cat ), obj ) ] );
 end );
 
 # TODO ShortExactSequence
 
-InstallMethod( InductiveComplex, [ IsAbelianCat, IsObject, IsFunction ],
+InstallMethod( InductiveComplex, [ IsAbelianCategory, IsObject, IsFunction ],
 function( cat, d0, f )
   local zero_map, zero_part, d_1, diffs;
-  zero_map := ZeroMorphism( cat, ZeroObject( cat ), ZeroObject( cat ) );
+  zero_map := ZeroMorphism( ZeroObject( cat ), ZeroObject( cat ) );
   zero_part := RepeatList( [ zero_map ] );
-  d_1 := ZeroMorphism( cat, CodomainOfMorphism( cat, d0 ), ZeroObject( cat ) );
+  d_1 := ZeroMorphism( Range( d0 ), ZeroObject( cat ) );
   diffs := Concat( zero_part, [ d_1 ], InductiveList( d0, f ) );
   return ComplexByDifferentialList( cat, diffs );
 end );
 
-InstallMethod( Resolution, [ IsAbelianCat, IsObject, IsFunction ],
+InstallMethod( Resolution, [ IsAbelianCategory, IsObject, IsFunction ],
 function( cat, obj, f )
   local d0, next_d;
-  d0 := ZeroMorphism( cat, obj, ZeroObject( cat ) );
+  d0 := ZeroMorphism( obj, ZeroObject( cat ) );
   next_d := function( d )
     local ker, K, p;
-    ker := KernelOfMorphism( cat, d );
-    K := DomainOfMorphism( cat, ker );
+    ker := KernelEmb( d );
+    K := Source( ker );
     p := f( K );
-    return Compose( cat, ker, p );
+    return PostCompose( ker, p );
   end;
   return InductiveComplex( cat, d0, next_d );
 end );
 
-# InstallMethod( Resolution, [ IsAbelianCat, IsObject, IsFunction ],
+# InstallMethod( Resolution, [ IsAbelianCategory, IsObject, IsFunction ],
 # function( cat, obj, f )
 #   local d0, d1, next_d;
 #   zero := ZeroObject( cat );
-#   zero_map := ZeroMorphism( cat, ZeroObject( cat ), ZeroObject( cat ) );
+#   zero_map := ZeroMorphism( ZeroObject( cat ), ZeroObject( cat ) );
 #   zero_part := RepeatList( zero_map );
-#   d0 := ZeroMorphism( cat, obj, zero );
+#   d0 := ZeroMorphism( obj, zero );
 #   d1 := f( obj );
 #   next_d := function( d )
 #     local ker, K, p;
-#     ker := KernelOfMorphism( cat, d );
-#     K := DomainOfMorphism( cat, ker );
+#     ker := KernelEmb( d );
+#     K := Source( ker );
 #     p := f( K );
-#     return Compose( cat, ker, p );
+#     return PostCompose( ker, p );
 #   end;
 #   diffs := Concat( zero_part, [ d0 ],
 #                    InductiveList( d1, next_d ) );
@@ -197,7 +199,7 @@ function( C )
   opt := rec( format_value :=
               function( i, d )
                 return Concatenation( String( i ), ":",
-                                      ObjectAsString( cat, DomainOfMorphism( cat, d ) ),
+                                      String( Source( d ) ),
                                       " ->" );
               end,
               separator := " ",
