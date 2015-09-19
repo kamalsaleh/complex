@@ -1384,6 +1384,15 @@ function( L, i )
                              BasePosition( L ) - i );
 end );
 
+InstallMethod( MapImp, [ IsConcatZListImp, IsFunction ],
+function( L, f )
+  return MakeConcatZListImp
+         ( MapImp( NegativeList( L ), f ),
+           List( MiddleList( L ), f ),
+           MapImp( PositiveList( L ), f ),
+           BasePosition( L ) );
+end );
+
 InstallMethod( ZRepeatList, [ IsDenseList ],
 function( list )
   return MakeInfList( ZRepeatListImp( list ) );

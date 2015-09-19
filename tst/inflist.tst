@@ -126,5 +126,16 @@ true
 gap> NegativeList( Implementation( L ) ) = Implementation( neg );
 true
 
+# shift and map for ConcatZList
+gap> L1 := Concatenate( RepeatList( [ 20, 21, 22 ] ), [ 1, 2 ], RepeatList( [ 11, 12 ] ) );;
+gap> L2 := Shift( L1, 2 );;
+gap> L2[ 0 ] = L1[ 2 ];
+true
+gap> Sublist( L2, -3, 1 ) = [ 20, 1, 2, 11 ];
+true
+gap> L3 := Map( L2, x -> x + 1 );;
+gap> Sublist( L3, -3, 1 ) = [ 21, 2, 3, 12 ];
+true
+
 #
 gap> STOP_TEST( "inflist.tst", 10000 );
