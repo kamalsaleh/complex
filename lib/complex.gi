@@ -65,7 +65,7 @@ end );
 
 InstallMethod( ObjectOfComplex, [ IsChainComplex, IsInt ],
 function( C, i )
-  return Source( CatOfComplex( C ), DifferentialOfComplex( C, i ) );
+  return Source( DifferentialOfComplex( C, i ) );
 end );
 
 InstallMethod( \[\], [ IsChainComplex, IsInt ],
