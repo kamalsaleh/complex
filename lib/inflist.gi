@@ -1314,7 +1314,8 @@ function( L, NL )
     change := true;
   fi;
   if change then
-    SetBetterImplementation( L, ConcatenateImp( neg, MiddleList( L ), pos ) );
+    SetBetterImplementation( L, MakeConcatZListImp( neg, MiddleList( L ), pos,
+                                                    BasePosition( L ) ) );
   fi;
 end );
 
