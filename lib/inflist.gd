@@ -27,7 +27,8 @@ DeclareOperation( "\[\]", [ IsZList, IsInt ] );
 DeclareOperation( "LookupInfListImp", [ IsNListImp, IsPosInt ] );
 DeclareOperation( "LookupInfListImp", [ IsZListImp, IsInt ] );
 
-DeclareGlobalVariable( "InfListStringDefaultOptions" );
+DeclareGlobalVariable( "InfListStringDefaultOptionsN" );
+DeclareGlobalVariable( "InfListStringDefaultOptionsZ" );
 DeclareOperation( "InfListString", [ IsInfList ] );
 DeclareOperation( "InfListString", [ IsInfListImp ] );
 DeclareOperation( "InfListString", [ IsRecord, IsInfList ] );

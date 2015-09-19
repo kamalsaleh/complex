@@ -264,7 +264,17 @@ function( L, i, elem1, elem2 )
   od;
 end );
 
-InstallValue( InfListStringDefaultOptions,
+InstallValue( InfListStringDefaultOptionsN,
+              rec( format_value := function( i, v )
+                     return String( v );
+                   end,
+                   separator := ", ",
+                   repeat_start_left := "( ",
+                   repeat_start_right := " )",
+                   repeat_end_left := "*( ",
+                   repeat_end_right := " )*",
+                   ellipsis := "..." ) );
+InstallValue( InfListStringDefaultOptionsZ,
               rec( format_value := function( i, v )
                      return Concatenation( String( i ), ":", String( v ) );
                    end,
@@ -275,9 +285,14 @@ InstallValue( InfListStringDefaultOptions,
                    repeat_end_right := " )*",
                    ellipsis := "..." ) );
 
-InstallMethod( InfListString, [ IsInfListImp ],
+InstallMethod( InfListString, [ IsNListImp ],
 function( L )
-  return InfListString( InfListStringDefaultOptions, L );
+  return InfListString( InfListStringDefaultOptionsN, L );
+end );
+
+InstallMethod( InfListString, [ IsZListImp ],
+function( L )
+  return InfListString( InfListStringDefaultOptionsZ, L );
 end );
 
 InstallMethod( InfListString, [ IsRecord, IsInfListImp ],
