@@ -136,8 +136,12 @@ function( cat, d0, f )
   local zero_map, zero_part, d_1, diffs;
   zero_map := ZeroMorphism( ZeroObject( cat ), ZeroObject( cat ) );
   zero_part := RepeatList( [ zero_map ] );
+  # d_{-1}:
   d_1 := ZeroMorphism( Range( d0 ), ZeroObject( cat ) );
+  # this places d_1 in degree 0:
   diffs := Concat( zero_part, [ d_1 ], InductiveList( d0, f ) );
+  # shift to get d0 in degree 0:
+  diffs := Shift( diffs, 1 );
   return ComplexByDifferentialList( cat, diffs );
 end );
 
