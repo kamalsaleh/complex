@@ -77,7 +77,7 @@ InstallMethod( CyclesOfComplex, [ IsChainComplex, IsInt ],
 function( C, i )
   local cat;
   cat := CatOfComplex( C );
-  return KernelEmb( DifferentialOfComplex( C, i ) );
+  return KernelEmbedding( DifferentialOfComplex( C, i ) );
 end );
 
 InstallMethod( BoundariesOfComplex, [ IsChainComplex, IsInt ],
@@ -94,7 +94,7 @@ function( C, i )
   im := BoundariesOfComplex( C, i );
   d := DifferentialOfComplex( C, i );
   inc := KernelLift( d, im );
-  return Cokernel( inc );
+  return CokernelObject( inc );
 end );
 
 InstallMethod( ZeroComplex, [ IsAbelianCategory ],
@@ -151,7 +151,7 @@ function( cat, obj, f )
   d0 := ZeroMorphism( obj, ZeroObject( cat ) );
   next_d := function( d )
     local ker, K, p;
-    ker := KernelEmb( d );
+    ker := KernelEmbedding( d );
     K := Source( ker );
     p := f( K );
     return PostCompose( ker, p );
