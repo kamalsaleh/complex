@@ -45,6 +45,7 @@ DeclareOperation( "DifferentialOfComplex", [ IsChainComplex, IsInt ] );
 DeclareOperation( "\^", [ IsChainComplex, IsInt ] );
 DeclareOperation( "\[\]", [ IsChainComplex, IsInt ] );
 DeclareAttribute( "DifferentialsOfComplex", IsChainComplex );
+DeclareAttribute( "ObjectsOfComplex", IsChainComplex );
 DeclareOperation( "CyclesOfComplex", [ IsChainComplex, IsInt ] );
 DeclareOperation( "BoundariesOfComplex", [ IsChainComplex, IsInt ] );
 DeclareOperation( "HomologyOfComplex", [ IsChainComplex, IsInt ] );

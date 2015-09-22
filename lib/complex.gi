@@ -160,8 +160,8 @@ function( cat )
 
   direct_sum := function( complexes )
     local diffs;
-    diffs := MapN( List( complexes, DifferentialsOfComplex ),
-                   DirectSumFunctorial );
+    diffs := Map( Combine( List( complexes, DifferentialsOfComplex ) ),
+                  DirectSumFunctorial );
     #cat := UnderlyingCategory( CapCategory( complexes[ 1 ] ) );
     return ComplexByDifferentialList( cat, diffs );
   end;
@@ -169,8 +169,8 @@ function( cat )
 
   injection_of_cofactor := function( complexes, i, sum_complex )
     local morphisms;
-    morphisms := MapN( [ Combine( List( complexes, DifferentialsOfComplex ) ),
-                         DifferentialsOfComplex( sum_complex ) ],
+    morphisms := MapN( [ Combine( List( complexes, ObjectsOfComplex ) ),
+                         ObjectsOfComplex( sum_complex ) ],
                        function( summands, sum )
                          return InjectionOfCofactorOfDirectSumWithGivenDirectSum
                                 ( summands, i, sum );
@@ -183,8 +183,8 @@ function( cat )
 
   projection_in_factor := function( complexes, i, sum_complex )
     local morphisms;
-    morphisms := MapN( [ Combine( List( complexes, DifferentialsOfComplex ) ),
-                         DifferentialsOfComplex( sum_complex ) ],
+    morphisms := MapN( [ Combine( List( complexes, ObjectsOfComplex ) ),
+                         ObjectsOfComplex( sum_complex ) ],
                        function( summands, sum )
                          return ProjectionInFactorOfDirectSumWithGivenDirectSum
                                 ( summands, i, sum );
@@ -228,6 +228,11 @@ function( cat, diffs, make_assertions )
     od;
   fi;
   return C;
+end );
+
+InstallMethod( ObjectsOfComplex, [ IsChainComplex ],
+function( C )
+  return Map( DifferentialsOfComplex( C ), Source );
 end );
 
 InstallMethod( DifferentialOfComplex, [ IsChainComplex, IsInt ],
