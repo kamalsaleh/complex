@@ -525,6 +525,21 @@ function( L, A )
   CheckAssertion( A, n, rep_list[ n ], rep_list[ 1 ] );
 end );
 
+InstallMethod( PositionalZList, [ IsFunction ],
+function( f )
+  return PositionalZList( f, false );
+end );
+
+InstallMethod( PositionalZList, [ IsFunction, IsBool ],
+function( f, store )
+  # TODO use separate representation for positional ZList
+  local pos_list, middle, neg_list;
+  pos_list := PositionalList( f, store );
+  middle := [ f( 0 ) ];
+  neg_list := PositionalList( i -> f( -i ), store );
+  return Concatenate( neg_list, middle, pos_list );
+end );
+
 InstallMethod( PositionalList, [ IsFunction ],
 function( f )
   return PositionalList( f, false );

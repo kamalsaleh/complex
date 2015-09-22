@@ -5,7 +5,7 @@
 ReadPackage( "complex", "lib/assert.gd" );
 ReadPackage( "complex", "lib/inflist.gd" );
 ReadPackage( "complex", "lib/complex.gd" );
-#ReadPackage( "complex", "lib/chainmap.gd" );
+ReadPackage( "complex", "lib/chainmap.gd" );
 #ReadPackage( "complex", "lib/cone.gd" );
 #ReadPackage( "complex", "lib/truncations.gd" );
 

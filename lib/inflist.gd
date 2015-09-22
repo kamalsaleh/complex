@@ -114,6 +114,8 @@ DeclareOperation( "InductiveListImp", [ IsObject, IsFunction ] );
 DeclareOperation( "PositionalList", [ IsFunction ] );
 DeclareOperation( "PositionalList", [ IsFunction, IsBool ] );
 DeclareOperation( "PositionalListImp", [ IsFunction, IsBool ] );
+DeclareOperation( "PositionalZList", [ IsFunction ] );
+DeclareOperation( "PositionalZList", [ IsFunction, IsBool ] );
 DeclareOperation( "ArithmeticSequence", [ IsInt, IsInt ] );
 DeclareOperation( "ArithmeticSequenceImp", [ IsInt, IsInt ] );
 DeclareOperation( "ZArithmeticSequence", [ IsInt, IsInt ] );
