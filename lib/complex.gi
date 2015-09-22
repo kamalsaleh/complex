@@ -189,7 +189,7 @@ function( cat )
                          return ProjectionInFactorOfDirectSumWithGivenDirectSum
                                 ( summands, i, sum );
                        end );
-    return ChainMapByMorphismList( complexes[ i ], sum_complex,
+    return ChainMapByMorphismList( sum_complex, complexes[ i ],
                                    morphisms );
   end;
   AddProjectionInFactorOfDirectSumWithGivenDirectSum
