@@ -24,6 +24,183 @@ InstallValue( ComplexDoubleAssertions,
     end,
     "differentials must compose to zero" ] ] );
 
+InstallMethod( ComplexCategory, [ IsCapCategory ],
+function( cat )
+  local   name,  complex_cat,  addition_for_morphisms,  
+          additive_inverse_for_morphisms,  pre_compose,  
+          identity_morphism,  inverse,  lift_along_monomorphism,  
+          colift_along_epimorphism,  kernel_embedding,  
+          cokernel_projection,  direct_sum,  injection_of_cofactor,  
+          projection_in_factor;
+
+  name := Concatenation( "Chain complexes over ", Name( cat ) );
+  complex_cat := CreateCapCategory( name );
+  SetFilterObj( complex_cat, IsChainComplexCategory );
+  SetUnderlyingCategory( complex_cat, cat );
+
+  if HasIsAbelianCategory( cat ) and IsAbelianCategory( cat ) then
+    SetIsAbelianCategory( complex_cat, true );
+  fi;
+
+  # TODO
+  #AddIsEqualForObjects( complex_cat, 
+  #AddIsEqualForMorphisms( complex_cat, 
+
+  AddZeroObject( complex_cat, ZeroComplex );
+
+  AddZeroMorphism( complex_cat, ZeroChainMap );
+
+  addition_for_morphisms := function( m1, m2 )
+    local morphisms;
+    morphisms := MapN( [ MorphismsOfChainMap( m1 ),
+                         MorphismsOfChainMap( m2 ) ],
+                       AdditionForMorphisms );
+    return ChainMapByMorphismList( Source( m1 ), Range( m1 ),
+                                   morphisms );
+  end;
+  AddAdditionForMorphisms( complex_cat, addition_for_morphisms );
+
+  additive_inverse_for_morphisms := function( map )
+    local morphisms;
+    morphisms := Map( MorphismsOfChainMap( map ),
+                      AdditiveInverseForMorphisms );
+    return ChainMapByMorphismList( Source( map ), Range( map ),
+                                   morphisms );
+  end;
+  AddAdditiveInverseForMorphisms( complex_cat, additive_inverse_for_morphisms );
+
+  pre_compose := function( m1, m2 )
+    local morphisms;
+    morphisms := MapN( [ MorphismsOfChainMap( m1 ),
+                         MorphismsOfChainMap( m2 ) ],
+                       PreCompose );
+    return ChainMapByMorphismList( Source( m1 ), Range( m2 ),
+                                   morphisms );
+  end;
+  AddPreCompose( complex_cat, pre_compose );
+
+  identity_morphism := function( C )
+    local morphisms;
+    morphisms := Map( DifferentialsOfComplex( C ),
+                      d -> IdentityMorphism( Source( d ) ) );
+    return ChainMapByMorphismList( C, C, morphisms );
+  end;
+  AddIdentityMorphism( complex_cat, identity_morphism );
+
+  inverse := function( iso )
+    local morphisms;
+    morphisms := Map( MorphismsOfChainMap( iso ), Inverse );
+    return ChainMapByMorphismList( Range( iso ), Source( iso ),
+                                   morphisms );
+  end;
+  AddInverse( complex_cat, inverse );
+
+  lift_along_monomorphism := function( mono, test )
+    local morphisms;
+    morphisms := MapN( [ MorphismsOfChainMap( mono ),
+                         MorphismsOfChainMap( test ) ],
+                       LiftAlongMonomorphism );
+    return ChainMapByMorphismList( Source( test ), Source( mono ),
+                                   morphisms );
+  end;
+  AddLiftAlongMonomorphism( complex_cat, lift_along_monomorphism );
+
+  colift_along_epimorphism := function( epi, test )
+    local morphisms;
+    morphisms := MapN( [ MorphismsOfChainMap( epi ),
+                         MorphismsOfChainMap( test ) ],
+                       ColiftAlongEpimorphism );
+    return ChainMapByMorphismList( Range( epi ), Source( test ),
+                                   morphisms );
+  end;
+  AddColiftAlongEpimorphism( complex_cat, colift_along_epimorphism );
+
+  kernel_embedding := function( map )
+    local   embeddings,  kernel_to_next_source,  diffs,
+            kernel_complex,  kernel_emb;
+    embeddings := Map( MorphismsOfChainMap( map ), KernelEmbedding );
+    kernel_to_next_source :=
+      MapN( [ embeddings, DifferentialsOfComplex( Source( map ) ) ],
+            PreCompose );
+    diffs :=
+      MapN( [ Shift( MorphismsOfChainMap( map ), -1 ),
+              kernel_to_next_source ],
+            KernelLift );
+    #cat := UnderlyingCategory( CapCategory( map ) );
+    kernel_complex := ComplexByDifferentialList( cat, diffs );
+    kernel_emb := ChainMapByMorphismList( kernel_complex, Source( map ),
+                                          embeddings );
+    return kernel_emb;
+  end;
+  if CanCompute( cat, "KernelEmbedding" ) and CanCompute( cat, "KernelLift" ) then
+    AddKernelEmbedding( complex_cat, kernel_embedding );
+  fi;
+
+  cokernel_projection := function( map )
+    local   projections,  range_to_next_cokernel,  diffs,
+            cokernel_complex,  cokernel_proj;
+    projections := Map( MorphismsOfChainMap( map ), CokernelProjection );
+    range_to_next_cokernel :=
+      MapN( [ DifferentialsOfComplex( Range( map ) ),
+              Shift( projections, -1 ) ],
+            PreCompose );
+    diffs :=
+      MapN( [ range_to_next_cokernel,
+              projections ],
+            CokernelColift );
+    #cat := UnderlyingCategory( CapCategory( map ) );
+    cokernel_complex := ComplexByDifferentialList( cat, diffs );
+    cokernel_proj := ChainMapByMorphismList( Range( map ), cokernel_complex,
+                                             projections );
+    return cokernel_proj;
+  end;
+  if CanCompute( cat, "CokernelProjection" ) and CanCompute( cat, "CokernelColift" ) then
+    AddCokernelProjection( complex_cat, cokernel_projection );
+  fi;
+
+  direct_sum := function( complexes )
+    local diffs;
+    diffs := MapN( List( complexes, DifferentialsOfComplex ),
+                   DirectSumFunctorial );
+    #cat := UnderlyingCategory( CapCategory( complexes[ 1 ] ) );
+    return ComplexByDifferentialList( cat, diffs );
+  end;
+  AddDirectSum( complex_cat, direct_sum );
+
+  injection_of_cofactor := function( complexes, i, sum_complex )
+    local morphisms;
+    morphisms := MapN( [ Combine( List( complexes, DifferentialsOfComplex ) ),
+                         DifferentialsOfComplex( sum_complex ) ],
+                       function( summands, sum )
+                         return InjectionOfCofactorOfDirectSumWithGivenDirectSum
+                                ( summands, i, sum );
+                       end );
+    return ChainMapByMorphismList( complexes[ i ], sum_complex,
+                                   morphisms );
+  end;
+  AddInjectionOfCofactorOfDirectSumWithGivenDirectSum
+    ( complex_cat, injection_of_cofactor );
+
+  projection_in_factor := function( complexes, i, sum_complex )
+    local morphisms;
+    morphisms := MapN( [ Combine( List( complexes, DifferentialsOfComplex ) ),
+                         DifferentialsOfComplex( sum_complex ) ],
+                       function( summands, sum )
+                         return ProjectionInFactorOfDirectSumWithGivenDirectSum
+                                ( summands, i, sum );
+                       end );
+    return ChainMapByMorphismList( complexes[ i ], sum_complex,
+                                   morphisms );
+  end;
+  AddProjectionInFactorOfDirectSumWithGivenDirectSum
+    ( complex_cat, projection_in_factor );
+
+  #TODO
+
+  Finalize( complex_cat );
+  return complex_cat;
+end );
+
 InstallMethod( ComplexByDifferentialList, [ IsAbelianCategory, IsZList ],
 function( cat, diffs )
   return ComplexByDifferentialList( cat, diffs, true );

@@ -21,7 +21,13 @@ end );
 
 # InstallMethod( FiniteChainMap, [ IsChainComplex, IsChainComplex, IsInt, IsList ],
 # function( C1, C2, base_pos, morphisms )
-  
+#   local make_morphism, morphisms;
+#   make_morphism := function( i )
+#     return ZeroMorphism( ObjectOfComplex( C1, i ),
+#                          ObjectOfComplex( C2, i ) );
+#   end;
+#   morphisms_pos := PositionalList( make_morphism );
+#   return ChainMapByMorphismList( C1, C2, morphisms );
 # end );
 
 InstallMethod( ZeroChainMap, [ IsChainComplex, IsChainComplex ],

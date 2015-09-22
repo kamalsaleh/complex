@@ -532,12 +532,17 @@ end );
 
 InstallMethod( PositionalZList, [ IsFunction, IsBool ],
 function( f, store )
+  return MakeInfList( PositionalZListImp( f, store ) );
+end );
+
+InstallMethod( PositionalZListImp, [ IsFunction, IsBool ],
+function( f, store )
   # TODO use separate representation for positional ZList
   local pos_list, middle, neg_list;
-  pos_list := PositionalList( f, store );
+  pos_list := PositionalListImp( f, store );
   middle := [ f( 0 ) ];
-  neg_list := PositionalList( i -> f( -i ), store );
-  return Concatenate( neg_list, middle, pos_list );
+  neg_list := PositionalListImp( i -> f( -i ), store );
+  return ConcatenateImp( neg_list, middle, pos_list );
 end );
 
 InstallMethod( PositionalList, [ IsFunction ],
@@ -841,6 +846,14 @@ function( L, A )
   AddAssertion( BaseList( L ), Shift( A, - CutIndex( L ) ) );
 end );
 
+InstallMethod( MapN, [ IsDenseList, IsFunction ],
+function( lists, f )
+  # TODO check that lists are appropriate
+  # TODO check number of arguments for f
+  return Map( Combine( lists ),
+              items -> CallFuncList( f, items ) );
+end );
+
 InstallMethod( Map, [ IsInfList, IsFunction ],
 function( list, f )
   return MakeInfList( MapImp( Implementation( list ), f ) );
@@ -898,7 +911,19 @@ end );
 
 InstallMethod( CombineImp, [ IsDenseList ],
 function( lists )
+  if ForAny( lists, IsNListImp ) then
+    return NCombineImp( lists );
+  else
+    return ZCombineImp( lists );
+  fi;
+end );
+
+InstallMethod( NCombineImp, [ IsDenseList ],
+function( lists )
   local L, list, i, cut_index, rep_len, rep_list;
+  if not ForAll( lists, IsNListImp ) then
+    Error( "lists must be NListImp objects" );
+  fi;
   if ForAny( lists, IsConcatNListImp ) then
     cut_index := 0;
     for i in [ 1 .. Length( lists ) ] do
@@ -924,6 +949,17 @@ function( lists )
     NotifyBetterImplementation( list, L );
   od;
   return L;
+end );
+
+InstallMethod( ZCombineImp, [ IsDenseList ],
+function( lists )
+  if not ForAll( lists, IsZListImp ) then
+    Error( "lists must be ZListImp objects" );
+  fi;
+  # TODO avoid positional list
+  # (should have separate IsCombinationZListImp implementation)
+  return PositionalZListImp( i -> List( lists, l -> LookupInfListImp( l, i ) ),
+                             false );
 end );
 
 InstallMethod( BetterImplementationAvailable, [ IsCombinationNListImp, IsNListImp ],

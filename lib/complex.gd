@@ -1,7 +1,17 @@
-DeclareCategory( "IsChainComplex", IsObject );
+DeclareCategory( "IsChainOrCochainComplex", IsObject );
+DeclareCategory( "IsChainComplex", IsChainOrCochainComplex );
+DeclareCategory( "IsCochainComplex", IsChainOrCochainComplex );
+DeclareCategory( "IsChainOrCochainComplexCategory", IsCapCategory );
+DeclareCategory( "IsChainComplexCategory", IsChainOrCochainComplexCategory );
+DeclareCategory( "IsCochainComplexCategory", IsChainOrCochainComplexCategory );
 
 DeclareGlobalVariable( "ComplexSingleAssertions" );
 DeclareGlobalVariable( "ComplexDoubleAssertions" );
+
+DeclareAttribute( "ComplexCategory", IsCapCategory );
+DeclareAttribute( "CocomplexCategory", IsCapCategory );
+
+DeclareAttribute( "UnderlyingCategory", IsChainOrCochainComplexCategory );
 
 DeclareOperation( "ComplexByDifferentialList", [ IsAbelianCategory, IsZList, IsBool ] );
 DeclareOperation( "ComplexByDifferentialList", [ IsAbelianCategory, IsZList ] );
