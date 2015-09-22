@@ -1,4 +1,4 @@
-DeclareCategory( "IsChainOrCochainComplex", IsObject );
+DeclareCategory( "IsChainOrCochainComplex", IsCapCategoryObject );
 DeclareCategory( "IsChainComplex", IsChainOrCochainComplex );
 DeclareCategory( "IsCochainComplex", IsChainOrCochainComplex );
 DeclareCategory( "IsChainOrCochainComplexCategory", IsCapCategory );

@@ -1,4 +1,4 @@
-DeclareCategory( "IsChainMap", IsObject );
+DeclareCategory( "IsChainMap", IsCapCategoryMorphism );
 DeclareCategoryFamily( "IsChainMap" );
 
 # DeclareRepresentation( "IsChainMapDefaultRep",

@@ -227,6 +227,7 @@ function( cat, diffs, make_assertions )
       AddAssertion( diffs, MakeDoubleAssertion( C, f, msg ) );
     od;
   fi;
+  Add( ComplexCategory( cat ), C );
   return C;
 end );
 

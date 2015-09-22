@@ -16,6 +16,7 @@ function( C1, C2, morphisms )
                            Source, C1,
                            Range, C2,
                            MorphismsOfChainMap, morphisms );
+  Add( CapCategory( C1 ), map );
   return map;
 end );
 
