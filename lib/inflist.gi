@@ -382,6 +382,21 @@ function( opt, L, start_index, indices, reversed, shift_and_incr )
   return str;
 end );
 
+InstallMethod( \=, [ IsInfList, IsObject ], ReturnFalse );
+InstallMethod( \=, [ IsObject, IsInfList ], ReturnFalse );
+InstallMethod( \=, [ IsInfListImp, IsObject ], ReturnFalse );
+InstallMethod( \=, [ IsObject, IsInfListImp ], ReturnFalse );
+
+InstallMethod( \=, [ IsNList, IsNList ],
+function( L1, L2 )
+  return Implementation( L1 ) = Implementation( L2 );
+end );
+
+InstallMethod( \=, [ IsZList, IsZList ],
+function( L1, L2 )
+  return Implementation( L1 ) = Implementation( L2 );
+end );
+
 InstallMethod( InductiveList, [ IsObject, IsFunction ],
 function( init, f )
   return MakeInfList( InductiveListImp( init, f ) );
@@ -393,6 +408,12 @@ function( init, f )
                          rec( values := [ init ] ),
                          [ InitialValue, init,
                            InductionFunction, f ] );
+end );
+
+InstallMethod( \=, [ IsInductiveNListImp, IsInductiveNListImp ],
+function( L1, L2 )
+  return InitialValue( L1 ) = InitialValue( L2 )
+         and InductionFunction( L1 ) = InductionFunction( L2 );
 end );
 
 InstallMethod( LookupInfListImp, [ IsInductiveNListImp, IsPosInt ],
@@ -472,6 +493,11 @@ function( list )
   return MakeInfListImp( IsRepeatingNListImp,
                          rec(),
                          [ RepeatingList, list ] );
+end );
+
+InstallMethod( \=, [ IsRepeatingNListImp, IsRepeatingNListImp ],
+function( L1, L2 )
+  return RepeatingList( L1 ) = RepeatingList( L2 );
 end );
 
 InstallMethod( LookupInfListImp, [ IsRepeatingNListImp, IsPosInt ],
@@ -563,6 +589,12 @@ function( f, store )
                            IsStoringValues, store ] );
 end );
 
+InstallMethod( \=, [ IsPositionalNListImp, IsPositionalNListImp ],
+function( L1, L2 )
+  # TODO: should IsStoringValues also be the same?
+  return ElementFunction( L1 ) = ElementFunction( L2 );
+end );
+
 InstallMethod( LookupInfListImp, [ IsPositionalNListImp, IsPosInt ],
 function( L, i )
   local values, f, v;
@@ -605,6 +637,12 @@ function( init, incr )
                            Increment, incr ] );
 end );
 
+InstallMethod( \=, [ IsArithmeticNListImp, IsArithmeticNListImp ],
+function( L1, L2 )
+  return InitialValue( L1 ) = InitialValue( L2 )
+         and Increment( L1 ) = Increment( L2 );
+end );
+
 InstallMethod( BetterImplementationAvailable, [ IsArithmeticNListImp, IsNListImp ],
 function( L, BL ) end );
 
@@ -637,6 +675,12 @@ function( tail, base_list )
                          ConcatList, tail ] );
   NotifyBetterImplementation( base_list, L );
   return L;
+end );
+
+InstallMethod( \=, [ IsConcatNListImp, IsConcatNListImp ],
+function( L1, L2 )
+  return BaseList( L1 ) = BaseList( L2 )
+         and ConcatList( L1 ) = ConcatList( L2 );
 end );
 
 InstallMethod( ConcatenateImp, [ IsDenseList, IsNListImp ],
@@ -771,6 +815,12 @@ function( list, i )
   return L;
 end );
 
+InstallMethod( \=, [ IsCutNListImp, IsCutNListImp ],
+function( L1, L2 )
+  return BaseList( L1 ) = BaseList( L2 )
+         and CutIndex( L1 ) = CutIndex( L2 );
+end );
+
 InstallMethod( CutImp, [ IsNListImp, IsInt and IsZero ],
 function( list, i )
   return list;
@@ -870,6 +920,12 @@ function( list, f )
   return L;
 end );
 
+InstallMethod( \=, [ IsMapNListImp, IsMapNListImp ],
+function( L1, L2 )
+  return BaseList( L1 ) = BaseList( L2 )
+         and MapFunction( L1 ) = MapFunction( L2 );
+end );
+
 InstallMethod( MapImp, [ IsRepeatingNListImp, IsFunction ],
 function( list, f )
   return RepeatListImp( List( RepeatingList( list ), f ) );
@@ -949,6 +1005,11 @@ function( lists )
     NotifyBetterImplementation( list, L );
   od;
   return L;
+end );
+
+InstallMethod( \=, [ IsCombinationNListImp, IsCombinationNListImp ],
+function( L1, L2 )
+  return Lists( L1 ) = Lists( L2 );
 end );
 
 InstallMethod( ZCombineImp, [ IsDenseList ],
