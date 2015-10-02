@@ -20,6 +20,6 @@ DeclareOperation( "LowestKnownDegree", [ IsChainMap ] );
 DeclareOperation( "ChainMapByMorphismList",
                   [ IsChainComplex, IsChainComplex, IsZList ] );
 DeclareOperation( "FiniteChainMap",
-                  [ IsChainComplex, IsChainComplex, IsInt, IsList ] );
+                  [ IsChainComplex, IsChainComplex, IsInt, IsDenseList ] );
 DeclareOperation( "ZeroChainMap",
                   [ IsChainComplex, IsChainComplex ] );
