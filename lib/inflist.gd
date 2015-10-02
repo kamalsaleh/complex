@@ -96,6 +96,10 @@ DeclareOperation( "Concatenate", [ IsDenseList, IsNList ] );
 # concatenate to ZList.
 # middle list is placed in degrees [0, 1, ...]
 DeclareOperation( "Concatenate", [ IsNList, IsDenseList, IsNList ] );
+# concatenate to ZList.
+# Concatenate( neg, i, mid, pos )
+# middle list is placed in degrees [i, i + 1, ...]
+DeclareOperation( "Concatenate", [ IsNList, IsInt, IsDenseList, IsNList ] );
 DeclareOperation( "Concatenate", [ IsNList, IsNList ] );
 DeclareOperation( "MakeConcatNList", [ IsDenseList, IsNList ] );
 DeclareOperation( "MakeConcatZList", [ IsNList, IsDenseList, IsNList, IsInt ] );
@@ -118,6 +122,7 @@ DeclareOperation( "NegativePartFrom", [ IsZList, IsInt ] );
 
 DeclareOperation( "Shift", [ IsZList, IsInt ] );
 DeclareOperation( "Splice", [ IsZList, IsZList, IsInt ] );
+DeclareOperation( "Replace", [ IsZList, IsInt, IsDenseList ] );
 
 DeclareOperation( "Intersection2", [ IsList, IsNList ] );
 DeclareOperation( "Intersection2", [ IsNList, IsList ] );

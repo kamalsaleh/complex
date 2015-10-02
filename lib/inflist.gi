@@ -284,7 +284,7 @@ function( opt, L, indices, reversed, shift, incr )
   if IsEmpty( indices ) then
     return opt.ellipsis;
   else
-    return InfListString( opt, L, indices[ 1 ], indices, reversed, shift, incr );
+    return InfListString( opt, L, indices[ 1 ], indices, reversed, [ shift, incr ] );
   fi;
 end );
 
@@ -1203,6 +1203,11 @@ function( neg, mid, pos )
   return MakeConcatZList( neg, mid, pos, 0 );
 end );
 
+InstallMethod( Concatenate, [ IsNList, IsInt, IsDenseList, IsNList ],
+function( neg, i, mid, pos )
+  return MakeConcatZList( neg, mid, pos, i );
+end );
+
 InstallMethod( Concatenate, [ IsConcatNList, IsDenseList, IsNList ],
 function( L1, middle, L2 )
   local middle_extra, C;
@@ -1360,6 +1365,16 @@ function( opt, L, reversed, shift, incr )
   return Concatenation( opt.repeat_end_left, str, opt.repeat_end_right );
 end );
 
+InstallMethod( PositivePartFrom, [ IsRepeatingZList, IsInt ],
+function( L, i )
+  return RepeatListN( RotateLeft( RepeatingList( L ), i ) );
+end );
+
+InstallMethod( NegativePartFrom, [ IsRepeatingZList, IsInt ],
+function( L, i )
+  return RepeatListN( RotateLeft( Reversed( RepeatingList( L ) ), -1 - i ) );
+end );
+
 InstallMethod( Shift, [ IsRepeatingZList, IsInt ],
 function( L, i )
   return RepeatListZ( RotateLeft( RepeatingList( L ), i ) );
@@ -1394,13 +1409,23 @@ InstallMethod( InfListString, [ IsRecord, IsArithmeticZList, IsBool, IsInt, IsIn
 function( opt, L, reversed, shift, incr )
   local str_list, str;
   str_list := ListN( [ -2 .. 3 ] * incr + shift,
-                     Sublist( L, -2, 3 ),
+                     Sublist( L, -2, 3 + 1 ),
                      opt.format_value );
   if reversed then str_list := Reversed( str_list ); fi;
   str := JoinStringsWithSeparator( str_list, opt.separator );
   return Concatenation( opt.ellipsis, opt.separator,
                         str,
                         opt.separator, opt.ellipsis );
+end );
+
+InstallMethod( PositivePartFrom, [ IsArithmeticZList, IsInt ],
+function( L, i )
+  return ArithmeticSequenceN( L[ i ], Increment( L ) );
+end );
+
+InstallMethod( NegativePartFrom, [ IsArithmeticZList, IsInt ],
+function( L, i )
+  return ArithmeticSequenceN( L[ i ], - Increment( L ) );
 end );
 
 InstallMethod( Shift, [ IsArithmeticZList, IsInt ],
@@ -1410,3 +1435,10 @@ function( L, i )
 end );
 
 InstallValue( IntegersList, ArithmeticSequenceZ( 0, 1 ) );
+
+InstallMethod( Replace, [ IsZList, IsInt, IsDenseList ],
+function( L, i, values )
+  return Concatenate( NegativePartFrom( L, i - 1 ),
+                      i, values,
+                      PositivePartFrom( L, i + Length( values ) ) );
+end );
