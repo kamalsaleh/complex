@@ -33,12 +33,10 @@ end );
 
 InstallMethod( ZeroChainMap, [ IsChainComplex, IsChainComplex ],
 function( C1, C2 )
-  local make_morphism, morphisms;
-  make_morphism := function( i )
-    return ZeroMorphism( ObjectOfComplex( C1, i ),
-                         ObjectOfComplex( C2, i ) );
-  end;
-  morphisms := PositionalZList( make_morphism );
+  local morphisms;
+  morphisms := Map( [ ObjectsOfComplex( C1 ),
+                      ObjectsOfComplex( C2 ) ],
+                    ZeroMorphism );
   return ChainMapByMorphismList( C1, C2, morphisms );
 end );
 
@@ -51,9 +49,17 @@ end );
 InstallMethod( \[\], [ IsChainMap, IsInt ], MorphismOfChainMap );
 
 InstallMethod( String, [ IsChainMap ],
+               NICE_FLAGS + 1,
 function( map )
   return Concatenation( "<chain map (",
                         InfListString( MorphismsOfChainMap( map ) ),
                         ")>" );
 end );
 
+InstallMethod( ViewObj, [ IsChainMap ],
+function( map )
+  Print( String( map ) );
+end );
+
+InstallMethod( SetString, [ IsChainMap, IsString ],
+               function( m, str ) end );
