@@ -918,7 +918,7 @@ function( lists )
   fi;
   neg := CombineN( List( lists, L -> NegativePartFrom( L, base_pos - 1 ) ) );
   pos := CombineN( List( lists, L -> PositivePartFrom( L, base_pos ) ) );
-  return Concatenate( neg, pos );
+  return Concatenate( neg, base_pos, [], pos );
 end );
 
 InstallMethod( ImplementationNotification, [ IsCombinationNList, IsNList ],
