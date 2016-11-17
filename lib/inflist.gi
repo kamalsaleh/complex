@@ -1452,7 +1452,7 @@ function( L, i, values )
                       PositivePartFrom( L, i + Length( values ) ) );
 end );
 
-#c
+#n
 InstallMethod( ViewObj, 
                [ IsInfList ],
   function( inflist )
