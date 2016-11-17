@@ -804,7 +804,7 @@ function( lists, f )
               items -> CallFuncList( f, items ) );
 end );
 
-InstallMethod( Map, [ IsInfList, IsFunction ],
+InstallMethod( Map, [ IsInfList and IsNList, IsFunction ],
 function( list, f )
   local L;
   L := MakeInfList( IsMapNList,
@@ -825,6 +825,13 @@ InstallMethod( Map, [ IsRepeatingNList, IsFunction ],
 function( list, f )
   return RepeatListN( List( RepeatingList( list ), f ) );
 end );
+
+#*
+InstallMethod( Map, [ IsRepeatingZList, IsFunction ],
+function( list, f )
+  return RepeatListZ( List( RepeatingList( list ), f ) );
+end );
+#**
 
 InstallMethod( Map, [ IsConcatNList, IsFunction ],
 function( list, f )
