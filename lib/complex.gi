@@ -49,7 +49,9 @@ function( cat )
   #c
   AddZeroObject( complex_cat, function( ) return ZeroComplex( cat ); end );
   ##
-  
+
+  AddZeroMorphism( complex_cat, ZeroChainMap );
+
   addition_for_morphisms := function( m1, m2 )
     local morphisms;
     morphisms := Map( [ MorphismsOfChainMap( m1 ),
@@ -104,7 +106,8 @@ function( cat )
                                    morphisms );
   end;
   AddLiftAlongMonomorphism( complex_cat, lift_along_monomorphism );
-
+  
+  #c
   colift_along_epimorphism := function( epi, test )
     local morphisms;
     morphisms := Map( [ MorphismsOfChainMap( epi ),
@@ -113,6 +116,8 @@ function( cat )
     return ChainMapByMorphismList( Range( epi ), Range( test ),
                                    morphisms );
   end;
+  ##
+
   AddColiftAlongEpimorphism( complex_cat, colift_along_epimorphism );
 
   kernel_embedding := function( map )
