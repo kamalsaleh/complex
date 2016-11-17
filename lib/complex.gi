@@ -49,9 +49,7 @@ function( cat )
   #c
   AddZeroObject( complex_cat, function( ) return ZeroComplex( cat ); end );
   ##
-
-  AddZeroMorphism( complex_cat, ZeroChainMap );
-
+  
   addition_for_morphisms := function( m1, m2 )
     local morphisms;
     morphisms := Map( [ MorphismsOfChainMap( m1 ),
