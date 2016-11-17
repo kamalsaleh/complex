@@ -754,11 +754,13 @@ function( list, i )
               MapFunction( list ) );
 end );
 
+#c
 InstallMethod( Cut, [ IsArithmeticNList, IsPosInt ],
 function( L, i )
-  return ArithmeticSequenceN( BasePosition( L ) + i * Increment( L ),
+  return ArithmeticSequenceN( InitialValue( L ) + i * Increment( L ),
                               Increment( L ) );
 end );
+##
 
 InstallMethod( ImplementationNotification, [ IsCutNList, IsNList ],
 function( L, BL )
