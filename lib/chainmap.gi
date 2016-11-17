@@ -55,10 +55,10 @@ function( map )
                         ")>" );
 end );
 
-InstallMethod( ViewObj, [ IsChainMap ],
-function( map )
-  Print( String( map ) );
-end );
+# InstallMethod( ViewObj, [ IsChainMap ],
+# function( map )
+#   Print( String( map ) );
+# end );
 
 InstallMethod( SetString, [ IsChainMap, IsString ],
                function( m, str ) end );
