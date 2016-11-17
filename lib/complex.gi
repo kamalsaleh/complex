@@ -46,7 +46,9 @@ function( cat )
   #AddIsEqualForObjects( complex_cat, 
   #AddIsEqualForMorphisms( complex_cat, 
 
-  AddZeroObject( complex_cat, ZeroComplex );
+  #c
+  AddZeroObject( complex_cat, function( ) return ZeroComplex( cat ); end );
+  ##
 
   AddZeroMorphism( complex_cat, ZeroChainMap );
 
