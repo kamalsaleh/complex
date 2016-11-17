@@ -110,7 +110,7 @@ function( cat )
     morphisms := Map( [ MorphismsOfChainMap( epi ),
                         MorphismsOfChainMap( test ) ],
                       ColiftAlongEpimorphism );
-    return ChainMapByMorphismList( Range( epi ), Source( test ),
+    return ChainMapByMorphismList( Range( epi ), Range( test ),
                                    morphisms );
   end;
   AddColiftAlongEpimorphism( complex_cat, colift_along_epimorphism );
