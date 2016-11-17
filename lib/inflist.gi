@@ -804,6 +804,7 @@ function( lists, f )
               items -> CallFuncList( f, items ) );
 end );
 
+#c
 InstallMethod( Map, [ IsInfList and IsNList, IsFunction ],
 function( list, f )
   local L;
@@ -814,6 +815,7 @@ function( list, f )
   AddDerivation( list, L );
   return L;
 end );
+##
 
 InstallMethod( \=, [ IsMapNList, IsMapNList ],
 function( L1, L2 )
@@ -826,12 +828,12 @@ function( list, f )
   return RepeatListN( List( RepeatingList( list ), f ) );
 end );
 
-#*
+#n
 InstallMethod( Map, [ IsRepeatingZList, IsFunction ],
 function( list, f )
   return RepeatListZ( List( RepeatingList( list ), f ) );
 end );
-#**
+##
 
 InstallMethod( Map, [ IsConcatNList, IsFunction ],
 function( list, f )
