@@ -398,10 +398,10 @@ function( C )
   return InfListString( opt, DifferentialsOfComplex( C ), true );
 end );
 
-InstallMethod( ViewObj, [ IsChainComplex ],
-function( C )
-  Print( String( C ) );
-end );
+# InstallMethod( ViewObj, [ IsChainComplex ],
+# function( C )
+#   Print( String( C ) );
+# end );
 
 InstallMethod( SetString, [ IsChainComplex, IsString ],
                function( L, str ) end );
