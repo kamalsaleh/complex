@@ -1451,3 +1451,11 @@ function( L, i, values )
                       i, values,
                       PositivePartFrom( L, i + Length( values ) ) );
 end );
+
+#c
+InstallMethod( ViewObj, 
+               [ IsInfList ],
+  function( inflist )
+  Print( "ViewObj method for all inflists is not yet implemented" );
+end );
+##
