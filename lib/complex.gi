@@ -24,16 +24,21 @@ InstallValue( ComplexDoubleAssertions,
     end,
     "differentials must compose to zero" ] ] );
 
-InstallMethod( ComplexCategory, [ IsCapCategory ],
-function( cat )
+InstallMethod( Complex_Or_Cocomplex_Category, [ IsCapCategory, IsInt ],
+function( cat, shift_index )
   local   name,  complex_cat,  addition_for_morphisms,  
           additive_inverse_for_morphisms,  pre_compose,  
           identity_morphism,  inverse,  lift_along_monomorphism,  
           colift_along_epimorphism,  kernel_embedding,  
           cokernel_projection,  direct_sum,  injection_of_cofactor,  
           projection_in_factor;
-
-  name := Concatenation( "Chain complexes over ", Name( cat ) );
+  if shift_index = -1 then 
+  name := Concatenation( "Complexes category over ", Name( cat ) );
+  elif shift_index = 1 then
+  name := Concatenation( "Cocomplexes category over ", Name( cat ) );
+  else
+    Error( "The second argument must be either -1( to construct the complexes category ) or 1( to contruct the cocomplexes category )" );
+  fi;
   complex_cat := CreateCapCategory( name );
   SetFilterObj( complex_cat, IsChainComplexCategory );
   SetUnderlyingCategory( complex_cat, cat );
@@ -128,7 +133,7 @@ function( cat )
       Map( [ embeddings, DifferentialsOfComplex( Source( map ) ) ],
            PreCompose );
     diffs :=
-      Map( [ Shift( MorphismsOfChainMap( map ), -1 ),
+      Map( [ Shift( MorphismsOfChainMap( map ), shift_index ),
              kernel_to_next_source ],
            KernelLift );
     #cat := UnderlyingCategory( CapCategory( map ) );
@@ -148,7 +153,7 @@ function( cat )
     projections := Map( MorphismsOfChainMap( map ), CokernelProjection );
     range_to_next_cokernel :=
       Map( [ DifferentialsOfComplex( Range( map ) ),
-             Shift( projections, -1 ) ],
+             Shift( projections, shift_index ) ],
            PreCompose );
     diffs :=
       Map( [ MorphismsOfChainMap( map ),
@@ -203,16 +208,21 @@ function( cat )
   AddProjectionInFactorOfDirectSumWithGivenDirectSum
     ( complex_cat, projection_in_factor );
 
+ ## Terminal and initial objects
+
  #n
+ if CanCompute( cat, "TerminalObject" ) then
  AddTerminalObject( complex_cat, function( )
                                  local terminal_obj_functorial, terminal_obj_differentials;
                                  terminal_obj_functorial := TerminalObjectFunctorial( cat );
                                  terminal_obj_differentials := RepeatListZ( [ terminal_obj_functorial ] );
                                  return ComplexByDifferentialList( cat, terminal_obj_differentials, false );
                                  end );
+ fi;
  ##
 
  #n
+ if CanCompute( cat, "UniversalMorphismIntoTerminalObject" ) then
  AddUniversalMorphismIntoTerminalObjectWithGivenTerminalObject( complex_cat,
                                  function( complex, terminal_obj )
                                  local objects, universal_maps;
@@ -220,18 +230,22 @@ function( cat )
                                  universal_maps := Map( objects,  UniversalMorphismIntoTerminalObject );
                                  return ChainMapByMorphismList( complex, terminal_obj, universal_maps );
                                  end );
+ fi;
  ##
 
  #n
+ if CanCompute( cat, "InitialObject" ) then
  AddInitialObject( complex_cat, function( )
                                  local initial_obj_functorial, initial_obj_differentials;
                                  initial_obj_functorial := InitialObjectFunctorial( cat );
                                  initial_obj_differentials := RepeatListZ( [ initial_obj_functorial ] );
                                  return ComplexByDifferentialList( cat, initial_obj_differentials, false );
                                  end );
+ fi;
  ##
 
  #n
+ if CanCompute( cat, "UniversalMorphismFromInitialObject" ) then
  AddUniversalMorphismFromInitialObjectWithGivenInitialObject( complex_cat,
                                  function( complex, initial_object )
                                  local objects, universal_maps;
@@ -239,6 +253,7 @@ function( cat )
                                  universal_maps := Map( objects,  UniversalMorphismFromInitialObject );
                                  return ChainMapByMorphismList( complex, initial_object, universal_maps );
                                  end );
+ fi;
  ##
 
  #TODO
@@ -247,6 +262,28 @@ function( cat )
   Finalize( complex_cat );
   return complex_cat;
 end );
+
+#########################################
+#
+#  Constructors of (Co)complexes category
+#
+#########################################
+
+#n
+InstallMethod( ComplexCategory, 
+                 [ IsCapCategory ],
+  function( cat )
+  return Complex_Or_Cocomplex_Category( cat, -1 );
+end );
+##
+
+#n
+InstallMethod( CocomplexCategory, 
+                 [ IsCapCategory ],
+  function( cat )
+  return Complex_Or_Cocomplex_Category( cat, 1 );
+end );
+##
 
 InstallMethod( ComplexByDifferentialList, [ IsAbelianCategory, IsZList ],
 function( cat, diffs )
