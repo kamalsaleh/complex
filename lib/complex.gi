@@ -141,6 +141,7 @@ function( cat )
     AddKernelEmbedding( complex_cat, kernel_embedding );
   fi;
 
+  #c
   cokernel_projection := function( map )
     local   projections,  range_to_next_cokernel,  diffs,
             cokernel_complex,  cokernel_proj;
@@ -150,15 +151,17 @@ function( cat )
              Shift( projections, -1 ) ],
            PreCompose );
     diffs :=
-      Map( [ range_to_next_cokernel,
-             projections ],
-           CokernelColift );
+      Map( [ MorphismsOfChainMap( map ),
+             range_to_next_cokernel ],
+              CokernelColift );
     #cat := UnderlyingCategory( CapCategory( map ) );
     cokernel_complex := ComplexByDifferentialList( cat, diffs );
     cokernel_proj := ChainMapByMorphismList( Range( map ), cokernel_complex,
                                              projections );
     return cokernel_proj;
   end;
+  ##
+
   if CanCompute( cat, "CokernelProjection" ) and CanCompute( cat, "CokernelColift" ) then
     AddCokernelProjection( complex_cat, cokernel_projection );
   fi;
