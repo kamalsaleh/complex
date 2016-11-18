@@ -203,7 +203,46 @@ function( cat )
   AddProjectionInFactorOfDirectSumWithGivenDirectSum
     ( complex_cat, projection_in_factor );
 
-  #TODO
+ #n
+ AddTerminalObject( complex_cat, function( )
+                                 local terminal_obj_functorial, terminal_obj_differentials;
+                                 terminal_obj_functorial := TerminalObjectFunctorial( cat );
+                                 terminal_obj_differentials := RepeatListZ( [ terminal_obj_functorial ] );
+                                 return ComplexByDifferentialList( cat, terminal_obj_differentials, false );
+                                 end );
+ ##
+
+ #n
+ AddUniversalMorphismIntoTerminalObjectWithGivenTerminalObject( complex_cat,
+                                 function( complex, terminal_obj )
+                                 local objects, universal_maps;
+                                 objects := ObjectsOfComplex( complex );
+                                 universal_maps := Map( objects,  UniversalMorphismIntoTerminalObject );
+                                 return ChainMapByMorphismList( complex, terminal_obj, universal_maps );
+                                 end );
+ ##
+
+ #n
+ AddInitialObject( complex_cat, function( )
+                                 local initial_obj_functorial, initial_obj_differentials;
+                                 initial_obj_functorial := InitialObjectFunctorial( cat );
+                                 initial_obj_differentials := RepeatListZ( [ initial_obj_functorial ] );
+                                 return ComplexByDifferentialList( cat, initial_obj_differentials, false );
+                                 end );
+ ##
+
+ #n
+ AddUniversalMorphismFromInitialObjectWithGivenInitialObject( complex_cat,
+                                 function( complex, initial_object )
+                                 local objects, universal_maps;
+                                 objects := ObjectsOfComplex( complex );
+                                 universal_maps := Map( objects,  UniversalMorphismFromInitialObject );
+                                 return ChainMapByMorphismList( complex, initial_object, universal_maps );
+                                 end );
+ ##
+
+ #TODO
+
 
   Finalize( complex_cat );
   return complex_cat;
