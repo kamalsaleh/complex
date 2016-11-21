@@ -1,3 +1,12 @@
+
+
+########################################
+#
+# Representations, families and types
+#
+########################################
+
+
 DeclareRepresentation( "IsChainMapRep",
                        IsComponentObjectRep and IsAttributeStoringRep,
                        [ ] );
@@ -5,20 +14,81 @@ DeclareRepresentation( "IsChainMapRep",
 BindGlobal( "FamilyOfChainMaps",
             NewFamily( "chain maps" ) );
 
-InstallMethod( ChainMapByMorphismList,
-               [ IsChainComplex, IsChainComplex, IsZList ],
-function( C1, C2, morphisms )
-  local type, map;
-  type := NewType( FamilyOfChainComplexes,
-                   IsChainMap and IsChainMapRep );
-  map := rec();
-  ObjectifyWithAttributes( map, type,
+BindGlobal( "TheTypeOfChainMaps",
+            NewType( FamilyOfChainMaps, 
+                     IsChainMap and IsChainMapRep ) );
+
+DeclareRepresentation( "IsCochainMapRep",
+                       IsComponentObjectRep and IsAttributeStoringRep,
+                       [ ] );
+
+BindGlobal( "FamilyOfCochainMaps",
+            NewFamily( "cochain maps" ) );
+
+BindGlobal( "TheTypeOfCochainMaps",
+            NewType( FamilyOfCochainMaps, 
+                     IsCochainMap and IsCochainMapRep ) );
+
+#########################################
+#
+# (Co)chain maps constructors 
+#
+#########################################
+
+#n
+BindGlobal( "CHAIN_OR_COCHAIN_MAP_BY_LIST",
+     function( C1, C2, morphisms )
+     local map;
+     map := rec( );
+     if ForAll( [ C1, C2 ], IsChainComplex ) then 
+        ObjectifyWithAttributes( map, TheTypeOfChainMaps,
                            Source, C1,
                            Range, C2,
-                           MorphismsOfChainMap, morphisms );
-  Add( CapCategory( C1 ), map );
-  return map;
+                           MorphismsOfMap, morphisms );
+                           
+     elif ForAll( [ C1, C2 ], IsCochainComplex ) then 
+        ObjectifyWithAttributes( map, TheTypeOfCochainMaps,
+                           Source, C1,
+                           Range, C2,
+                           MorphismsOfMap, morphisms );
+     else
+        Error( "first and second argument should be both chains or cochains" );
+     fi;
+     Add( CapCategory( C1 ), map );
+     return map;
 end );
+##
+
+#c
+InstallMethod( ChainMapByMorphismList,
+               [ IsChainComplex, IsChainComplex, IsZList ],
+CHAIN_OR_COCHAIN_MAP_BY_LIST );
+##
+
+#n
+InstallMethod( CochainMapByMorphismList,
+               [ IsCochainComplex, IsCochainComplex, IsZList ],
+CHAIN_OR_COCHAIN_MAP_BY_LIST );
+##
+
+###################################
+#
+# Attributes of (Co)chain maps
+#
+###################################
+
+#c
+InstallMethod( MorphismsOfChainMap,
+                  [ IsChainMap ],
+MorphismsOfMap );
+##
+
+#n
+InstallMethod( MorphismsOfCochainMap,
+                  [ IsCochainMap ],
+MorphismsOfMap );
+##
+
 
 InstallMethod( FiniteChainMap, [ IsChainComplex, IsChainComplex, IsInt, IsDenseList ],
 function( C1, C2, base_pos, morphisms_list )
@@ -30,22 +100,68 @@ function( C1, C2, base_pos, morphisms_list )
   return ChainMapByMorphismList( C1, C2, morphisms );
 end );
 
-InstallMethod( ZeroChainMap, [ IsChainComplex, IsChainComplex ],
+#############################
+#
+#  Zero co(chain) maps
+#
+#############################
+
+#n
+InstallMethod( ZeroMap, [ IsChainOrCochainComplex, IsChainOrCochainComplex ], 
 function( C1, C2 )
-  local morphisms;
-  morphisms := Map( [ ObjectsOfComplex( C1 ),
+local morphisms;
+   morphisms := Map( [ ObjectsOfComplex( C1 ),
                       ObjectsOfComplex( C2 ) ],
                     ZeroMorphism );
-  return ChainMapByMorphismList( C1, C2, morphisms );
+   if ForAll( [ C1, C2 ], IsChainComplex ) then 
+      
+      return ChainMapByMorphismList( C1, C2, morphisms );
+      
+   elif ForAll( [ C1, C2 ], IsCochainComplex ) then
+      
+      return CochainMapByMorphismList( C1, C2, morphisms );
+      
+   else 
+      
+      Error( "first and second argument should be both chains or cochains" );
+      
+   fi;
 end );
+##
 
-InstallMethod( MorphismOfChainMap,
-[ IsChainMap, IsInt ],
+#c
+InstallMethod( ZeroChainMap, [ IsChainComplex, IsChainComplex ], ZeroMap );
+##
+
+#n
+InstallMethod( ZeroCochainMap, [ IsCochainComplex, IsCochainComplex ], ZeroMap );
+##
+
+#############################
+#
+# Morphism of (co)chain maps
+#
+#############################
+
+#n
+InstallMethod( MorphismOfMap, 
+          [ IsChainOrCochainMap, IsInt ], 
 function( map, i )
-    return MorphismsOfChainMap( map )[ i ];
-end );
 
-InstallMethod( \[\], [ IsChainMap, IsInt ], MorphismOfChainMap );
+     return MorphismsOfMap( map )[ i ];
+     
+end );
+##
+
+#c
+InstallMethod( MorphismOfChainMap,[ IsChainMap, IsInt ], MorphismOfMap);
+##
+
+#n
+InstallMethod( MorphismOfCochainMap,[ IsCochainMap, IsInt ], MorphismOfMap);
+##
+
+InstallMethod( \[\], [ IsChainOrCochainMap, IsInt ], MorphismOfMap );
 
 InstallMethod( String, [ IsChainMap ],
                NICE_FLAGS + 1,
