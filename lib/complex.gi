@@ -23,8 +23,9 @@ InstallValue( ComplexDoubleAssertions,
       return IsZeroForMorphisms( PostCompose( d0, d1 ) );
     end,
     "differentials must compose to zero" ] ] );
-
-InstallMethod( Complex_Or_Cocomplex_Category, [ IsCapCategory, IsInt ],
+#c
+BindGlobal( "CHAIN_OR_COCHAIN_COMPLEX_CATEGORY",
+##
 function( cat, shift_index )
   local   name,  complex_cat,  addition_for_morphisms,  
           additive_inverse_for_morphisms,  pre_compose,  
@@ -32,15 +33,19 @@ function( cat, shift_index )
           colift_along_epimorphism,  kernel_embedding,  
           cokernel_projection,  direct_sum,  injection_of_cofactor,  
           projection_in_factor;
+#c
   if shift_index = -1 then 
-  name := Concatenation( "Complexes category over ", Name( cat ) );
-  elif shift_index = 1 then
-  name := Concatenation( "Cocomplexes category over ", Name( cat ) );
-  else
-    Error( "The second argument must be either -1( to construct the complexes category ) or 1( to contruct the cocomplexes category )" );
-  fi;
+  name := Concatenation( "Chain complexes category over ", Name( cat ) );
   complex_cat := CreateCapCategory( name );
   SetFilterObj( complex_cat, IsChainComplexCategory );
+  elif shift_index = 1 then
+  name := Concatenation( "Cochain complexes category over ", Name( cat ) );
+  complex_cat := CreateCapCategory( name );
+  SetFilterObj( complex_cat, IsCochainComplexCategory );
+  else
+    Error( "The second argument must be either -1( to construct the chain complexes category ) or 1( to contruct the cochain complexes category )" );
+  fi;
+##
   SetUnderlyingCategory( complex_cat, cat );
 
   if HasIsAbelianCategory( cat ) and IsAbelianCategory( cat ) then
@@ -270,18 +275,18 @@ end );
 #########################################
 
 #n
-InstallMethod( ComplexCategory, 
+InstallMethod( ChainComplexCategory, 
                  [ IsCapCategory ],
   function( cat )
-  return Complex_Or_Cocomplex_Category( cat, -1 );
+  return CHAIN_OR_COCHAIN_COMPLEX_CATEGORY( cat, -1 );
 end );
 ##
 
 #n
-InstallMethod( CocomplexCategory, 
+InstallMethod( CochainComplexCategory, 
                  [ IsCapCategory ],
   function( cat )
-  return Complex_Or_Cocomplex_Category( cat, 1 );
+  return CHAIN_OR_COCHAIN_COMPLEX_CATEGORY( cat, 1 );
 end );
 ##
 

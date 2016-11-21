@@ -8,11 +8,8 @@ DeclareCategory( "IsCochainComplexCategory", IsChainOrCochainComplexCategory );
 DeclareGlobalVariable( "ComplexSingleAssertions" );
 DeclareGlobalVariable( "ComplexDoubleAssertions" );
 
-#n
-DeclareOperation( "Complex_Or_Cocomplex_Category", [ IsCapCategory, IsInt ] );
-##
-DeclareAttribute( "ComplexCategory", IsCapCategory );
-DeclareAttribute( "CocomplexCategory", IsCapCategory );
+DeclareAttribute( "ChainComplexCategory", IsCapCategory );
+DeclareAttribute( "CochainComplexCategory", IsCapCategory );
 
 DeclareAttribute( "UnderlyingCategory", IsChainOrCochainComplexCategory );
 
