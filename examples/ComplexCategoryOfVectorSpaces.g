@@ -3,7 +3,7 @@ LoadPackage( "complex" );
 
 Q := HomalgFieldOfRationals( );;
 matrix_category := MatrixCategory( Q );;
-complex_category := ComplexCategory( matrix_category );;
+complex_category := ChainComplexCategory( matrix_category );;
 A := VectorSpaceObject( 1, Q );;
 B := VectorSpaceObject( 2, Q );;
 f := VectorSpaceMorphism( A, HomalgMatrix( [ [ 1, 3 ] ], 1, 2, Q ), B );;
@@ -30,6 +30,6 @@ end;;
 neg_diffs := Map( neg_integers, D );;
 pos_diffs := Map( pos_integers, D );;
 diffs := Concatenate( neg_diffs, pos_diffs );;
-P := ComplexByDifferentialList( matrix_category, diffs );
+P := ChainComplexByDifferentialList( matrix_category, diffs );
 #! <An object in Chain complexes over Category of matrices over Q>
 Obj := ObjectsOfComplex( P );;
