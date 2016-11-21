@@ -1,15 +1,42 @@
+
+
+#############################################
+#
+#  Representations, families and types 
+#
+#############################################
+
+
 DeclareRepresentation( "IsChainComplexRep",
+                       IsComponentObjectRep and IsAttributeStoringRep,
+                       [ ] );
+
+DeclareRepresentation( "IsCochainComplexRep",
                        IsComponentObjectRep and IsAttributeStoringRep,
                        [ ] );
 
 BindGlobal( "FamilyOfChainComplexes",
             NewFamily( "chain complexes" ) );
 
+
+BindGlobal( "FamilyOfCochainComplexes",
+            NewFamily( "cochain complexes" ) );
+
+BindGlobal( "TheTypeOfChainComplexes",
+            NewType( FamilyOfChainComplexes,
+                     IsChainComplex and IsChainComplexRep ) );
+
+BindGlobal( "TheTypeOfCochainComplexes",
+            NewType( FamilyOfCochainComplexes,
+                     IsCochainComplex and IsCochainComplexRep ) );
+
+
 InstallValue( ComplexSingleAssertions,
 [ [ function( C, i, d )
       return MorphismFilter( CatOfComplex( C ) )( d );
     end,
     "differentials must be morphisms in the category" ] ] );
+
 InstallValue( ComplexDoubleAssertions,
 [ [ function( C, i, d0, d1 )
       local cat;
@@ -32,16 +59,19 @@ function( cat, shift_index )
           identity_morphism,  inverse,  lift_along_monomorphism,  
           colift_along_epimorphism,  kernel_embedding,  
           cokernel_projection,  direct_sum,  injection_of_cofactor,  
-          projection_in_factor;
+          projection_in_factor, complex_constructor;
 #c
   if shift_index = -1 then 
   name := Concatenation( "Chain complexes category over ", Name( cat ) );
   complex_cat := CreateCapCategory( name );
   SetFilterObj( complex_cat, IsChainComplexCategory );
+  complex_constructor := ChainComplexByDifferentialList;
+  
   elif shift_index = 1 then
   name := Concatenation( "Cochain complexes category over ", Name( cat ) );
   complex_cat := CreateCapCategory( name );
   SetFilterObj( complex_cat, IsCochainComplexCategory );
+  complex_constructor := CochainComplexByDifferentialList;
   else
     Error( "The second argument must be either -1( to construct the chain complexes category ) or 1( to contruct the cochain complexes category )" );
   fi;
@@ -57,7 +87,12 @@ function( cat, shift_index )
   #AddIsEqualForMorphisms( complex_cat, 
 
   #c
-  AddZeroObject( complex_cat, function( ) return ZeroComplex( cat ); end );
+  AddZeroObject( complex_cat, 
+    function( ) 
+    local zero_map;
+    zero_map := ZeroMorphism( ZeroObject( cat ), ZeroObject( cat ) );
+    return complex_constructor( cat, RepeatListZ( [ zero_map ] ), false );
+    end );
   ##
 
   AddZeroMorphism( complex_cat, ZeroChainMap );
@@ -290,35 +325,106 @@ InstallMethod( CochainComplexCategory,
 end );
 ##
 
-InstallMethod( ComplexByDifferentialList, [ IsAbelianCategory, IsZList ],
-function( cat, diffs )
-  return ComplexByDifferentialList( cat, diffs, true );
-end );
+#########################################
+#
+#  Constructors of (Co)chain complexes 
+#
+#########################################
 
-InstallMethod( ComplexByDifferentialList, [ IsAbelianCategory, IsZList, IsBool ],
-function( cat, diffs, make_assertions )
-  local type, C, assertion, f, msg;
-  type := NewType( FamilyOfChainComplexes,
-                   IsChainComplex and IsChainComplexRep );
+#n
+BindGlobal( "CHAIN_OR_COCHAIN_COMPLEX_BY_DIFFERENTIAL_LIST",
+function( cat, diffs, make_assertions, type )
+  local C, assertion, f, msg;
+
   C := rec();
-  ObjectifyWithAttributes( C, type,
+  
+  if type = "TheTypeOfChainComplexes" then
+
+     ObjectifyWithAttributes( C, TheTypeOfChainComplexes,
                            CatOfComplex, cat,
                            DifferentialsOfComplex, diffs );
-  if make_assertions then
-    for assertion in ComplexSingleAssertions do
-      f := assertion[ 1 ];
-      msg := assertion[ 2 ];
-      AddAssertion( diffs, MakeSingleAssertion( C, f, msg ) );
-    od;
-    for assertion in ComplexDoubleAssertions do
-      f := assertion[ 1 ];
-      msg := assertion[ 2 ];
-      AddAssertion( diffs, MakeDoubleAssertion( C, f, msg ) );
-    od;
+     if make_assertions then
+        for assertion in ComplexSingleAssertions do
+        f := assertion[ 1 ];
+        msg := assertion[ 2 ];
+        AddAssertion( diffs, MakeSingleAssertion( C, f, msg ) );
+        od;
+        for assertion in ComplexDoubleAssertions do
+        f := assertion[ 1 ];
+        msg := assertion[ 2 ];
+        AddAssertion( diffs, MakeDoubleAssertion( C, f, msg ) );
+        od;
+     fi;
+     Add( ChainComplexCategory( cat ), C );
+     
+  elif type = "TheTypeOfCochainComplexes" then
+
+     ObjectifyWithAttributes( C, TheTypeOfCochainComplexes,
+                              CatOfComplex, cat,
+                              DifferentialsOfComplex, diffs );
+     if make_assertions then
+#    this code need to be modified for the case of cochain complexes.
+#         for assertion in ComplexSingleAssertions do
+#         f := assertion[ 1 ];
+#         msg := assertion[ 2 ];
+#         AddAssertion( diffs, MakeSingleAssertion( C, f, msg ) );
+#         od;
+#         for assertion in ComplexDoubleAssertions do
+#         f := assertion[ 1 ];
+#         msg := assertion[ 2 ];
+#         AddAssertion( diffs, MakeDoubleAssertion( C, f, msg ) );
+#         od;
+     fi;
+
+     Add( CochainComplexCategory( cat ), C );
+
+  else 
+   
+     Error( "4'th argument must be either 'TheTypeOfChainComplexes' or 'TheTypeOfCochainComplexes'" );
+     
   fi;
-  Add( ComplexCategory( cat ), C );
+
   return C;
 end );
+##
+
+#n
+InstallMethod( ChainComplexByDifferentialList, [ IsAbelianCategory, IsZList, IsBool ],
+function( cat, diffs, make_assertions )
+  return CHAIN_OR_COCHAIN_COMPLEX_BY_DIFFERENTIAL_LIST( cat, diffs, make_assertions, "TheTypeOfChainComplexes" );
+end );
+
+InstallMethod( ChainComplexByDifferentialList, [ IsAbelianCategory, IsZList ],
+function( cat, diffs )
+  return ChainComplexByDifferentialList( cat, diffs, true );
+end );
+
+InstallMethod( CochainComplexByDifferentialList, [ IsAbelianCategory, IsZList, IsBool ],
+function( cat, diffs, make_assertions )
+  return CHAIN_OR_COCHAIN_COMPLEX_BY_DIFFERENTIAL_LIST( cat, diffs, make_assertions, "TheTypeOfCochainComplexes" );
+end );
+
+InstallMethod( CochainComplexByDifferentialList, [ IsAbelianCategory, IsZList ],
+function( cat, diffs )
+  return CochainComplexByDifferentialList( cat, diffs, true );
+end );
+##
+
+#c
+InstallMethod( ComplexByDifferentialList, 
+         [ IsAbelianCategory, IsZList, IsBool ],
+ChainComplexByDifferentialList );
+
+InstallMethod( ComplexByDifferentialList, 
+         [ IsAbelianCategory, IsZList ],
+ChainComplexByDifferentialList );
+##
+
+#########################################
+##
+##
+##
+#########################################
 
 InstallMethod( ObjectsOfComplex, [ IsChainComplex ],
 function( C )

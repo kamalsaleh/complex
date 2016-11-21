@@ -8,13 +8,39 @@ DeclareCategory( "IsCochainComplexCategory", IsChainOrCochainComplexCategory );
 DeclareGlobalVariable( "ComplexSingleAssertions" );
 DeclareGlobalVariable( "ComplexDoubleAssertions" );
 
+###################################################
+#
+#  Constructors of (Co)chain complexes categories
+#
+###################################################
+
 DeclareAttribute( "ChainComplexCategory", IsCapCategory );
 DeclareAttribute( "CochainComplexCategory", IsCapCategory );
 
 DeclareAttribute( "UnderlyingCategory", IsChainOrCochainComplexCategory );
 
+#########################################
+#
+#  Constructors of (Co)chain complexes 
+#
+#########################################
+
+#n
+DeclareOperation( "ChainComplexByDifferentialList", [ IsAbelianCategory, IsZList, IsBool ] );
+DeclareOperation( "ChainComplexByDifferentialList", [ IsAbelianCategory, IsZList ] );
+
+DeclareOperation( "CochainComplexByDifferentialList", [ IsAbelianCategory, IsZList, IsBool ] );
+DeclareOperation( "CochainComplexByDifferentialList", [ IsAbelianCategory, IsZList ] );
+##
+
+#c
+# The following two operations are exactly the same as ChainComplexByDifferentialList.
+# I 
 DeclareOperation( "ComplexByDifferentialList", [ IsAbelianCategory, IsZList, IsBool ] );
 DeclareOperation( "ComplexByDifferentialList", [ IsAbelianCategory, IsZList ] );
+##
+
+
 DeclareOperation( "FiniteComplex", [ IsAbelianCategory, IsDenseList ] );
 DeclareOperation( "StalkComplex", [ IsAbelianCategory, IsObject ] );
 DeclareOperation( "ZeroComplex", [ IsAbelianCategory ] );
