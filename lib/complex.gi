@@ -59,19 +59,20 @@ function( cat, shift_index )
           identity_morphism,  inverse,  lift_along_monomorphism,  
           colift_along_epimorphism,  kernel_embedding,  
           cokernel_projection,  direct_sum,  injection_of_cofactor,  
-          projection_in_factor, complex_constructor;
+          projection_in_factor, complex_constructor, maps_constructor;
 #c
   if shift_index = -1 then 
   name := Concatenation( "Chain complexes category over ", Name( cat ) );
   complex_cat := CreateCapCategory( name );
   SetFilterObj( complex_cat, IsChainComplexCategory );
   complex_constructor := ChainComplexByDifferentialList;
-  
+  maps_constructor := ChainMapByMorphismList;
   elif shift_index = 1 then
   name := Concatenation( "Cochain complexes category over ", Name( cat ) );
   complex_cat := CreateCapCategory( name );
   SetFilterObj( complex_cat, IsCochainComplexCategory );
   complex_constructor := CochainComplexByDifferentialList;
+  maps_constructor := CochainMapByMorphismList;
   else
     Error( "The second argument must be either -1( to construct the chain complexes category ) or 1( to contruct the cochain complexes category )" );
   fi;
@@ -95,33 +96,35 @@ function( cat, shift_index )
     end );
   ##
 
-  AddZeroMorphism( complex_cat, ZeroChainMap );
+  #c
+  AddZeroMorphism( complex_cat, ZeroMap );
+  ##
 
   addition_for_morphisms := function( m1, m2 )
     local morphisms;
-    morphisms := Map( [ MorphismsOfChainMap( m1 ),
-                        MorphismsOfChainMap( m2 ) ],
+    morphisms := Map( [ MorphismsOfMap( m1 ),
+                        MorphismsOfMap( m2 ) ],
                       AdditionForMorphisms );
-    return ChainMapByMorphismList( Source( m1 ), Range( m1 ),
+    return maps_constructor( Source( m1 ), Range( m1 ),
                                    morphisms );
   end;
   AddAdditionForMorphisms( complex_cat, addition_for_morphisms );
 
   additive_inverse_for_morphisms := function( map )
     local morphisms;
-    morphisms := Map( MorphismsOfChainMap( map ),
+    morphisms := Map( MorphismsOfMap( map ),
                       AdditiveInverseForMorphisms );
-    return ChainMapByMorphismList( Source( map ), Range( map ),
+    return maps_constructor( Source( map ), Range( map ),
                                    morphisms );
   end;
   AddAdditiveInverseForMorphisms( complex_cat, additive_inverse_for_morphisms );
 
   pre_compose := function( m1, m2 )
     local morphisms;
-    morphisms := Map( [ MorphismsOfChainMap( m1 ),
-                        MorphismsOfChainMap( m2 ) ],
+    morphisms := Map( [ MorphismsOfMap( m1 ),
+                        MorphismsOfMap( m2 ) ],
                       PreCompose );
-    return ChainMapByMorphismList( Source( m1 ), Range( m2 ),
+    return maps_constructor( Source( m1 ), Range( m2 ),
                                    morphisms );
   end;
   AddPreCompose( complex_cat, pre_compose );
@@ -130,24 +133,24 @@ function( cat, shift_index )
     local morphisms;
     morphisms := Map( DifferentialsOfComplex( C ),
                       d -> IdentityMorphism( Source( d ) ) );
-    return ChainMapByMorphismList( C, C, morphisms );
+    return maps_constructor( C, C, morphisms );
   end;
   AddIdentityMorphism( complex_cat, identity_morphism );
 
   inverse := function( iso )
     local morphisms;
-    morphisms := Map( MorphismsOfChainMap( iso ), Inverse );
-    return ChainMapByMorphismList( Range( iso ), Source( iso ),
+    morphisms := Map( MorphismsOfMap( iso ), Inverse );
+    return maps_constructor( Range( iso ), Source( iso ),
                                    morphisms );
   end;
   AddInverse( complex_cat, inverse );
 
   lift_along_monomorphism := function( mono, test )
     local morphisms;
-    morphisms := Map( [ MorphismsOfChainMap( mono ),
-                        MorphismsOfChainMap( test ) ],
+    morphisms := Map( [ MorphismsOfMap( mono ),
+                        MorphismsOfMap( test ) ],
                       LiftAlongMonomorphism );
-    return ChainMapByMorphismList( Source( test ), Source( mono ),
+    return maps_constructor( Source( test ), Source( mono ),
                                    morphisms );
   end;
   AddLiftAlongMonomorphism( complex_cat, lift_along_monomorphism );
@@ -155,10 +158,10 @@ function( cat, shift_index )
   #c
   colift_along_epimorphism := function( epi, test )
     local morphisms;
-    morphisms := Map( [ MorphismsOfChainMap( epi ),
-                        MorphismsOfChainMap( test ) ],
+    morphisms := Map( [ MorphismsOfMap( epi ),
+                        MorphismsOfMap( test ) ],
                       ColiftAlongEpimorphism );
-    return ChainMapByMorphismList( Range( epi ), Range( test ),
+    return maps_constructor( Range( epi ), Range( test ),
                                    morphisms );
   end;
   ##
@@ -168,17 +171,17 @@ function( cat, shift_index )
   kernel_embedding := function( map )
     local   embeddings,  kernel_to_next_source,  diffs,
             kernel_complex,  kernel_emb;
-    embeddings := Map( MorphismsOfChainMap( map ), KernelEmbedding );
+    embeddings := Map( MorphismsOfMap( map ), KernelEmbedding );
     kernel_to_next_source :=
       Map( [ embeddings, DifferentialsOfComplex( Source( map ) ) ],
            PreCompose );
     diffs :=
-      Map( [ Shift( MorphismsOfChainMap( map ), shift_index ),
+      Map( [ Shift( MorphismsOfMap( map ), shift_index ),
              kernel_to_next_source ],
            KernelLift );
     #cat := UnderlyingCategory( CapCategory( map ) );
-    kernel_complex := ComplexByDifferentialList( cat, diffs );
-    kernel_emb := ChainMapByMorphismList( kernel_complex, Source( map ),
+    kernel_complex := complex_constructor( cat, diffs );
+    kernel_emb := maps_constructor( kernel_complex, Source( map ),
                                           embeddings );
     return kernel_emb;
   end;
@@ -190,18 +193,18 @@ function( cat, shift_index )
   cokernel_projection := function( map )
     local   projections,  range_to_next_cokernel,  diffs,
             cokernel_complex,  cokernel_proj;
-    projections := Map( MorphismsOfChainMap( map ), CokernelProjection );
+    projections := Map( MorphismsOfMap( map ), CokernelProjection );
     range_to_next_cokernel :=
       Map( [ DifferentialsOfComplex( Range( map ) ),
              Shift( projections, shift_index ) ],
            PreCompose );
     diffs :=
-      Map( [ MorphismsOfChainMap( map ),
+      Map( [ MorphismsOfMap( map ),
              range_to_next_cokernel ],
               CokernelColift );
     #cat := UnderlyingCategory( CapCategory( map ) );
-    cokernel_complex := ComplexByDifferentialList( cat, diffs );
-    cokernel_proj := ChainMapByMorphismList( Range( map ), cokernel_complex,
+    cokernel_complex := complex_constructor( cat, diffs );
+    cokernel_proj := maps_constructor( Range( map ), cokernel_complex,
                                              projections );
     return cokernel_proj;
   end;
@@ -216,7 +219,7 @@ function( cat, shift_index )
     diffs := Map( Combine( List( complexes, DifferentialsOfComplex ) ),
                   DirectSumFunctorial );
     #cat := UnderlyingCategory( CapCategory( complexes[ 1 ] ) );
-    return ComplexByDifferentialList( cat, diffs );
+    return complex_constructor( cat, diffs );
   end;
   AddDirectSum( complex_cat, direct_sum );
 
@@ -228,7 +231,7 @@ function( cat, shift_index )
                         return InjectionOfCofactorOfDirectSumWithGivenDirectSum
                                ( summands, i, sum );
                       end );
-    return ChainMapByMorphismList( complexes[ i ], sum_complex,
+    return maps_constructor( complexes[ i ], sum_complex,
                                    morphisms );
   end;
   AddInjectionOfCofactorOfDirectSumWithGivenDirectSum
@@ -242,7 +245,7 @@ function( cat, shift_index )
                         return ProjectionInFactorOfDirectSumWithGivenDirectSum
                                ( summands, i, sum );
                       end );
-    return ChainMapByMorphismList( sum_complex, complexes[ i ],
+    return maps_constructor( sum_complex, complexes[ i ],
                                    morphisms );
   end;
   AddProjectionInFactorOfDirectSumWithGivenDirectSum
@@ -256,7 +259,7 @@ function( cat, shift_index )
                                  local terminal_obj_functorial, terminal_obj_differentials;
                                  terminal_obj_functorial := TerminalObjectFunctorial( cat );
                                  terminal_obj_differentials := RepeatListZ( [ terminal_obj_functorial ] );
-                                 return ComplexByDifferentialList( cat, terminal_obj_differentials, false );
+                                 return complex_constructor( cat, terminal_obj_differentials, false );
                                  end );
  fi;
  ##
@@ -268,7 +271,7 @@ function( cat, shift_index )
                                  local objects, universal_maps;
                                  objects := ObjectsOfComplex( complex );
                                  universal_maps := Map( objects,  UniversalMorphismIntoTerminalObject );
-                                 return ChainMapByMorphismList( complex, terminal_obj, universal_maps );
+                                 return maps_constructor( complex, terminal_obj, universal_maps );
                                  end );
  fi;
  ##
@@ -279,7 +282,7 @@ function( cat, shift_index )
                                  local initial_obj_functorial, initial_obj_differentials;
                                  initial_obj_functorial := InitialObjectFunctorial( cat );
                                  initial_obj_differentials := RepeatListZ( [ initial_obj_functorial ] );
-                                 return ComplexByDifferentialList( cat, initial_obj_differentials, false );
+                                 return complex_constructor( cat, initial_obj_differentials, false );
                                  end );
  fi;
  ##
@@ -291,7 +294,7 @@ function( cat, shift_index )
                                  local objects, universal_maps;
                                  objects := ObjectsOfComplex( complex );
                                  universal_maps := Map( objects,  UniversalMorphismFromInitialObject );
-                                 return ChainMapByMorphismList( complex, initial_object, universal_maps );
+                                 return maps_constructor( complex, initial_object, universal_maps );
                                  end );
  fi;
  ##
@@ -324,6 +327,19 @@ InstallMethod( CochainComplexCategory,
   return CHAIN_OR_COCHAIN_COMPLEX_CATEGORY( cat, 1 );
 end );
 ##
+
+#n
+InstallMethod( ComplexCategory, 
+                 [ IsCapCategory ],
+  ChainComplexCategory );
+##
+
+#n
+InstallMethod( CocomplexCategory, 
+                 [ IsCapCategory ],
+  CochainComplexCategory );
+##
+
 
 #########################################
 #
@@ -422,34 +438,37 @@ ChainComplexByDifferentialList );
 
 #########################################
 ##
-##
+## Attributes of (co)chain complexes and
+## some operations derived from these attributes
 ##
 #########################################
 
-InstallMethod( ObjectsOfComplex, [ IsChainComplex ],
+#c
+InstallMethod( ObjectsOfComplex, [ IsChainOrCochainComplex ],
 function( C )
   return Map( DifferentialsOfComplex( C ), Source );
 end );
+##
 
-InstallMethod( DifferentialOfComplex, [ IsChainComplex, IsInt ],
+#c
+InstallMethod( DifferentialOfComplex, [ IsChainOrCochainComplex, IsInt ],
 function( C, i )
   return DifferentialsOfComplex( C )[ i ];
 end );
+##
 
-InstallMethod( \^, [ IsChainComplex, IsInt ],
-function( C, i )
-  return DifferentialOfComplex( C, i );
-end );
+#c
+InstallMethod( \^, [ IsChainOrCochainComplex, IsInt ], DifferentialOfComplex );
+##
 
-InstallMethod( ObjectOfComplex, [ IsChainComplex, IsInt ],
+InstallMethod( ObjectOfComplex, [ IsChainOrCochainComplex, IsInt ],
 function( C, i )
   return Source( DifferentialOfComplex( C, i ) );
 end );
 
-InstallMethod( \[\], [ IsChainComplex, IsInt ],
-function( C, i )
-  return ObjectOfComplex( C, i );
-end );
+#c
+InstallMethod( \[\], [ IsChainOrCochainComplex, IsInt ], ObjectOfComplex );
+##
 
 InstallMethod( CyclesOfComplex, [ IsChainComplex, IsInt ],
 function( C, i )

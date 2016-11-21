@@ -19,6 +19,9 @@ DeclareAttribute( "CochainComplexCategory", IsCapCategory );
 
 DeclareAttribute( "UnderlyingCategory", IsChainOrCochainComplexCategory );
 
+DeclareAttribute( "ComplexCategory", IsCapCategory );
+DeclareAttribute( "CocomplexCategory", IsCapCategory );
+
 #########################################
 #
 #  Constructors of (Co)chain complexes 
@@ -65,13 +68,34 @@ DeclareOperation( "SyzygyCosyzygyTruncation", [ IsChainComplex, IsInt, IsInt ] )
 #DeclareOperation( "CutComplexAbove", [ IsChainComplex ] );
 #DeclareOperation( "CutComplexBelow", [ IsChainComplex ] );
 
+
+##############################################
+#
+# Attributes of (co)chain complexex
+#
+##############################################
+
+#c
+DeclareAttribute( "DifferentialsOfComplex", IsChainOrCochainComplex );
+##
+#c
+DeclareAttribute( "ObjectsOfComplex", IsChainOrCochainComplex );
+##
+
 DeclareAttribute( "CatOfComplex", IsChainComplex );
-DeclareOperation( "ObjectOfComplex", [ IsChainComplex, IsInt ] );
-DeclareOperation( "DifferentialOfComplex", [ IsChainComplex, IsInt ] );
-DeclareOperation( "\^", [ IsChainComplex, IsInt ] );
-DeclareOperation( "\[\]", [ IsChainComplex, IsInt ] );
-DeclareAttribute( "DifferentialsOfComplex", IsChainComplex );
-DeclareAttribute( "ObjectsOfComplex", IsChainComplex );
+
+##############################################
+#
+# operations derived from Attributes
+#
+##############################################
+
+DeclareOperation( "ObjectOfComplex", [ IsChainOrCochainComplex, IsInt ] );
+DeclareOperation( "DifferentialOfComplex", [ IsChainOrCochainComplex, IsInt ] );
+DeclareOperation( "\^", [ IsChainOrCochainComplex, IsInt ] );
+DeclareOperation( "\[\]", [ IsChainOrCochainComplex, IsInt ] );
+
+
 DeclareOperation( "CyclesOfComplex", [ IsChainComplex, IsInt ] );
 DeclareOperation( "BoundariesOfComplex", [ IsChainComplex, IsInt ] );
 DeclareOperation( "HomologyOfComplex", [ IsChainComplex, IsInt ] );
