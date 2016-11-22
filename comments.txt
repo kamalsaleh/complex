@@ -1,0 +1,55 @@
+Hello, here are general review of what I have done till now.
+
+1- There is a filter called "IsChainOrCochainComplex". 
+   For any IsChainOrCochainComplex object we are able to apply the functions 
+   
+   DifferentialsOfComplex( C ), ObjectsOfComplex( C ) where we get inflist that contains the data we want. 
+   DifferentialOfComplex( C, i ), ObjectOfComplex( C, i ) that gives back the requested morphism or object.
+   and many other fucntions, e.g., Shift, UnsignedShift ...... etc.
+   
+   Both IsChainComplex and IsCochainComplex are IsChainOrCochainComplex. Hence, we can 
+   ask for their differentials and objects to get the corresponding inflist.
+   
+   There is two constructors for complexes. The first is for chain complexes and it is called 
+   "ChainComplexByDifferentialList",
+   and the second is for cochain complexes and it is called "CochainComplexByDifferentialList".
+   
+2- There is a filter called "IsChainOrCochainMap". 
+   For any IsChainOrCochainMap object we can apply the functions 
+   
+   MorphismsOfMap( m ) where we get inflist of the morphisms and 
+   and MorphismOfMap( m, i ) where we get the corresponding morphism.
+   
+   Both IsChainMap and IsCochainMap are IsChainOrCochainMap. 
+   
+   To construct chain map we use "ChainMapByMorphismList" and for cochain maps we use "CochainMapByMorphismList".
+   Both functions calls global function CHAIN_OR_COCHAIN_MAP_BY_LIST.
+   
+   The functions "MorphismsOfChainMap", "MorphismsOfCochainMap" are defined to be equal to "MorphismsOfMap".
+   Again, there is "MorphismOfChainMap" and "MorphismOfCochainMap" which are equal to the operation "MorphismOfMap".
+   Many other operations are added, e.g., ZeroCochainMap( C1, C2 ) which in turn calls the function 
+   ZeroMap( C1, C2 ). The output of ZeroMap is ChainMap if C1 and C2 are ChainComplexes and is 
+   CochainMap if both C1 and C2 are CochainComplexes.
+   
+   
+3- Using the previous new general operations i modified to complex category constructor to be contructor for both
+   chain and cochain complex category. The difference so far is only the ( chain or cochain ) complex constructor, 
+   ( chain or cochain ) map constructor and shift_index which is used when computing kernel and cokernel of a map.
+   
+4- Some methods are changed to be more general and many new methods are added in inflists, complexes and maps.
+   
+   Every code that was changed has now the form 
+   
+   #c
+   Code .... 
+   ##
+   
+   and every new code has the form
+   
+   #n
+   Code
+   ##
+   
+5- In git commits there are more details about every change has been done.
+   
+   
