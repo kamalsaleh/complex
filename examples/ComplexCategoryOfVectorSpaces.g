@@ -32,7 +32,7 @@ pos_diffs := Map( pos_integers, D );;
 diffs := Concatenate( neg_diffs, pos_diffs );;
 P := ChainComplexByDifferentialList( matrix_category, diffs );
 #! <An object in Chain complexes over Category of matrices over Q>
-Obj := ObjectsOfComplex( P );;
+Obj := Objects( P );;
 Display( Obj[ 1 ] );
 Obj[ 1 ] = ObjectOfComplex( P, 1 );
 #! true
@@ -56,5 +56,13 @@ H2_Id_P := ApplyFunctor( H2, Id_P );
 #! <A morphism in Category of matrices over Q>
 Display( H2_Id_P );
 #! (an empty 0 x 0 matrix)
+#! 
+#! A morphism in Category of matrices over Q
+shift1:= ShiftAsFunctor( complex_category, 1 );
+#! Shift (1 times to the left) functor in Chain complexes category over Category of matrices over Q
+P1 := ApplyFunctor( shift1, P );
+#! <An object in Chain complexes category over Category of matrices over Q>
+Display( P1^1 );
+#! [ [  -1,  -3 ] ]
 #! 
 #! A morphism in Category of matrices over Q
