@@ -32,7 +32,7 @@ Hello, here are general review of what I have done till now.
    CochainMap if both C1 and C2 are CochainComplexes.
    
    
-3- Using the previous new general operations i modified to complex category constructor to be contructor for both
+3- Using the previous new general operations, I modified the complex category constructor to be contructor for both
    chain and cochain complex category. The difference so far is only the ( chain or cochain ) complex constructor, 
    ( chain or cochain ) map constructor and shift_index which is used when computing kernel and cokernel of a map.
    
@@ -52,4 +52,6 @@ Hello, here are general review of what I have done till now.
    
 5- In git commits there are more details about every change has been done.
    
-   
+6- Plane: 
+   a. Making Cycles, Boundaries more general.
+   b. Construct Homology, cohomology, shift as functors in the category of chain or cochain complexes.
