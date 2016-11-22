@@ -53,7 +53,7 @@ DeclareOperation( "Resolution", [ IsAbelianCategory, IsObject, IsFunction ] );
 DeclareOperation( "Coresolution", [ IsAbelianCategory, IsObject, IsFunction ] );
 
 DeclareOperation( "Shift", [ IsChainOrCochainComplex, IsInt ] );
-DeclareOperation( "ShiftUnsigned", [ IsChainComplex, IsInt ] );
+DeclareOperation( "ShiftUnsigned", [ IsChainOrCochainComplex, IsInt ] );
 DeclareOperation( "YonedaProduct", [ IsChainComplex, IsChainComplex ] );
 
 DeclareOperation( "GoodTruncationBelow", [ IsChainComplex, IsInt ] );
@@ -71,7 +71,7 @@ DeclareOperation( "SyzygyCosyzygyTruncation", [ IsChainComplex, IsInt, IsInt ] )
 
 ##############################################
 #
-# Attributes of (co)chain complexex
+# Attributes of (co)chain complexes
 #
 ##############################################
 
@@ -82,7 +82,7 @@ DeclareAttribute( "DifferentialsOfComplex", IsChainOrCochainComplex );
 DeclareAttribute( "ObjectsOfComplex", IsChainOrCochainComplex );
 ##
 
-DeclareAttribute( "CatOfComplex", IsChainComplex );
+DeclareAttribute( "CatOfComplex", IsChainOrCochainComplex );
 
 ##############################################
 #
@@ -90,14 +90,17 @@ DeclareAttribute( "CatOfComplex", IsChainComplex );
 #
 ##############################################
 
+#c
 DeclareOperation( "ObjectOfComplex", [ IsChainOrCochainComplex, IsInt ] );
 DeclareOperation( "DifferentialOfComplex", [ IsChainOrCochainComplex, IsInt ] );
 DeclareOperation( "\^", [ IsChainOrCochainComplex, IsInt ] );
 DeclareOperation( "\[\]", [ IsChainOrCochainComplex, IsInt ] );
+DeclareOperation( "CyclesOfComplex", [ IsChainOrCochainComplex, IsInt ] );
+DeclareOperation( "BoundariesOfComplex", [ IsChainOrCochainComplex, IsInt ] );
+DeclareOperation( "HomologyOfChainComplex", [ IsChainComplex, IsInt ] );
+DeclareOperation( "CohomologyOfCochainComplex", [ IsCochainComplex, IsInt ] );
+##
 
-
-DeclareOperation( "CyclesOfComplex", [ IsChainComplex, IsInt ] );
-DeclareOperation( "BoundariesOfComplex", [ IsChainComplex, IsInt ] );
 DeclareOperation( "HomologyOfComplex", [ IsChainComplex, IsInt ] );
 DeclareOperation( "UpperBound", [ IsChainComplex ] );
 DeclareOperation( "LowerBound", [ IsChainComplex ] );

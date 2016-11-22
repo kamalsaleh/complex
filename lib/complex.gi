@@ -470,29 +470,49 @@ end );
 InstallMethod( \[\], [ IsChainOrCochainComplex, IsInt ], ObjectOfComplex );
 ##
 
-InstallMethod( CyclesOfComplex, [ IsChainComplex, IsInt ],
+InstallMethod( CyclesOfComplex, [ IsChainOrCochainComplex, IsInt ],
 function( C, i )
   local cat;
   cat := CatOfComplex( C );
   return KernelEmbedding( DifferentialOfComplex( C, i ) );
 end );
 
-InstallMethod( BoundariesOfComplex, [ IsChainComplex, IsInt ],
+#c
+InstallMethod( BoundariesOfComplex, [ IsChainOrCochainComplex, IsInt ],
 function( C, i )
   local cat;
   cat := CatOfComplex( C );
-  return ImageEmbedding( DifferentialOfComplex( C, i + 1 ) );
+  if IsChainComplex( C ) then 
+    return ImageEmbedding( DifferentialOfComplex( C, i + 1 ) );
+  else
+    return ImageEmbedding( DifferentialOfComplex( C, i - 1 ) );
+  fi;
 end );
+##
 
-InstallMethod( HomologyOfComplex, [ IsChainComplex, IsInt ],
-function( C, i )
-  local cat, im, d, inc;
-  cat := CatOfComplex( C );
-  im := BoundariesOfComplex( C, i );
-  d := DifferentialOfComplex( C, i );
-  inc := KernelLift( d, im );
-  return CokernelObject( inc );
+#n
+BindGlobal( "HOMOLOGY_OR_COHOMOLOGY_OF_COMPLEX",
+   function( C, i )
+   local cat, im, d, inc;
+   cat := CatOfComplex( C );
+   im := BoundariesOfComplex( C, i );
+   d := DifferentialOfComplex( C, i );
+   inc := KernelLift( d, im );
+   return CokernelObject( inc );
 end );
+##
+
+#n
+InstallMethod( HomologyOfChainComplex, [ IsChainComplex, IsInt ], HOMOLOGY_OR_COHOMOLOGY_OF_COMPLEX );
+##
+
+#n
+InstallMethod( CohomologyOfCochainComplex, [ IsCochainComplex, IsInt ], HOMOLOGY_OR_COHOMOLOGY_OF_COMPLEX );
+##
+
+#c
+InstallMethod( HomologyOfComplex, [ IsChainComplex, IsInt ], HomologyOfChainComplex );
+##
 
 InstallMethod( ZeroComplex, [ IsAbelianCategory ],
 function( cat )
