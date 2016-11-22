@@ -14,13 +14,26 @@ DeclareGlobalVariable( "ComplexDoubleAssertions" );
 #
 ###################################################
 
+#n
 DeclareAttribute( "ChainComplexCategory", IsCapCategory );
 DeclareAttribute( "CochainComplexCategory", IsCapCategory );
+##
 
 DeclareAttribute( "UnderlyingCategory", IsChainOrCochainComplexCategory );
 
 DeclareAttribute( "ComplexCategory", IsCapCategory );
 DeclareAttribute( "CocomplexCategory", IsCapCategory );
+
+#########################################
+#
+#   Functors
+#
+########################################
+
+#n
+DeclareOperation( "HomologyAsFunctor", [ IsCapCategory, IsInt ] );
+DeclareOperation( "CohomologyAsFunctor", [ IsCapCategory, IsInt ] );
+##
 
 #########################################
 #
@@ -51,9 +64,11 @@ DeclareOperation( "ShortExactSequence", [ IsAbelianCategory, IsObject, IsObject 
 DeclareOperation( "InductiveComplex", [ IsAbelianCategory, IsObject, IsFunction ] );
 DeclareOperation( "Resolution", [ IsAbelianCategory, IsObject, IsFunction ] );
 DeclareOperation( "Coresolution", [ IsAbelianCategory, IsObject, IsFunction ] );
-
+#c
 DeclareOperation( "Shift", [ IsChainOrCochainComplex, IsInt ] );
 DeclareOperation( "ShiftUnsigned", [ IsChainOrCochainComplex, IsInt ] );
+##
+
 DeclareOperation( "YonedaProduct", [ IsChainComplex, IsChainComplex ] );
 
 DeclareOperation( "GoodTruncationBelow", [ IsChainComplex, IsInt ] );

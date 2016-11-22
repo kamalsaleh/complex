@@ -470,6 +470,12 @@ end );
 InstallMethod( \[\], [ IsChainOrCochainComplex, IsInt ], ObjectOfComplex );
 ##
 
+#############################################
+##
+## Homology and Cohomology functors
+##
+#############################################
+
 InstallMethod( CyclesOfComplex, [ IsChainOrCochainComplex, IsInt ],
 function( C, i )
   local cat;
@@ -503,6 +509,66 @@ end );
 ##
 
 #n
+BindGlobal( "HOMOLOGY_OR_COHOMOLOGY_OF_COMPLEX_FUNCTORIAL",
+   function( map, i )
+   local C1, C2, im1, d1, inc1, im2, d2, inc2, cycle1, map_i, ker1_to_ker2;
+   C1 := Source( map );
+   C2 := Range( map );
+   
+   im1 := BoundariesOfComplex( C1, i );
+   d1 := DifferentialOfComplex( C1, i );
+   inc1 := KernelLift( d1, im1 );
+   
+   im2 := BoundariesOfComplex( C2, i );
+   d2 := DifferentialOfComplex( C2, i );
+   inc2 := KernelLift( d2, im2 );
+   
+   cycle1 := CyclesOfComplex( C1, i );
+   map_i := MorphismOfMap( map, i );
+   
+   ker1_to_ker2 := KernelLift( d2, PreCompose( cycle1, map_i ) );
+   
+   return CokernelColift( inc1, PreCompose( ker1_to_ker2, CokernelProjection( inc2 ) ) );
+   
+   end );
+##
+
+#n
+BindGlobal( "HOMOLOGY_OR_COHOMOLOGY_AS_FUNCTOR", 
+     function( cat, i, string )
+     local functor, complex_cat, name;
+     
+     if string = "Homology" then
+     
+     complex_cat := ChainComplexCategory( cat );
+     
+     name := Concatenation( String( i ), "-th homology functor in ", Name( cat ) );
+     
+     else
+     
+     complex_cat := CochainComplexCategory( cat );
+     
+     name := Concatenation( String( i ), "-th cohomology functor in ", Name( cat ) );
+     
+     fi;
+     
+     functor := CapFunctor( name, complex_cat, cat );
+
+     AddObjectFunction( functor, 
+     function( complex )
+     return HOMOLOGY_OR_COHOMOLOGY_OF_COMPLEX( complex, i );
+     end );
+     
+     AddMorphismFunction( functor,
+     function( new_source, map, new_range )
+     return HOMOLOGY_OR_COHOMOLOGY_OF_COMPLEX_FUNCTORIAL( map, i );
+     end );
+     
+     return functor;
+     end );
+##
+
+#n
 InstallMethod( HomologyOfChainComplex, [ IsChainComplex, IsInt ], HOMOLOGY_OR_COHOMOLOGY_OF_COMPLEX );
 ##
 
@@ -510,9 +576,32 @@ InstallMethod( HomologyOfChainComplex, [ IsChainComplex, IsInt ], HOMOLOGY_OR_CO
 InstallMethod( CohomologyOfCochainComplex, [ IsCochainComplex, IsInt ], HOMOLOGY_OR_COHOMOLOGY_OF_COMPLEX );
 ##
 
+#n
+InstallMethod( HomologyAsFunctor, 
+               [ IsCapCategory, IsInt ], 
+  function( cat, i )
+  return HOMOLOGY_OR_COHOMOLOGY_AS_FUNCTOR( cat, i, "Homology" );
+  end );
+##
+
+#n
+InstallMethod( CohomologyAsFunctor, 
+               [ IsCapCategory, IsInt ],
+  function( cat, i )
+  return HOMOLOGY_OR_COHOMOLOGY_AS_FUNCTOR( cat, i, "Cohomology" );
+  end );
+##
+
 #c
 InstallMethod( HomologyOfComplex, [ IsChainComplex, IsInt ], HomologyOfChainComplex );
 ##
+
+
+########################################
+#
+# More methods 
+#
+########################################
 
 InstallMethod( ZeroComplex, [ IsAbelianCategory ],
 function( cat )
