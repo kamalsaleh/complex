@@ -576,22 +576,36 @@ end );
 #   return ComplexByDifferentialList( cat, diffs );
 # end );
 
-InstallMethod( Shift, [ IsChainComplex, IsInt ],
+#c
+InstallMethod( Shift, [ IsChainOrCochainComplex, IsInt ],
 function( C, i )
   local newDifferentials;
   newDifferentials := Shift( DifferentialsOfComplex( C ), i );
   if i mod 2 = 1 then
     newDifferentials := Map( newDifferentials, d -> -d );
   fi;
-  return ComplexByDifferentialList( CatOfComplex( C ), newDifferentials );
+  
+  if IsChainComplex( C ) then 
+     return ChainComplexByDifferentialList( CatOfComplex( C ), newDifferentials );
+  else
+     return CochainComplexByDifferentialList( CatOfComplex( C ), newDifferentials );
+  fi;
 end );
+##
 
-InstallMethod( ShiftUnsigned, [ IsChainComplex, IsInt ],
+#c
+InstallMethod( ShiftUnsigned, [ IsChainOrCochainComplex, IsInt ],
 function( C, i )
   local newDifferentials;
   newDifferentials := Shift( DifferentialsOfComplex( C ), i );
-  return ComplexByDifferentialList( CatOfComplex( C ), newDifferentials );
+  
+  if IsChainComplex( C ) then 
+     return ChainComplexByDifferentialList( CatOfComplex( C ), newDifferentials );
+  else
+     return CochainComplexByDifferentialList( CatOfComplex( C ), newDifferentials );
+  fi;
 end );
+##
 
 InstallMethod( String, [ IsChainComplex ],
 function( C )

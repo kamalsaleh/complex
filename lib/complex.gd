@@ -52,7 +52,7 @@ DeclareOperation( "InductiveComplex", [ IsAbelianCategory, IsObject, IsFunction 
 DeclareOperation( "Resolution", [ IsAbelianCategory, IsObject, IsFunction ] );
 DeclareOperation( "Coresolution", [ IsAbelianCategory, IsObject, IsFunction ] );
 
-DeclareOperation( "Shift", [ IsChainComplex, IsInt ] );
+DeclareOperation( "Shift", [ IsChainOrCochainComplex, IsInt ] );
 DeclareOperation( "ShiftUnsigned", [ IsChainComplex, IsInt ] );
 DeclareOperation( "YonedaProduct", [ IsChainComplex, IsChainComplex ] );
 
