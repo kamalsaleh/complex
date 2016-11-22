@@ -131,7 +131,7 @@ function( cat, shift_index )
 
   identity_morphism := function( C )
     local morphisms;
-    morphisms := Map( DifferentialsOfComplex( C ),
+    morphisms := Map( Differentials( C ),
                       d -> IdentityMorphism( Source( d ) ) );
     return maps_constructor( C, C, morphisms );
   end;
@@ -173,7 +173,7 @@ function( cat, shift_index )
             kernel_complex,  kernel_emb;
     embeddings := Map( MorphismsOfMap( map ), KernelEmbedding );
     kernel_to_next_source :=
-      Map( [ embeddings, DifferentialsOfComplex( Source( map ) ) ],
+      Map( [ embeddings, Differentials( Source( map ) ) ],
            PreCompose );
     diffs :=
       Map( [ Shift( MorphismsOfMap( map ), shift_index ),
@@ -195,7 +195,7 @@ function( cat, shift_index )
             cokernel_complex,  cokernel_proj;
     projections := Map( MorphismsOfMap( map ), CokernelProjection );
     range_to_next_cokernel :=
-      Map( [ DifferentialsOfComplex( Range( map ) ),
+      Map( [ Differentials( Range( map ) ),
              Shift( projections, shift_index ) ],
            PreCompose );
     diffs :=
@@ -216,7 +216,7 @@ function( cat, shift_index )
 
   direct_sum := function( complexes )
     local diffs;
-    diffs := Map( Combine( List( complexes, DifferentialsOfComplex ) ),
+    diffs := Map( Combine( List( complexes, Differentials ) ),
                   DirectSumFunctorial );
     #cat := UnderlyingCategory( CapCategory( complexes[ 1 ] ) );
     return complex_constructor( cat, diffs );
@@ -225,8 +225,8 @@ function( cat, shift_index )
 
   injection_of_cofactor := function( complexes, i, sum_complex )
     local morphisms;
-    morphisms := Map( [ Combine( List( complexes, ObjectsOfComplex ) ),
-                        ObjectsOfComplex( sum_complex ) ],
+    morphisms := Map( [ Combine( List( complexes, Objects ) ),
+                        Objects( sum_complex ) ],
                       function( summands, sum )
                         return InjectionOfCofactorOfDirectSumWithGivenDirectSum
                                ( summands, i, sum );
@@ -239,8 +239,8 @@ function( cat, shift_index )
 
   projection_in_factor := function( complexes, i, sum_complex )
     local morphisms;
-    morphisms := Map( [ Combine( List( complexes, ObjectsOfComplex ) ),
-                        ObjectsOfComplex( sum_complex ) ],
+    morphisms := Map( [ Combine( List( complexes, Objects ) ),
+                        Objects( sum_complex ) ],
                       function( summands, sum )
                         return ProjectionInFactorOfDirectSumWithGivenDirectSum
                                ( summands, i, sum );
@@ -269,7 +269,7 @@ function( cat, shift_index )
  AddUniversalMorphismIntoTerminalObjectWithGivenTerminalObject( complex_cat,
                                  function( complex, terminal_obj )
                                  local objects, universal_maps;
-                                 objects := ObjectsOfComplex( complex );
+                                 objects := Objects( complex );
                                  universal_maps := Map( objects,  UniversalMorphismIntoTerminalObject );
                                  return maps_constructor( complex, terminal_obj, universal_maps );
                                  end );
@@ -292,7 +292,7 @@ function( cat, shift_index )
  AddUniversalMorphismFromInitialObjectWithGivenInitialObject( complex_cat,
                                  function( complex, initial_object )
                                  local objects, universal_maps;
-                                 objects := ObjectsOfComplex( complex );
+                                 objects := Objects( complex );
                                  universal_maps := Map( objects,  UniversalMorphismFromInitialObject );
                                  return maps_constructor( complex, initial_object, universal_maps );
                                  end );
@@ -329,15 +329,15 @@ end );
 ##
 
 #n
-InstallMethod( ComplexCategory, 
-                 [ IsCapCategory ],
-  ChainComplexCategory );
+# InstallMethod( ComplexCategory, 
+#                  [ IsCapCategory ],
+#   ChainComplexCategory );
 ##
 
 #n
-InstallMethod( CocomplexCategory, 
-                 [ IsCapCategory ],
-  CochainComplexCategory );
+# InstallMethod( CocomplexCategory, 
+#                  [ IsCapCategory ],
+#   CochainComplexCategory );
 ##
 
 
@@ -358,7 +358,7 @@ function( cat, diffs, make_assertions, type )
 
      ObjectifyWithAttributes( C, TheTypeOfChainComplexes,
                            CatOfComplex, cat,
-                           DifferentialsOfComplex, diffs );
+                           Differentials, diffs );
      if make_assertions then
         for assertion in ComplexSingleAssertions do
         f := assertion[ 1 ];
@@ -377,7 +377,7 @@ function( cat, diffs, make_assertions, type )
 
      ObjectifyWithAttributes( C, TheTypeOfCochainComplexes,
                               CatOfComplex, cat,
-                              DifferentialsOfComplex, diffs );
+                              Differentials, diffs );
      if make_assertions then
 #    this code need to be modified for the case of cochain complexes.
 #         for assertion in ComplexSingleAssertions do
@@ -443,17 +443,29 @@ ChainComplexByDifferentialList );
 ##
 #########################################
 
-#c
-InstallMethod( ObjectsOfComplex, [ IsChainOrCochainComplex ],
+#n
+InstallMethod( Objects, [ IsChainOrCochainComplex ],
 function( C )
-  return Map( DifferentialsOfComplex( C ), Source );
+  return Map( Differentials( C ), Source );
 end );
+##
+
+#n
+InstallMethod( ObjectsOfChainComplex, [ IsChainComplex ], Objects );
+InstallMethod( ObjectsOfCochainComplex, [ IsCochainComplex ], Objects );
+##
+
+#c
+# InstallMethod( ObjectsOfComplex, [ IsChainOrCochainComplex ],
+# function( C )
+#   return Map( DifferentialsOfComplex( C ), Source );
+# end );
 ##
 
 #c
 InstallMethod( DifferentialOfComplex, [ IsChainOrCochainComplex, IsInt ],
 function( C, i )
-  return DifferentialsOfComplex( C )[ i ];
+  return Differentials( C )[ i ];
 end );
 ##
 
@@ -472,7 +484,7 @@ InstallMethod( \[\], [ IsChainOrCochainComplex, IsInt ], ObjectOfComplex );
 
 #############################################
 ##
-## Homology and Cohomology functors
+## Homology and Cohomology computations
 ##
 #############################################
 
@@ -534,6 +546,26 @@ BindGlobal( "HOMOLOGY_OR_COHOMOLOGY_OF_COMPLEX_FUNCTORIAL",
 ##
 
 #n
+InstallMethod( HomologyOfChainComplex, [ IsChainComplex, IsInt ], HOMOLOGY_OR_COHOMOLOGY_OF_COMPLEX );
+##
+
+#n
+InstallMethod( CohomologyOfCochainComplex, [ IsCochainComplex, IsInt ], HOMOLOGY_OR_COHOMOLOGY_OF_COMPLEX );
+##
+
+#c
+InstallMethod( HomologyOfComplex, [ IsChainComplex, IsInt ], HomologyOfChainComplex );
+##
+
+####################################
+#
+#    Functors 
+#
+####################################
+
+# Homology and Cohomology functors
+
+#n
 BindGlobal( "HOMOLOGY_OR_COHOMOLOGY_AS_FUNCTOR", 
      function( cat, i, string )
      local functor, complex_cat, name;
@@ -569,12 +601,44 @@ BindGlobal( "HOMOLOGY_OR_COHOMOLOGY_AS_FUNCTOR",
 ##
 
 #n
-InstallMethod( HomologyOfChainComplex, [ IsChainComplex, IsInt ], HOMOLOGY_OR_COHOMOLOGY_OF_COMPLEX );
+BindGlobal( "SHIFT_AS_FUNCTOR",
+   function( complex_cat, n )
+   local name, shift, morphism_constructor;
+   
+   if IsChainComplexCategory( complex_cat ) then 
+      morphism_constructor := ChainMapByMorphismList;
+   elif IsCochainComplexCategory( complex_cat ) then 
+      morphism_constructor := CochainMapByMorphismList;
+   else 
+      Error( "The category should be either chain or cochain complexes category" );
+   fi;
+   
+   if n = 0 then 
+      return IdentityFunctor( complex_cat );
+   elif n>0 then 
+      name := Concatenation( "Shift (", String( n ), " times to the left) functor in ", Name( complex_cat ) );
+   else
+      name := Concatenation( "Shift (", String( -n ), " times to the right) functor in ", Name( complex_cat ) );
+   fi;
+   
+   shift := CapFunctor( name, complex_cat, complex_cat );
+   
+   AddObjectFunction( shift, 
+     function( complex )
+       return Shift( complex, n );
+     end );
+   AddMorphismFunction( shift, 
+     function( new_source, map, new_range )
+     local morphisms;
+     morphisms := MorphismsOfMap( map );
+     morphisms := Shift( morphisms, n );
+     return morphism_constructor( new_source, new_range, morphisms );
+     end );
+   
+   return shift;
+end );
 ##
 
-#n
-InstallMethod( CohomologyOfCochainComplex, [ IsCochainComplex, IsInt ], HOMOLOGY_OR_COHOMOLOGY_OF_COMPLEX );
-##
 
 #n
 InstallMethod( HomologyAsFunctor, 
@@ -592,10 +656,11 @@ InstallMethod( CohomologyAsFunctor,
   end );
 ##
 
-#c
-InstallMethod( HomologyOfComplex, [ IsChainComplex, IsInt ], HomologyOfChainComplex );
+#n
+InstallMethod( ShiftAsFunctor, 
+               [ IsCapCategory, IsInt ],
+SHIFT_AS_FUNCTOR );
 ##
-
 
 ########################################
 #
@@ -689,7 +754,7 @@ end );
 InstallMethod( Shift, [ IsChainOrCochainComplex, IsInt ],
 function( C, i )
   local newDifferentials;
-  newDifferentials := Shift( DifferentialsOfComplex( C ), i );
+  newDifferentials := Shift( Differentials( C ), i );
   if i mod 2 = 1 then
     newDifferentials := Map( newDifferentials, d -> -d );
   fi;
@@ -706,7 +771,7 @@ end );
 InstallMethod( ShiftUnsigned, [ IsChainOrCochainComplex, IsInt ],
 function( C, i )
   local newDifferentials;
-  newDifferentials := Shift( DifferentialsOfComplex( C ), i );
+  newDifferentials := Shift( Differentials( C ), i );
   
   if IsChainComplex( C ) then 
      return ChainComplexByDifferentialList( CatOfComplex( C ), newDifferentials );
@@ -732,7 +797,7 @@ function( C )
               repeat_end_left := "[ ",
               repeat_end_right := " ]",
               ellipsis := "---" );
-  return InfListString( opt, DifferentialsOfComplex( C ), true );
+  return InfListString( opt, Differentials( C ), true );
 end );
 
 # InstallMethod( ViewObj, [ IsChainComplex ],

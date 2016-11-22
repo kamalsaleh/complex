@@ -21,8 +21,8 @@ DeclareAttribute( "CochainComplexCategory", IsCapCategory );
 
 DeclareAttribute( "UnderlyingCategory", IsChainOrCochainComplexCategory );
 
-DeclareAttribute( "ComplexCategory", IsCapCategory );
-DeclareAttribute( "CocomplexCategory", IsCapCategory );
+# DeclareAttribute( "ComplexCategory", IsCapCategory );
+# DeclareAttribute( "CocomplexCategory", IsCapCategory );
 
 #########################################
 #
@@ -33,6 +33,7 @@ DeclareAttribute( "CocomplexCategory", IsCapCategory );
 #n
 DeclareOperation( "HomologyAsFunctor", [ IsCapCategory, IsInt ] );
 DeclareOperation( "CohomologyAsFunctor", [ IsCapCategory, IsInt ] );
+DeclareOperation( "ShiftAsFunctor", [ IsCapCategory, IsInt ] );
 ##
 
 #########################################
@@ -92,9 +93,19 @@ DeclareOperation( "SyzygyCosyzygyTruncation", [ IsChainComplex, IsInt, IsInt ] )
 
 #c
 DeclareAttribute( "DifferentialsOfComplex", IsChainOrCochainComplex );
+DeclareAttribute( "Differentials", IsChainOrCochainComplex );
+
 ##
 #c
-DeclareAttribute( "ObjectsOfComplex", IsChainOrCochainComplex );
+# This is supposed to be called ObjectsOfComplex, but it
+# causes a conflict with an operation in homalg
+DeclareAttribute( "Objects", IsChainOrCochainComplex );
+# DeclareAttribute( "ObjectsOfComplex", IsChainOrCochainComplex );
+##
+
+#n
+DeclareAttribute( "ObjectsOfChainComplex", IsChainComplex );
+DeclareAttribute( "ObjectsOfCochainComplex", IsCochainComplex );
 ##
 
 DeclareAttribute( "CatOfComplex", IsChainOrCochainComplex );

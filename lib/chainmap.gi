@@ -14,7 +14,7 @@ DeclareRepresentation( "IsChainMapRep",
 BindGlobal( "FamilyOfChainMaps",
             NewFamily( "chain maps" ) );
 
-BindGlobal( "TheTypeOfChainMaps",
+BindGlobal( "TheTypeOfChainMap",
             NewType( FamilyOfChainMaps, 
                      IsChainMap and IsChainMapRep ) );
 
@@ -25,7 +25,7 @@ DeclareRepresentation( "IsCochainMapRep",
 BindGlobal( "FamilyOfCochainMaps",
             NewFamily( "cochain maps" ) );
 
-BindGlobal( "TheTypeOfCochainMaps",
+BindGlobal( "TheTypeOfCochainMap",
             NewType( FamilyOfCochainMaps, 
                      IsCochainMap and IsCochainMapRep ) );
 
@@ -41,13 +41,13 @@ BindGlobal( "CHAIN_OR_COCHAIN_MAP_BY_LIST",
      local map;
      map := rec( );
      if ForAll( [ C1, C2 ], IsChainComplex ) then 
-        ObjectifyWithAttributes( map, TheTypeOfChainMaps,
+        ObjectifyWithAttributes( map, TheTypeOfChainMap,
                            Source, C1,
                            Range, C2,
                            MorphismsOfMap, morphisms );
                            
      elif ForAll( [ C1, C2 ], IsCochainComplex ) then 
-        ObjectifyWithAttributes( map, TheTypeOfCochainMaps,
+        ObjectifyWithAttributes( map, TheTypeOfCochainMap,
                            Source, C1,
                            Range, C2,
                            MorphismsOfMap, morphisms );
@@ -93,8 +93,8 @@ MorphismsOfMap );
 InstallMethod( FiniteChainMap, [ IsChainComplex, IsChainComplex, IsInt, IsDenseList ],
 function( C1, C2, base_pos, morphisms_list )
   local zero_morphisms, morphisms;
-  zero_morphisms := Map( [ ObjectsOfComplex( C1 ),
-                           ObjectsOfComplex( C2 ) ],
+  zero_morphisms := Map( [ Objects( C1 ),
+                           Objects( C2 ) ],
                          ZeroMorphism );
   morphisms := Replace( zero_morphisms, base_pos, morphisms_list );
   return ChainMapByMorphismList( C1, C2, morphisms );
@@ -110,8 +110,8 @@ end );
 InstallMethod( ZeroMap, [ IsChainOrCochainComplex, IsChainOrCochainComplex ], 
 function( C1, C2 )
 local morphisms;
-   morphisms := Map( [ ObjectsOfComplex( C1 ),
-                      ObjectsOfComplex( C2 ) ],
+   morphisms := Map( [ Objects( C1 ),
+                      Objects( C2 ) ],
                     ZeroMorphism );
    if ForAll( [ C1, C2 ], IsChainComplex ) then 
       
