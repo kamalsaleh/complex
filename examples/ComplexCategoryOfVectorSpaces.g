@@ -32,7 +32,12 @@ pos_diffs := Map( pos_integers, D );;
 diffs := Concatenate( neg_diffs, pos_diffs );;
 P := ChainComplexByDifferentialList( matrix_category, diffs );
 #! <An object in Chain complexes over Category of matrices over Q>
+
 Obj := Objects( P );;
+############################################################
+##  We could have used "ObjectsOfChainComplex( P );".
+############################################################
+
 Display( Obj[ 1 ] );
 Obj[ 1 ] = ObjectOfComplex( P, 1 );
 #! true
