@@ -53,15 +53,15 @@ Obj[ 1 ] = T;
 Obj[ 7 ] = T;
 #! true
  
-H0 := CohomologyAsFunctor( left_pre_cat, 0 );
+Coh0 := CohomologyAsFunctor( left_pre_cat, 0 );
 #! 0-th cohomology functor in Category of left presentations of Q[x,y,z]
-H1 := CohomologyAsFunctor( left_pre_cat, 1 );
+Coh1 := CohomologyAsFunctor( left_pre_cat, 1 );
 #! 1-th cohomology functor in Category of left presentations of Q[x,y,z]
-H2 := CohomologyAsFunctor( left_pre_cat, 2 );
+Coh2 := CohomologyAsFunctor( left_pre_cat, 2 );
 #! 2-th cohomology functor in Category of left presentations of Q[x,y,z]
-H3 := CohomologyAsFunctor( left_pre_cat, 3 );
+Coh3 := CohomologyAsFunctor( left_pre_cat, 3 );
 #! 3-th cohomology functor in Category of left presentations of Q[x,y,z]
-Display( ApplyFunctor( H0, C1 ) );
+Display( ApplyFunctor( Coh0, C1 ) );
 #! 1,0,0,0,
 #! 0,1,0,0,
 #! 0,0,1,0,
@@ -72,7 +72,7 @@ Display( ApplyFunctor( H0, C1 ) );
 #! 0,0,0,1 
 #! 
 #! An object in Category of left presentations of Q[x,y,z]
-Display( ApplyFunctor( H1, C1 ) );
+Display( ApplyFunctor( Coh1, C1 ) );
 #! 1,0,0,
 #! 0,1,0,
 #! 0,0,1,
@@ -86,7 +86,7 @@ Display( ApplyFunctor( H1, C1 ) );
 #! 0,x,1 
 #! 
 #! An object in Category of left presentations of Q[x,y,z]
-Display( ApplyFunctor( H2, C1 ) );
+Display( ApplyFunctor( Coh2, C1 ) );
 #! 0,0, 
 #! 0,0, 
 #! 0,0, 
@@ -99,7 +99,7 @@ Display( ApplyFunctor( H2, C1 ) );
 #! 0,y^2
 #! 
 #! An object in Category of left presentations of Q[x,y,z]
-Display( ApplyFunctor( H3, C1 ) );
+Display( ApplyFunctor( Coh3, C1 ) );
 #! 1,0,0,0,
 #! 0,1,0,0,
 #! 0,0,1,0,
@@ -129,10 +129,20 @@ f = MorphismOfMap( map, 101 );
 ##  We could have used "MorphismOfCochainMap( map, 101 );".
 ############################################################
 
-Display( ApplyFunctor( H0, map ) );
+Display( ApplyFunctor( Coh0, map ) );
 #! x,y,z,
 #! 0,0,0,
 #! x,y,z,
 #! 0,x,1 
 #! 
 #! A morphism in Category of left presentations of Q[x,y,z]
+
+cochain_to_chain := CochainToChainComplexAsFunctor( left_pre_cat );
+#! Cochain to chain complex functor over Category of left presentations of Q[x,y,z]
+B1 := ApplyFunctor( cochain_to_chain, C1 );
+#! <An object in Chain complexes category over Category of left presentations of Q[x,y,z]>
+H_minus_3 := HomologyAsFunctor( left_pre_cat, -3 );
+#! -3-th homology functor in Category of left presentations of Q[x,y,z]
+ApplyFunctor( H_minus_3, B1 ) = ApplyFunctor( Coh3, C1 );
+#! true
+
