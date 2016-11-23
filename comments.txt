@@ -52,6 +52,7 @@ Hello, here are general review of what I have done till now.
    
 5- In git commits there are more details about every change has been done.
    
-6- Plane: 
-   a. Making Cycles, Boundaries more general.
-   b. Construct Homology, cohomology, shift as functors in the category of chain or cochain complexes.
+6- Plan: 
+   a. Making Cycles, Boundaries more general. done.
+   b. Construct Homology, cohomology, shift as functors in the category of chain or cochain complexes. done.
+   c. Working with mapping cone since it is usefull by giving the category a Frobenius structure. To Do.
