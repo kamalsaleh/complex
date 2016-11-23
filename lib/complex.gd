@@ -34,6 +34,8 @@ DeclareAttribute( "UnderlyingCategory", IsChainOrCochainComplexCategory );
 DeclareOperation( "HomologyAsFunctor", [ IsCapCategory, IsInt ] );
 DeclareOperation( "CohomologyAsFunctor", [ IsCapCategory, IsInt ] );
 DeclareOperation( "ShiftAsFunctor", [ IsCapCategory, IsInt ] );
+DeclareOperation( "ChainToCochainComplexAsFunctor", [ IsCapCategory ] );
+DeclareOperation( "CochainToChainComplexAsFunctor", [ IsCapCategory ] );
 ##
 
 #########################################
