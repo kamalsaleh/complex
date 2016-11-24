@@ -642,6 +642,45 @@ end );
 ##
 
 #n
+BindGlobal( "UNSIGNED_SHIFT_AS_FUNCTOR",
+   function( complex_cat, n )
+   local name, shift, morphism_constructor;
+   
+   if IsChainComplexCategory( complex_cat ) then 
+      morphism_constructor := ChainMapByMorphismList;
+   elif IsCochainComplexCategory( complex_cat ) then 
+      morphism_constructor := CochainMapByMorphismList;
+   else 
+      Error( "The category should be either chain or cochain complexes category" );
+   fi;
+   
+   if n = 0 then 
+      return IdentityFunctor( complex_cat );
+   elif n>0 then 
+      name := Concatenation( "Unsigned shift (", String( n ), " times to the left) functor in ", Name( complex_cat ) );
+   else
+      name := Concatenation( "Unsigned shift (", String( -n ), " times to the right) functor in ", Name( complex_cat ) );
+   fi;
+   
+   shift := CapFunctor( name, complex_cat, complex_cat );
+   
+   AddObjectFunction( shift, 
+     function( complex )
+       return ShiftUnsigned( complex, n );
+     end );
+   AddMorphismFunction( shift, 
+     function( new_source, map, new_range )
+     local morphisms;
+     morphisms := MorphismsOfMap( map );
+     morphisms := Shift( morphisms, n );
+     return morphism_constructor( new_source, new_range, morphisms );
+     end );
+   
+   return shift;
+end );
+##
+
+#n
 BindGlobal( "CHAIN_TO_COCHAIN_OR_COCHAIN_TO_CHAIN_FUNCTOR",
    function( cat, string )
    local chain_complexes, cochain_complexes, complex_constructor, name, functor, morphism_constructor; 
@@ -704,6 +743,10 @@ InstallMethod( CohomologyAsFunctor,
 InstallMethod( ShiftAsFunctor, 
                [ IsCapCategory, IsInt ],
 SHIFT_AS_FUNCTOR );
+
+InstallMethod( UnsignedShiftAsFunctor, 
+               [ IsCapCategory, IsInt ],
+UNSIGNED_SHIFT_AS_FUNCTOR );
 
 InstallMethod( ChainToCochainComplexAsFunctor, 
                [ IsCapCategory ], 
