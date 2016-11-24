@@ -25,6 +25,9 @@ DeclareAttribute( "MorphismsOfCochainMap", IsCochainMap );
 DeclareAttribute( "MorphismsOfMap", IsChainOrCochainMap );
 ##
 
+#n
+DeclareAttribute( "MappingCone", IsChainOrCochainMap );
+##
 
 #n
 DeclareOperation( "MorphismOfMap", [ IsChainOrCochainMap, IsInt ] );

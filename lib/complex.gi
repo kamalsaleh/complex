@@ -808,6 +808,11 @@ BindGlobal( "MAPPING_CONE_OF_CHAIN_OR_COCHAIN_MAP",
     return complex_constructor( UnderlyingCategory( complex_cat), MorphismsOfMap( map1 + map2 ) );
 
 end );
+
+#n
+InstallMethod( MappingCone, [ IsChainOrCochainMap ], MAPPING_CONE_OF_CHAIN_OR_COCHAIN_MAP );
+##
+
 ########################################
 #
 # More methods 
