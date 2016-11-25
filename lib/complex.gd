@@ -46,12 +46,19 @@ DeclareOperation( "CochainToChainComplexAsFunctor", [ IsCapCategory ] );
 #########################################
 
 #n
-DeclareOperation( "ChainComplexByDifferentialList", [ IsAbelianCategory, IsZList, IsBool ] );
-DeclareOperation( "ChainComplexByDifferentialList", [ IsAbelianCategory, IsZList ] );
+DeclareOperation( "ChainComplexByDifferentialList", [ IsCapCategory, IsZList, IsBool ] );
+DeclareOperation( "ChainComplexByDifferentialList", [ IsCapCategory, IsZList ] );
 
-DeclareOperation( "CochainComplexByDifferentialList", [ IsAbelianCategory, IsZList, IsBool ] );
-DeclareOperation( "CochainComplexByDifferentialList", [ IsAbelianCategory, IsZList ] );
+DeclareOperation( "CochainComplexByDifferentialList", [ IsCapCategory, IsZList, IsBool ] );
+DeclareOperation( "CochainComplexByDifferentialList", [ IsCapCategory, IsZList ] );
+
+DeclareOperation( "FiniteChainComplexByDifferentialList", [ IsCapCategory, IsDenseList ] );
+DeclareOperation( "FiniteChainComplexByDifferentialList", [ IsCapCategory, IsDenseList, IsInt ] );
+
+DeclareOperation( "FiniteCochainComplexByDifferentialList", [ IsCapCategory, IsDenseList ] );
+DeclareOperation( "FiniteCochainComplexByDifferentialList", [ IsCapCategory, IsDenseList, IsInt ] );
 ##
+
 
 #c
 # The following two operations are exactly the same as ChainComplexByDifferentialList.

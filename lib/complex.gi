@@ -405,22 +405,22 @@ end );
 ##
 
 #n
-InstallMethod( ChainComplexByDifferentialList, [ IsAbelianCategory, IsZList, IsBool ],
+InstallMethod( ChainComplexByDifferentialList, [ IsCapCategory, IsZList, IsBool ],
 function( cat, diffs, make_assertions )
   return CHAIN_OR_COCHAIN_COMPLEX_BY_DIFFERENTIAL_LIST( cat, diffs, make_assertions, "TheTypeOfChainComplexes" );
 end );
 
-InstallMethod( ChainComplexByDifferentialList, [ IsAbelianCategory, IsZList ],
+InstallMethod( ChainComplexByDifferentialList, [ IsCapCategory, IsZList ],
 function( cat, diffs )
   return ChainComplexByDifferentialList( cat, diffs, true );
 end );
 
-InstallMethod( CochainComplexByDifferentialList, [ IsAbelianCategory, IsZList, IsBool ],
+InstallMethod( CochainComplexByDifferentialList, [ IsCapCategory, IsZList, IsBool ],
 function( cat, diffs, make_assertions )
   return CHAIN_OR_COCHAIN_COMPLEX_BY_DIFFERENTIAL_LIST( cat, diffs, make_assertions, "TheTypeOfCochainComplexes" );
 end );
 
-InstallMethod( CochainComplexByDifferentialList, [ IsAbelianCategory, IsZList ],
+InstallMethod( CochainComplexByDifferentialList, [ IsCapCategory, IsZList ],
 function( cat, diffs )
   return CochainComplexByDifferentialList( cat, diffs, true );
 end );
@@ -825,6 +825,62 @@ function( cat )
   zero_map := ZeroMorphism( ZeroObject( cat ), ZeroObject( cat ) );
   return ComplexByDifferentialList( cat, RepeatListZ( [ zero_map ] ), false );
 end );
+
+########################################
+#
+#  Finite complexes
+#
+########################################
+
+#n
+BindGlobal( "FINITE_CHAIN_OR_COCHAIN_COMPLEX",
+     function( cat, list, homological_index, string )
+     local zero, zero_map, zero_part, n, diffs, new_list;
+  zero := ZeroObject( cat );
+  zero_map := ZeroMorphism( zero, zero );
+  zero_part := RepeatListN( [ zero_map ] );
+  n := Length( list );
+  
+  if string = "chain" then 
+ 
+        new_list := Concatenation( [ ZeroMorphism( Range( list[ 1 ] ), zero ) ], list, [ ZeroMorphism( zero, Source( list[ n ] ) ) ] );
+        diffs := Concatenate( zero_part, new_list, zero_part );
+        return ShiftUnsigned( ChainComplexByDifferentialList( cat, diffs ), 1 - homological_index );
+  else
+
+        new_list := Concatenation( [ ZeroMorphism( zero, Source( list[ 1 ] ) ) ], list, [ ZeroMorphism( Range( list[ n ] ), zero ) ] );
+        diffs := Concatenate( zero_part, diffs, zero_part );
+        return ShiftUnsigned( CochainComplexByDifferentialList( cat, diffs ), 1 - homological_index );
+  fi;
+
+end );
+##
+
+#n
+InstallMethod( FiniteChainComplexByDifferentialList, 
+                   [ IsCapCategory, IsDenseList, IsInt ], 
+   function( cat, diffs, n )
+   return FINITE_CHAIN_OR_COCHAIN_COMPLEX( cat, diffs, n, "chain" );
+   end );
+ 
+InstallMethod( FiniteCochainComplexByDifferentialList, 
+                   [ IsCapCategory, IsDenseList, IsInt ], 
+   function( cat, diffs, n )
+   return FINITE_CHAIN_OR_COCHAIN_COMPLEX( cat, diffs, n, "cochain" );
+   end );
+ 
+InstallMethod( FiniteChainComplexByDifferentialList, 
+                   [ IsCapCategory, IsDenseList ], 
+   function( cat, diffs )
+   return FiniteChainComplexByDifferentialList( cat, diffs, 0 );
+   end );
+ 
+InstallMethod( FiniteCochainComplexByDifferentialList, 
+                   [ IsCapCategory, IsDenseList ], 
+   function( cat, diffs )
+   return FiniteCochainComplexByDifferentialList( cat, diffs, 0 );
+   end );
+##
 
 InstallMethod( FiniteComplex, [ IsAbelianCategory, IsDenseList ],
 function( cat, diffs )
