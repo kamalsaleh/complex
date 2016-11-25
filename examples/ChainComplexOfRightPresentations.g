@@ -31,3 +31,23 @@ d := PreCompose( cone^3, cone^2 );
 IsZeroForMorphisms( d );
 #true
 
+H0 := HomologyAsFunctor( right_pre_category, 0 );
+H1 := HomologyAsFunctor( right_pre_category, 1 );
+H2 := HomologyAsFunctor( right_pre_category, 2 );
+
+IsZeroForObjects(ApplyFunctor( H1, cone ) );
+#! false
+# Hence, "map" is not quasi-isomorphism, because if it were, then the mapping cone would be exact chain which is 
+# not true.
+
+# It can easily be shown that "map" is 0-homotopic. This means that the morphisms between homology groups 
+# induced by "map" should all be equal to zero.
+
+IsZeroForMorphisms( ApplyFunctor( H0, map ) );
+#! true
+IsZeroForMorphisms( ApplyFunctor( H1, map ) );
+#! true
+IsZeroForMorphisms( ApplyFunctor( H2, map ) );
+#! true
+
+
