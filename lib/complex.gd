@@ -52,14 +52,14 @@ DeclareOperation( "ChainComplexByDifferentialList", [ IsCapCategory, IsZList ] )
 DeclareOperation( "CochainComplexByDifferentialList", [ IsCapCategory, IsZList, IsBool ] );
 DeclareOperation( "CochainComplexByDifferentialList", [ IsCapCategory, IsZList ] );
 
-DeclareOperation( "FiniteChainComplexByDifferentialList", [ IsCapCategory, IsDenseList ] );
-DeclareOperation( "FiniteChainComplexByDifferentialList", [ IsCapCategory, IsDenseList, IsInt ] );
+DeclareOperation( "FiniteChainComplexByDifferentialList", [ IsDenseList ] );
+DeclareOperation( "FiniteChainComplexByDifferentialList", [ IsDenseList, IsInt ] );
 
-DeclareOperation( "FiniteCochainComplexByDifferentialList", [ IsCapCategory, IsDenseList ] );
-DeclareOperation( "FiniteCochainComplexByDifferentialList", [ IsCapCategory, IsDenseList, IsInt ] );
+DeclareOperation( "FiniteCochainComplexByDifferentialList", [ IsDenseList ] );
+DeclareOperation( "FiniteCochainComplexByDifferentialList", [ IsDenseList, IsInt ] );
 
-DeclareOperation( "StalkChainComplex", [ IsCapCategory, IsCapCategoryObject ] );
-DeclareOperation( "StalkCochainComplex", [ IsCapCategory, IsCapCategoryObject ] );
+DeclareOperation( "StalkChainComplex", [ IsCapCategoryObject ] );
+DeclareOperation( "StalkCochainComplex", [ IsCapCategoryObject ] );
 ##
 
 

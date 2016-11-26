@@ -450,7 +450,9 @@ BindGlobal( "FINITE_CHAIN_OR_COCHAIN_COMPLEX",
   zero_map := ZeroMorphism( zero, zero );
   zero_part := RepeatListN( [ zero_map ] );
   n := Length( list );
-  
+  if not ForAll( list, mor -> cat = CapCategory( mor ) ) then 
+     Error( "All morphisms in the list should live in the same category" );
+  fi;  
   if string = "chain" then 
  
         new_list := Concatenation( [ ZeroMorphism( Range( list[ 1 ] ), zero ) ], list, [ ZeroMorphism( zero, Source( list[ n ] ) ) ] );
@@ -468,45 +470,49 @@ end );
 
 #n
 InstallMethod( FiniteChainComplexByDifferentialList, 
-                   [ IsCapCategory, IsDenseList, IsInt ], 
-   function( cat, diffs, n )
+                   [ IsDenseList, IsInt ], 
+   function( diffs, n )
+   local cat;
+   cat := CapCategory( diffs[ 1 ] );
    return FINITE_CHAIN_OR_COCHAIN_COMPLEX( cat, diffs, n, "chain" );
    end );
  
 InstallMethod( FiniteCochainComplexByDifferentialList, 
-                   [ IsCapCategory, IsDenseList, IsInt ], 
-   function( cat, diffs, n )
+                   [ IsDenseList, IsInt ], 
+   function( diffs, n )
+   local cat;
+   cat := CapCategory( diffs[ 1 ] );
    return FINITE_CHAIN_OR_COCHAIN_COMPLEX( cat, diffs, n, "cochain" );
    end );
  
 InstallMethod( FiniteChainComplexByDifferentialList, 
-                   [ IsCapCategory, IsDenseList ], 
-   function( cat, diffs )
-   return FiniteChainComplexByDifferentialList( cat, diffs, 0 );
+                   [ IsDenseList ], 
+   function( diffs )
+   return FiniteChainComplexByDifferentialList( diffs, 0 );
    end );
  
 InstallMethod( FiniteCochainComplexByDifferentialList, 
-                   [ IsCapCategory, IsDenseList ], 
-   function( cat, diffs )
-   return FiniteCochainComplexByDifferentialList( cat, diffs, 0 );
+                   [ IsDenseList ], 
+   function( diffs )
+   return FiniteCochainComplexByDifferentialList( diffs, 0 );
    end );
 
 InstallMethod( StalkChainComplex, 
-                   [ IsCapCategory, IsCapCategoryObject ], 
-   function( cat, obj )
+                   [ IsCapCategoryObject ], 
+   function( obj )
    local zero, diffs;
-   zero := ZeroObject( cat );
+   zero := ZeroObject( CapCategory( obj ) );
    diffs := [ ZeroMorphism( obj, zero ) ];
-   return FiniteChainComplexByDifferentialList( cat, diffs );
+   return FiniteChainComplexByDifferentialList( diffs );
    end );
 
 InstallMethod( StalkCochainComplex, 
-                   [ IsCapCategory, IsCapCategoryObject ], 
-   function( cat, obj )
+                   [ IsCapCategoryObject ], 
+   function( obj )
    local zero, diffs;
-   zero := ZeroObject( cat );
+   zero := ZeroObject( CapCategory( obj ) );
    diffs := [ ZeroMorphism( obj, zero ) ];
-   return FiniteCochainComplexByDifferentialList( cat, diffs );
+   return FiniteCochainComplexByDifferentialList( diffs );
    end );
 ##
 
