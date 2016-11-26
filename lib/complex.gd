@@ -57,6 +57,9 @@ DeclareOperation( "FiniteChainComplexByDifferentialList", [ IsCapCategory, IsDen
 
 DeclareOperation( "FiniteCochainComplexByDifferentialList", [ IsCapCategory, IsDenseList ] );
 DeclareOperation( "FiniteCochainComplexByDifferentialList", [ IsCapCategory, IsDenseList, IsInt ] );
+
+DeclareOperation( "StalkChainComplex", [ IsCapCategory, IsCapCategoryObject ] );
+DeclareOperation( "StalkCochainComplex", [ IsCapCategory, IsCapCategoryObject ] );
 ##
 
 
