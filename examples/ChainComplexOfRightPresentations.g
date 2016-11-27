@@ -50,4 +50,6 @@ IsZeroForMorphisms( ApplyFunctor( H1, map ) );
 IsZeroForMorphisms( ApplyFunctor( H2, map ) );
 #! true
 
+list := [ f, g ];
+C3 := FiniteChainComplex( list, 6 );
 
