@@ -52,14 +52,21 @@ DeclareOperation( "ChainComplexByDifferentialList", [ IsCapCategory, IsZList ] )
 DeclareOperation( "CochainComplexByDifferentialList", [ IsCapCategory, IsZList, IsBool ] );
 DeclareOperation( "CochainComplexByDifferentialList", [ IsCapCategory, IsZList ] );
 
-DeclareOperation( "FiniteChainComplexByDifferentialList", [ IsDenseList ] );
-DeclareOperation( "FiniteChainComplexByDifferentialList", [ IsDenseList, IsInt ] );
+DeclareOperation( "FiniteChainComplex", [ IsDenseList ] );
+DeclareOperation( "FiniteChainComplex", [ IsDenseList, IsInt ] );
 
-DeclareOperation( "FiniteCochainComplexByDifferentialList", [ IsDenseList ] );
-DeclareOperation( "FiniteCochainComplexByDifferentialList", [ IsDenseList, IsInt ] );
+DeclareOperation( "FiniteCochainComplex", [ IsDenseList ] );
+DeclareOperation( "FiniteCochainComplex", [ IsDenseList, IsInt ] );
 
 DeclareOperation( "StalkChainComplex", [ IsCapCategoryObject ] );
 DeclareOperation( "StalkCochainComplex", [ IsCapCategoryObject ] );
+
+DeclareOperation( "ChainComplexWithInductiveSides", [ IsCapCategoryMorphism, IsFunction, IsFunction ] );
+DeclareOperation( "CochainComplexWithInductiveSides", [ IsCapCategoryMorphism, IsFunction, IsFunction ] );
+DeclareOperation( "ChainComplexWithInductiveNegativeSide", [ IsCapCategoryMorphism, IsFunction ] );
+DeclareOperation( "ChainComplexWithInductivePositiveSide", [ IsCapCategoryMorphism, IsFunction ] );
+DeclareOperation( "CochainComplexWithInductiveNegativeSide", [ IsCapCategoryMorphism, IsFunction ] );
+DeclareOperation( "CochainComplexWithInductivePositiveSide", [ IsCapCategoryMorphism, IsFunction ] );
 ##
 
 
@@ -138,6 +145,7 @@ DeclareOperation( "CyclesOfComplex", [ IsChainOrCochainComplex, IsInt ] );
 DeclareOperation( "BoundariesOfComplex", [ IsChainOrCochainComplex, IsInt ] );
 DeclareOperation( "HomologyOfChainComplex", [ IsChainComplex, IsInt ] );
 DeclareOperation( "CohomologyOfCochainComplex", [ IsCochainComplex, IsInt ] );
+DeclareOperation( "DefectOfExactness", [ IsChainOrCochainComplex, IsInt ] );
 ##
 
 DeclareOperation( "HomologyOfComplex", [ IsChainComplex, IsInt ] );

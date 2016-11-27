@@ -469,7 +469,7 @@ end );
 ##
 
 #n
-InstallMethod( FiniteChainComplexByDifferentialList, 
+InstallMethod( FiniteChainComplex, 
                    [ IsDenseList, IsInt ], 
    function( diffs, n )
    local cat;
@@ -477,7 +477,7 @@ InstallMethod( FiniteChainComplexByDifferentialList,
    return FINITE_CHAIN_OR_COCHAIN_COMPLEX( cat, diffs, n, "chain" );
    end );
  
-InstallMethod( FiniteCochainComplexByDifferentialList, 
+InstallMethod( FiniteCochainComplex, 
                    [ IsDenseList, IsInt ], 
    function( diffs, n )
    local cat;
@@ -485,16 +485,16 @@ InstallMethod( FiniteCochainComplexByDifferentialList,
    return FINITE_CHAIN_OR_COCHAIN_COMPLEX( cat, diffs, n, "cochain" );
    end );
  
-InstallMethod( FiniteChainComplexByDifferentialList, 
+InstallMethod( FiniteChainComplex, 
                    [ IsDenseList ], 
    function( diffs )
-   return FiniteChainComplexByDifferentialList( diffs, 0 );
+   return FiniteChainComplex( diffs, 0 );
    end );
  
-InstallMethod( FiniteCochainComplexByDifferentialList, 
+InstallMethod( FiniteCochainComplex, 
                    [ IsDenseList ], 
    function( diffs )
-   return FiniteCochainComplexByDifferentialList( diffs, 0 );
+   return FiniteCochainComplex( diffs, 0 );
    end );
 
 InstallMethod( StalkChainComplex, 
@@ -503,7 +503,7 @@ InstallMethod( StalkChainComplex,
    local zero, diffs;
    zero := ZeroObject( CapCategory( obj ) );
    diffs := [ ZeroMorphism( obj, zero ) ];
-   return FiniteChainComplexByDifferentialList( diffs );
+   return FiniteChainComplex( diffs );
    end );
 
 InstallMethod( StalkCochainComplex, 
@@ -512,8 +512,91 @@ InstallMethod( StalkCochainComplex,
    local zero, diffs;
    zero := ZeroObject( CapCategory( obj ) );
    diffs := [ ZeroMorphism( obj, zero ) ];
-   return FiniteCochainComplexByDifferentialList( diffs );
+   return FiniteCochainComplex( diffs );
    end );
+##
+
+################################################
+#
+#  Constructors of inductive (co)chain complexes
+#
+################################################
+
+#n
+BindGlobal( "CHAIN_OR_COCHAINS_WITH_INDUCTIVE_SIDES",
+  function( d0, negative_part_function, positive_part_function, string )
+  local complex_constructor, negative_part, positive_part, cat, diffs;
+
+  cat := CapCategory( d0 ); 
+  if string = "chain" then 
+     complex_constructor := ChainComplexByDifferentialList;
+  elif string = "cochain" then
+     complex_constructor := CochainComplexByDifferentialList;
+  else
+     Error( "string must be either chain or cochain" );
+  fi;
+
+  negative_part := InductiveList( negative_part_function( d0 ), negative_part_function );
+  positive_part := InductiveList( d0, positive_part_function );
+
+  diffs := Concatenate( negative_part, positive_part );
+
+  return complex_constructor( cat, diffs );
+end );
+##
+
+#n
+InstallMethod( ChainComplexWithInductiveSides,
+               [ IsCapCategoryMorphism, IsFunction, IsFunction ],
+   function( d0, negative_part_function, positive_part_function )
+   return CHAIN_OR_COCHAINS_WITH_INDUCTIVE_SIDES( d0, negative_part_function, positive_part_function, "chain" );
+end );
+
+InstallMethod( CochainComplexWithInductiveSides,
+               [ IsCapCategoryMorphism, IsFunction, IsFunction ],
+   function( d0, negative_part_function, positive_part_function )
+   return CHAIN_OR_COCHAINS_WITH_INDUCTIVE_SIDES( d0, negative_part_function, positive_part_function, "cochain" );
+end );
+
+InstallMethod( ChainComplexWithInductiveNegativeSide,
+               [ IsCapCategoryMorphism, IsFunction ],
+   function( d0, negative_part_function )
+   local positive_part_function;
+   positive_part_function := function( mor )
+                             return UniversalMorphismFromZeroObject( Source( mor ) );
+                             end;
+   return ChainComplexWithInductiveSides( d0, negative_part_function, positive_part_function );
+end );
+
+InstallMethod( ChainComplexWithInductivePositiveSide,
+               [ IsCapCategoryMorphism, IsFunction ],
+   function( d0, positive_part_function )
+   local negative_part_function;
+   negative_part_function := function( mor )
+                             return UniversalMorphismIntoZeroObject( Range( mor ) );
+                             end;
+   return ChainComplexWithInductiveSides( d0, negative_part_function, positive_part_function );
+end );
+
+InstallMethod( CochainComplexWithInductiveNegativeSide,
+               [ IsCapCategoryMorphism, IsFunction ],
+   function( d0, negative_part_function )
+   local positive_part_function;
+   positive_part_function := function( mor )
+                             return UniversalMorphismIntoZeroObject( Range( mor ) );
+                             end;
+   return CochainComplexWithInductiveSides( d0, negative_part_function, positive_part_function );
+end );
+
+InstallMethod( CochainComplexWithInductivePositiveSide,
+               [ IsCapCategoryMorphism, IsFunction ],
+   function( d0, positive_part_function )
+   local negative_part_function;
+   negative_part_function := function( mor )
+                             return UniversalMorphismFromZeroObject( Source( mor ) );
+                             end;
+   return CochainComplexWithInductiveSides( d0, negative_part_function, positive_part_function );
+end );
 ##
 
 #########################################
@@ -627,10 +710,20 @@ BindGlobal( "HOMOLOGY_OR_COHOMOLOGY_OF_COMPLEX_FUNCTORIAL",
 
 #n
 InstallMethod( HomologyOfChainComplex, [ IsChainComplex, IsInt ], HOMOLOGY_OR_COHOMOLOGY_OF_COMPLEX );
+
+InstallMethod( CohomologyOfCochainComplex, [ IsCochainComplex, IsInt ], HOMOLOGY_OR_COHOMOLOGY_OF_COMPLEX );
 ##
 
 #n
-InstallMethod( CohomologyOfCochainComplex, [ IsCochainComplex, IsInt ], HOMOLOGY_OR_COHOMOLOGY_OF_COMPLEX );
+InstallMethod( DefectOfExactness, 
+               [ IsChainOrCochainComplex, IsInt ],
+  function( C, n )
+  if IsChainComplex( C ) then 
+     return HomologyOfChainComplex( C, n );
+  else
+     return CohomologyOfCochainComplex( C, n );
+  fi;
+end );
 ##
 
 #c
