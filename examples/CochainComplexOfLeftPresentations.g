@@ -146,3 +146,18 @@ H_minus_3 := HomologyAsFunctor( left_pre_cat, -3 );
 ApplyFunctor( H_minus_3, B1 ) = ApplyFunctor( Coh3, C1 );
 #! true
 
+# Now let us constructe the free (projective) resolution of M.
+
+d0 := UniversalMorphismIntoZeroObject( M );
+#! <A morphism in Category of left presentations of Q[x,y,z]>
+inductive_function := function( mor )
+                      local ker_embedding, cover;
+                      ker_embedding := KernelEmbedding( mor );
+                      cover := CoverByFreeModule( Source( ker_embedding ) );
+                      return PreCompose( cover, ker_embedding );
+                      end;;
+
+proj_M := CochainComplexWithInductiveNegativeSide( d0, inductive_function );
+#! <An object in Cochain complexes category over Category of left presentations of Q[x,y,z]>
+
+
