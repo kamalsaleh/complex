@@ -55,5 +55,8 @@ Hello, here are general review of what I have done till now.
 6- Plan: 
    a. Making Cycles, Boundaries more general. done.
    b. Construct Homology, cohomology, shift as functors in the category of chain or cochain complexes. done.
-   c. Working with mapping cone since it is usefull by giving the category a Frobenius structure. To Do.
+   c. Working with mapping cone since it is usefull by giving the category a Frobenius structure. done.
    d. Chain --> Cochain and Cochain --> Chain functors. done.
+   e. Finite chians and cochains are added.
+   f. Inductive chains and cochains are added.
+   g. IsBoundedComplex, UpperBound and LowerBound .... etc. To Do.
