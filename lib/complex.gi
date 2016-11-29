@@ -523,7 +523,7 @@ InstallMethod( StalkCochainComplex,
 ################################################
 
 #n
-BindGlobal( "CHAIN_OR_COCHAINS_WITH_INDUCTIVE_SIDES",
+BindGlobal( "CHAIN_OR_COCHAIN_WITH_INDUCTIVE_SIDES",
   function( d0, negative_part_function, positive_part_function, string )
   local complex_constructor, negative_part, positive_part, cat, diffs;
 
@@ -546,57 +546,91 @@ end );
 ##
 
 #n
+BindGlobal( "CHAIN_OR_COCHAIN_WITH_INDUCTIVE_NEGATIVE_SIDE",
+  function( d0, negative_part_function, string )
+  local complex_constructor, negative_part, positive_part, cat, diffs, d1, zero_part;
+
+  cat := CapCategory( d0 ); 
+  zero_part := RepeatListN( [ UniversalMorphismFromZeroObject( ZeroObject( cat ) ) ] );
+  if string = "chain" then 
+     complex_constructor := ChainComplexByDifferentialList;
+     d1 := UniversalMorphismFromZeroObject( Source( d0 ) );
+  elif string = "cochain" then
+     complex_constructor := CochainComplexByDifferentialList;
+     d1 := UniversalMorphismIntoZeroObject( Range( d0 ) );
+  else
+     Error( "string must be either chain or cochain" );
+  fi;
+
+  negative_part := InductiveList( negative_part_function( d0 ), negative_part_function );
+  positive_part := Concatenate( [ d0, d1 ], zero_part );
+  diffs := Concatenate( negative_part, positive_part );
+
+  return complex_constructor( cat, diffs );
+end );
+##
+
+#n
+BindGlobal( "CHAIN_OR_COCHAIN_WITH_INDUCTIVE_POSITIVE_SIDE",
+  function( d0, positive_part_function, string )
+  local complex_constructor, negative_part, positive_part, cat, diffs, d_minus_1, zero_part;
+
+  cat := CapCategory( d0 ); 
+  zero_part := RepeatListN( [ UniversalMorphismFromZeroObject( ZeroObject( cat ) ) ] );
+  if string = "chain" then 
+     complex_constructor := ChainComplexByDifferentialList;
+     d_minus_1 := UniversalMorphismIntoZeroObject( Range( d0 ) );
+  elif string = "cochain" then
+     complex_constructor := CochainComplexByDifferentialList;
+     d_minus_1 := UniversalMorphismFromZeroObject( Source( d0 ) );
+  else
+     Error( "string must be either chain or cochain" );
+  fi;
+
+  positive_part := InductiveList( d0, positive_part_function );
+  negative_part := Concatenate( [ d_minus_1 ], zero_part );
+  diffs := Concatenate( negative_part, positive_part );
+
+  return complex_constructor( cat, diffs );
+end );
+##
+
+#n
 InstallMethod( ChainComplexWithInductiveSides,
                [ IsCapCategoryMorphism, IsFunction, IsFunction ],
    function( d0, negative_part_function, positive_part_function )
-   return CHAIN_OR_COCHAINS_WITH_INDUCTIVE_SIDES( d0, negative_part_function, positive_part_function, "chain" );
+   return CHAIN_OR_COCHAIN_WITH_INDUCTIVE_SIDES( d0, negative_part_function, positive_part_function, "chain" );
 end );
 
 InstallMethod( CochainComplexWithInductiveSides,
                [ IsCapCategoryMorphism, IsFunction, IsFunction ],
    function( d0, negative_part_function, positive_part_function )
-   return CHAIN_OR_COCHAINS_WITH_INDUCTIVE_SIDES( d0, negative_part_function, positive_part_function, "cochain" );
+   return CHAIN_OR_COCHAIN_WITH_INDUCTIVE_SIDES( d0, negative_part_function, positive_part_function, "cochain" );
 end );
 
 InstallMethod( ChainComplexWithInductiveNegativeSide,
                [ IsCapCategoryMorphism, IsFunction ],
    function( d0, negative_part_function )
-   local positive_part_function;
-   positive_part_function := function( mor )
-                             return UniversalMorphismFromZeroObject( Source( mor ) );
-                             end;
-   return ChainComplexWithInductiveSides( d0, negative_part_function, positive_part_function );
-end );
+   return CHAIN_OR_COCHAIN_WITH_INDUCTIVE_NEGATIVE_SIDE( d0, negative_part_function, "chain" );
+   end );
 
 InstallMethod( ChainComplexWithInductivePositiveSide,
                [ IsCapCategoryMorphism, IsFunction ],
    function( d0, positive_part_function )
-   local negative_part_function;
-   negative_part_function := function( mor )
-                             return UniversalMorphismIntoZeroObject( Range( mor ) );
-                             end;
-   return ChainComplexWithInductiveSides( d0, negative_part_function, positive_part_function );
+   return CHAIN_OR_COCHAIN_WITH_INDUCTIVE_POSITIVE_SIDE( d0, positive_part_function, "chain" );
 end );
 
 InstallMethod( CochainComplexWithInductiveNegativeSide,
                [ IsCapCategoryMorphism, IsFunction ],
    function( d0, negative_part_function )
-   local positive_part_function;
-   positive_part_function := function( mor )
-                             return UniversalMorphismIntoZeroObject( Range( mor ) );
-                             end;
-   return CochainComplexWithInductiveSides( d0, negative_part_function, positive_part_function );
-end );
+   return CHAIN_OR_COCHAIN_WITH_INDUCTIVE_NEGATIVE_SIDE( d0, negative_part_function, "cochain" );
+   end );
 
 InstallMethod( CochainComplexWithInductivePositiveSide,
                [ IsCapCategoryMorphism, IsFunction ],
    function( d0, positive_part_function )
-   local negative_part_function;
-   negative_part_function := function( mor )
-                             return UniversalMorphismFromZeroObject( Source( mor ) );
-                             end;
-   return CochainComplexWithInductiveSides( d0, negative_part_function, positive_part_function );
-end );
+   return CHAIN_OR_COCHAIN_WITH_INDUCTIVE_POSITIVE_SIDE( d0, positive_part_function, "cochain" );
+   end );
 ##
 
 #########################################
@@ -729,6 +763,13 @@ end );
 #c
 InstallMethod( HomologyOfComplex, [ IsChainComplex, IsInt ], HomologyOfChainComplex );
 ##
+
+# InstallMethod( UpperBound, 
+#               [ IsChainOrCochainComplex ], 
+#function( C )
+#local 
+#diffs := Differentials( C );
+#positive_part := PositivePart( diffs );
 
 ####################################
 #
@@ -985,6 +1026,163 @@ end );
 #n
 InstallMethod( MappingCone, [ IsChainOrCochainMap ], MAPPING_CONE_OF_CHAIN_OR_COCHAIN_MAP );
 ##
+
+########################################
+#
+# Upper and lower bounds of (co)chains
+#
+########################################
+
+BindGlobal( "LOWER_BOUND_OF_CHAIN_OR_COCHAIN", 
+  function( C, bool, m )
+  local diffs, repeating_list, negative_part, positive_part, middle_part, n,i;
+  
+  diffs := Differentials( C );
+  
+  if IsRepeatingInfList( diffs ) then 
+    
+     repeating_list := RepeatingList( diffs );
+     
+     if IsZero( repeating_list ) then 
+         return PositiveInfinity;
+     else
+         return NegativeInfinity;
+     fi;
+     
+  fi;
+
+  if IsConcatZList( diffs ) then 
+     negative_part := NegativeList( diffs );
+
+     if IsRepeatingInfList( negative_part ) then 
+          repeating_list := RepeatingList( negative_part );
+            if IsZero( repeating_list ) then 
+               middle_part := MiddleList( diffs );
+               n := Length( middle_part );
+               for i in [ 1..n ] do
+                  if not IsZero( middle_part[ i ] ) then 
+                     return BasePosition( diffs ) + i-1;
+                  fi;
+               od;
+           
+               positive_part := PositiveList( diffs );
+               
+               if IsRepeatingInfList( positive_part ) then 
+                      repeating_list := RepeatingList( positive_part );
+                      if IsZero( repeating_list ) then 
+                         return PositiveInfinity;
+                      fi;
+               fi;
+            return BasePosition( diffs )+ n - 1;
+            else
+               return NegativeInfinity;
+            fi;
+     elif IsInductiveNList( negative_part ) and bool  then 
+          for i in [ 1 .. m ] do 
+              if IsZero( negative_part[ i ] ) and IsZero( negative_part[ i + 1 ] ) and negative_part[ i ] = negative_part[ i + 1 ] then 
+                       if IsZero( negative_part[ i -1 ] ) then 
+                          return BasePosition( diffs ) - i + 2;
+                       else 
+                          return BasePosition( diffs ) - i + 1;
+                       fi;
+              fi;
+           od;
+     else
+     
+           return fail;
+     
+     fi;
+ fi;
+
+   return fail;
+end );
+
+BindGlobal( "UPPER_BOUND_OF_CHAIN_OR_COCHAIN", 
+  function( C, bool, m )
+  local diffs, repeating_list, negative_part, positive_part, middle_part, n,i;
+  
+  diffs := Differentials( C );
+  
+  if IsRepeatingInfList( diffs ) then 
+    
+     repeating_list := RepeatingList( diffs );
+     
+     if IsZero( repeating_list ) then 
+         return NegativeInfinity;
+     else
+         return PositiveInfinity;
+     fi;
+     
+  fi;
+
+  if IsConcatZList( diffs ) then 
+     positive_part := PositiveList( diffs );
+
+     if IsRepeatingInfList( positive_part ) then 
+          repeating_list := RepeatingList( positive_part );
+            if IsZero( repeating_list ) then 
+               middle_part := MiddleList( diffs );
+               n := Length( middle_part );
+               for i in [ 1..n ] do
+                  if not IsZero( middle_part[ n-i+1 ] ) then 
+                     return BasePosition( diffs ) + n-i;
+                  fi;
+               od;
+           
+               negative_part := NegativeList( diffs );
+               
+               if IsRepeatingInfList( negative_part ) then 
+                      repeating_list := RepeatingList( negative_part );
+                      if IsZero( repeating_list ) then 
+                         return NegativeInfinity;
+                      fi;
+               fi;
+               
+            #To do. This code can be improved.
+            return BasePosition( diffs );
+            
+            else
+               return PositiveInfinity;
+            fi;
+     elif IsInductiveNList( positive_part ) and bool  then 
+          for i in [ 1 .. m ] do 
+              if IsZero( positive_part[ i ] ) and IsZero( positive_part[ i + 1 ] ) and positive_part[ i ] = positive_part[ i + 1 ] then 
+                       if IsZero( positive_part[ i -1 ] ) then 
+                          return BasePosition( diffs ) + Length( MiddleList( diffs ) ) + i - 3;
+                       else 
+                          return BasePosition( diffs ) + i - 2;
+                       fi;
+              fi;
+           od;
+     else
+     
+           return fail;
+     
+     fi;
+ fi;
+
+   return fail;
+end );
+
+InstallMethod( LowerBound, [ IsChainOrCochainComplex, IsPosInt ],
+   function( C, m )
+   return LOWER_BOUND_OF_CHAIN_OR_COCHAIN( C, true, m );
+end );
+
+InstallMethod( LowerBound, [ IsChainOrCochainComplex ],
+   function( C )
+   return LOWER_BOUND_OF_CHAIN_OR_COCHAIN( C, false, 0 );
+end );
+
+InstallMethod( UpperBound, [ IsChainOrCochainComplex, IsPosInt ],
+   function( C, m )
+   return UPPER_BOUND_OF_CHAIN_OR_COCHAIN( C, true, m );
+end );
+
+InstallMethod( UpperBound, [ IsChainOrCochainComplex ],
+   function( C )
+   return UPPER_BOUND_OF_CHAIN_OR_COCHAIN( C, false, 0 );
+end );
 
 ########################################
 #

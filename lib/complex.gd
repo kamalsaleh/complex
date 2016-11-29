@@ -146,11 +146,19 @@ DeclareOperation( "BoundariesOfComplex", [ IsChainOrCochainComplex, IsInt ] );
 DeclareOperation( "HomologyOfChainComplex", [ IsChainComplex, IsInt ] );
 DeclareOperation( "CohomologyOfCochainComplex", [ IsCochainComplex, IsInt ] );
 DeclareOperation( "DefectOfExactness", [ IsChainOrCochainComplex, IsInt ] );
+DeclareOperation( "LowerBound", [ IsChainOrCochainComplex ] );
+DeclareOperation( "LowerBound", [ IsChainOrCochainComplex, IsPosInt ] );
+DeclareOperation( "UpperBound", [ IsChainOrCochainComplex ] );
+DeclareOperation( "UpperBound", [ IsChainOrCochainComplex, IsPosInt ] );
+
 ##
 
 DeclareOperation( "HomologyOfComplex", [ IsChainComplex, IsInt ] );
+
+#c
 DeclareOperation( "UpperBound", [ IsChainComplex ] );
-DeclareOperation( "LowerBound", [ IsChainComplex ] );
+# DeclareOperation( "LowerBound", [ IsChainComplex ] );
+##
 #DeclareOperation( "IsFiniteComplex", [ IsChainComplex ] );
 DeclareOperation( "IsBoundedComplex", [ IsChainComplex ] );
 DeclareOperation( "LengthOfComplex", [ IsChainComplex ] );
