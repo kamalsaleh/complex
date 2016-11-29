@@ -146,6 +146,7 @@ DeclareOperation( "BoundariesOfComplex", [ IsChainOrCochainComplex, IsInt ] );
 DeclareOperation( "HomologyOfChainComplex", [ IsChainComplex, IsInt ] );
 DeclareOperation( "CohomologyOfCochainComplex", [ IsCochainComplex, IsInt ] );
 DeclareOperation( "DefectOfExactness", [ IsChainOrCochainComplex, IsInt ] );
+DeclareOperation( "IsExactInIndex", [ IsChainOrCochainComplex, IsInt ] );
 DeclareOperation( "LowerBound", [ IsChainOrCochainComplex ] );
 DeclareOperation( "LowerBound", [ IsChainOrCochainComplex, IsPosInt ] );
 DeclareOperation( "UpperBound", [ IsChainOrCochainComplex ] );

@@ -159,5 +159,18 @@ inductive_function := function( mor )
 
 proj_M := CochainComplexWithInductiveNegativeSide( d0, inductive_function );
 #! <An object in Cochain complexes category over Category of left presentations of Q[x,y,z]>
-
-
+UpperBound( proj_M );
+#! 0
+## Since the negative part is inductive, there is efficient method to find if it is bounded or not.
+LowerBound( proj_M );
+#! fail
+## Here we tell gap to go n steps(here n = 2) in the inductive part and to find if there are two equal consecutive zero morphisms. 
+## because if that happen, the complex would be bounded bellow.
+LowerBound( proj_M, 2 );
+#! fail
+LowerBound( proj_M, 10 );
+#! -3
+IsZeroForMorphisms( proj_M^-3 );
+#! false
+IsZeroForMorphisms( proj_M^-4 );
+#! true

@@ -1,2 +1,4 @@
 DeclareOperation( "MappingCone", [ IsChainMap ] );
-DeclareOperation( "IsQuasiIsomorphism", [ IsChainMap ] );
+#c
+# DeclareOperation( "IsQuasiIsomorphism", [ IsChainMap ] );
+##

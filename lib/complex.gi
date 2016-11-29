@@ -758,6 +758,12 @@ InstallMethod( DefectOfExactness,
      return CohomologyOfCochainComplex( C, n );
   fi;
 end );
+
+InstallMethod( IsExactInIndex, 
+               [ IsChainOrCochainComplex, IsInt ],
+   function( C, n )
+   return IsZeroForObjects( DefectOfExactness( C, n ) );
+end );
 ##
 
 #c
@@ -1033,9 +1039,10 @@ InstallMethod( MappingCone, [ IsChainOrCochainMap ], MAPPING_CONE_OF_CHAIN_OR_CO
 #
 ########################################
 
+## This code is not yet finished.
 BindGlobal( "LOWER_BOUND_OF_CHAIN_OR_COCHAIN", 
   function( C, bool, m )
-  local diffs, repeating_list, negative_part, positive_part, middle_part, n,i;
+  local diffs, repeating_list, negative_part, positive_part, middle_part, n,i, k, concat_list, B;
   
   diffs := Differentials( C );
   
@@ -1055,7 +1062,7 @@ BindGlobal( "LOWER_BOUND_OF_CHAIN_OR_COCHAIN",
      negative_part := NegativeList( diffs );
 
      if IsRepeatingInfList( negative_part ) then 
-          repeating_list := RepeatingList( negative_part );
+            repeating_list := RepeatingList( negative_part );
             if IsZero( repeating_list ) then 
                middle_part := MiddleList( diffs );
                n := Length( middle_part );
@@ -1072,8 +1079,21 @@ BindGlobal( "LOWER_BOUND_OF_CHAIN_OR_COCHAIN",
                       if IsZero( repeating_list ) then 
                          return PositiveInfinity;
                       fi;
+               elif IsConcatNList( positive_part ) then 
+                      concat_list := ConcatList( positive_part );
+                      k := Length( concat_list );
+                           for i in [ 1 .. k ] do 
+                               if not IsZero( concat_list[ i ] ) then 
+                                  return BasePosition( diffs ) + n + i - 1;
+                               fi;
+                           od;
+                      B := BaseList( positive_part );
+                           if IsRepeatingInfList( B ) and IsZero( RepeatingList( B ) ) then 
+                                  return PositiveInfinity;
+                           fi;
+                      return BasePosition( diffs )+ n + k - 1;
                fi;
-            return BasePosition( diffs )+ n - 1;
+               return BasePosition( diffs )+ n - 1;
             else
                return NegativeInfinity;
             fi;
@@ -1099,7 +1119,7 @@ end );
 
 BindGlobal( "UPPER_BOUND_OF_CHAIN_OR_COCHAIN", 
   function( C, bool, m )
-  local diffs, repeating_list, negative_part, positive_part, middle_part, n,i;
+  local diffs, repeating_list, negative_part, positive_part, middle_part, n,i, k, concat_list, B;
   
   diffs := Differentials( C );
   
@@ -1154,11 +1174,36 @@ BindGlobal( "UPPER_BOUND_OF_CHAIN_OR_COCHAIN",
                        fi;
               fi;
            od;
-     else
-     
-           return fail;
-     
-     fi;
+     elif IsConcatNList( positive_part ) then 
+          
+          B := BaseList( positive_part );
+                
+                 if IsRepeatingInfList( B ) then 
+                       if not IsZero( RepeatingList( B ) ) then 
+                              return PositiveInfinity;
+                       else
+                              concat_list := ConcatList( positive_part );
+                              k := Length( concat_list );
+                              for i in [ 1 .. k ] do 
+                                  if not IsZero( concat_list[ k - i + 1 ] ) then 
+                                     return BasePosition( diffs ) + k - i;
+                                  fi;
+                              od;
+                              
+                              negative_part := NegativeList( diffs );
+                              
+                              if IsRepeatingInfList( negative_part ) and IsZero( RepeatingList( negative_part ) ) then 
+                                       return NegativeInfinity;
+                              elif IsRepeatingInfList( negative_part ) then 
+                                       return BasePosition( diffs );
+                              else
+                                       return BasePosition( diffs );
+                              fi;
+                       fi;
+                 else
+                       return fail;
+                 fi;
+      fi;
  fi;
 
    return fail;
