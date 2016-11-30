@@ -62,30 +62,47 @@ end );
 #n
 BindGlobal( "FINITE_CHAIN_OR_COCHAIN_MAP_BY_THREE_LISTS",
    function( l1,m1, l2,m2, mor, n, string )
-   local cat, complex_category, complex_constructor, map_constructor, C1, C2, zero, maps;
+   local cat, complex_category, complex_constructor, map_constructor, 
+         C1, C2, zero, maps, min, max, all_maps, start_of_maps, end_of_maps, base_list;
    
    cat := CapCategory( l1[ 1 ] );
+   min := Minimum( m1, m2 );
+   max := Maximum( m1 + Length( l1 ) - 1, m2 + Length( l2 ) - 1 );
+   
+   start_of_maps := n;
+   end_of_maps := n + Length( mor ) - 1;
    
    if string = "chain_map" then 
       complex_category := ChainComplexCategory( cat );
       complex_constructor := FiniteChainComplex;
       map_constructor := ChainMapByMorphismList;
+      base_list := [ min - 1 .. max ];
    else 
       complex_category := CochainComplexCategory( cat );
       complex_constructor := FiniteCochainComplex;
       map_constructor := CochainMapByMorphismList;
+      base_list := [ min .. max + 1 ];
    fi;
    
    C1 := complex_constructor( l1, m1 );
    C2 := complex_constructor( l2, m2 );
    
+   maps := List( base_list,      function( i )
+
+                                 if i >= start_of_maps and i <= end_of_maps then 
+                                        return mor[ i - start_of_maps + 1 ];
+                                 else 
+                                        return ZeroMorphism( C1[ i ], C2[ i ] );
+                                 fi;
+                                 end );
+   
    zero := ZeroMorphism( ZeroObject( cat ), ZeroObject( cat ) );
    
    zero := RepeatListN( [ zero ] );
    
-   maps := Concatenate( zero, n, mor, zero );
+   all_maps := Concatenate( zero, base_list[ 1 ], maps, zero );
    
-   return map_constructor( C1, C2, maps );
+   return map_constructor( C1, C2, all_maps );
 end );
 
 #c
@@ -101,20 +118,20 @@ CHAIN_OR_COCHAIN_MAP_BY_LIST );
 ##
 
 #n
-InstallMethod( FiniteChainMap, 
-               [ IsDenseList, IsInt, IsDenseList, IsInt, IsDenseList, IsInt ], 
+InstallMethod( FiniteChainMap,
+               [ IsDenseList, IsInt, IsDenseList, IsInt, IsDenseList, IsInt ],
    function( c1, m1, c2, m2, maps, n )
-   return FINITE_CHAIN_OR_COCHAIN_MAP_BY_THREE_LISTS( c1, m1, c2, m2, maps, n, "chain" );
+   return FINITE_CHAIN_OR_COCHAIN_MAP_BY_THREE_LISTS( c1, m1, c2, m2, maps, n, "chain_map" );
 end );
 
-InstallMethod( FiniteCochainMap, 
-               [ IsDenseList, IsInt, IsDenseList, IsInt, IsDenseList, IsInt ], 
+InstallMethod( FiniteCochainMap,
+               [ IsDenseList, IsInt, IsDenseList, IsInt, IsDenseList, IsInt ],
    function( c1, m1, c2, m2, maps, n )
-   return FINITE_CHAIN_OR_COCHAIN_MAP_BY_THREE_LISTS( c1, m1, c2, m2, maps, n, "cochain" );
+   return FINITE_CHAIN_OR_COCHAIN_MAP_BY_THREE_LISTS( c1, m1, c2, m2, maps, n, "cochain_map" );
 end );
 
-InstallMethod( FiniteChainMap, 
-               [ IsDenseList, IsDenseList, IsDenseList ], 
+InstallMethod( FiniteChainMap,
+               [ IsDenseList, IsDenseList, IsDenseList ],
    function( c1, c2, maps )
    return FINITE_CHAIN_OR_COCHAIN_MAP_BY_THREE_LISTS( c1, 0, c2, 0, maps, 0, "chain" );
 end );
@@ -124,6 +141,42 @@ InstallMethod( FiniteCochainMap,
    function( c1, c2, maps )
    return FINITE_CHAIN_OR_COCHAIN_MAP_BY_THREE_LISTS( c1, 0, c2, 0, maps, 0, "cochain" );
 end );
+
+# InstallMethod( FiniteChainMap, 
+#                [ IsChainComplex, IsChainComplex, IsDenseList, n ],
+#   function( C1, C2, maps, n )
+#   local cat, zero, maps;
+#   cat := UnderlyingCategory( CapCategory( C1 ) );
+#   zero := ZeroMorphism( ZeroObject( cat ), ZeroObject( cat ) );
+#   zero := RepeatListN( [ zero ] );
+#   maps := Concatenate( zero, n, maps, zero );
+#   return ChainMapByMorphismList( C1, C2, maps );
+# end );
+# 
+# InstallMethod( FiniteCochainMap, 
+#                [ IsCochainComplex, IsCochainComplex, IsDenseList, n ],
+#   function( C1, C2, maps, n )
+#   local cat, zero, maps;
+#   cat := UnderlyingCategory( CapCategory( C1 ) );
+#   zero := ZeroMorphism( ZeroObject( cat ), ZeroObject( cat ) );
+#   zero := RepeatListN( [ zero ] );
+#   maps := Concatenate( zero, n, maps, zero );
+#   return ChainMapByMorphismList( C1, C2, maps );
+# end );
+# 
+# InstallMethod( FiniteChainMap, 
+#                [ IsChainComplex, IsChainComplex, IsDenseList, n ],
+#   function( C1, C2, maps, n )
+#   return FiniteChainMap( C1, C2, maps, 0 );
+# end );
+# 
+# InstallMethod( FiniteCochainMap, 
+#                [ IsCochainComplex, IsCochainComplex, IsDenseList, n ],
+#   function( C1, C2, maps, n )
+#   return FiniteCochainMap( C1, C2, maps, 0 );
+# end );
+
+
 ##
 
 ###################################
@@ -169,17 +222,17 @@ local morphisms;
                       Objects( C2 ) ],
                     ZeroMorphism );
    if ForAll( [ C1, C2 ], IsChainComplex ) then 
-      
+
       return ChainMapByMorphismList( C1, C2, morphisms );
-      
+
    elif ForAll( [ C1, C2 ], IsCochainComplex ) then
-      
+
       return CochainMapByMorphismList( C1, C2, morphisms );
-      
+
    else 
-      
+
       Error( "first and second argument should be both chains or cochains" );
-      
+
    fi;
 end );
 ##
@@ -202,9 +255,7 @@ InstallMethod( ZeroCochainMap, [ IsCochainComplex, IsCochainComplex ], ZeroMap )
 InstallMethod( MorphismOfMap, 
           [ IsChainOrCochainMap, IsInt ], 
 function( map, i )
-
      return MorphismsOfMap( map )[ i ];
-     
 end );
 ##
 
@@ -231,40 +282,48 @@ end );
 #   Print( String( map ) );
 # end );
 
+#n
 InstallMethod( IsQuasiIsomorphismMap, 
                   [ IsChainOrCochainMap ], 
    function( map )
-   local C1, C2, l1,l2,u1,u2,l,i, h_functor, functor, lower_bound, upper_bound, cone_mapping;
-   
+   local C1, C2, l1,l2,u1,u2,l,i, h_functor, functor, lower_bound, upper_bound, cone_mapping, min, max;
    C1 := Source( map );
    C2 := Range( map );
-   
    l1 := LowerBound( C1 );
    l2 := LowerBound( C2 );
-   
    u1 := UpperBound( C1 );
    u2 := UpperBound( C2 );
-   
+   if u1 = NegativeInfinity or u2 = NegativeInfinity then
+      return true;
+   fi;
+   if l1 = PositiveInfinity or l2 = PositiveInfinity then
+      return true;
+   fi;
    if not IsInt( l1 ) or not IsInt( l2 ) then 
       return fail;
    fi;
-   
    if not IsInt( u1 ) or not IsInt( u2 ) then 
       return fail;
    fi;
-   
+#    the commented code is also true.
+#    lower_bound := Minimum( l1, l2 );
+#    upper_bound := Maximum( u1, u2 );
+#    cone_mapping := MappingCone( map );
+#    return ForAll( [ lower_bound .. upper_bound + 1 ], i-> IsExactInIndex( cone_mapping, i ) );
    if IsChainMap( map ) then 
       h_functor := HomologyAsFunctor;
    else 
       h_functor := CohomologyAsFunctor;
    fi;
-   
-   lower_bound := Minimum( l1, l2 );
-   upper_bound := Maximum( u1, u2 );
-   cone_mapping := MappingCone( map );
-   return ForAll( [ lower_bound .. upper_bound + 1 ], i-> IsExactInIndex( cone_mapping, i ) );
-  
+   min := Maximum( l1, l2 ) - 1;
+   max := Minimum( u1, u2 ) + 1;
+   return ForAll( [ min .. max ], function( i )
+                                   local functor; 
+                                   functor := h_functor( UnderlyingCategory( CapCategory( map ) ), i );
+                                   return IsIsomorphism( ApplyFunctor( functor, map ) );
+                                   end );
 end );
-   
+##
+
 InstallMethod( SetString, [ IsChainMap, IsString ],
                function( m, str ) end );

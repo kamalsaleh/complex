@@ -1071,9 +1071,9 @@ BindGlobal( "LOWER_BOUND_OF_CHAIN_OR_COCHAIN",
                      return BasePosition( diffs ) + i-1;
                   fi;
                od;
-           
+
                positive_part := PositiveList( diffs );
-               
+
                if IsRepeatingInfList( positive_part ) then 
                       repeating_list := RepeatingList( positive_part );
                       if IsZero( repeating_list ) then 
