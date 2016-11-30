@@ -174,3 +174,67 @@ IsZeroForMorphisms( proj_M^-3 );
 #! false
 IsZeroForMorphisms( proj_M^-4 );
 #! true
+
+# Let us constructe the finite cochain map 
+#  obj index:            13         14            15           16           17              18                  ...
+#-----------------------------------------------------------------------------------------------------------------
+#  mor index:                 13          14           15            16            17             18            ...
+#-----------------------------------------------------------------------------------------------------------------
+#                                          g            h            f             g                            ...
+#           C3:   -----> 0 --------> N ---------> T ---------> M ----------> N -----------> T -----------> etc  ...
+
+C3 := FiniteCochainComplex( [ g, h, f, g ], 14 );
+#! <An object in Cochain complexes category over Category of left presentations of Q[x,y,z]>
+
+# Let us constructe the finite cochain map 
+###################################################################################################################
+#  obj index:            13         14            15           16           17              18                  ...
+#-----------------------------------------------------------------------------------------------------------------
+#  mor index:                 13          14           15            16            17             18            ...
+###################################################################################################################
+#                                          g            h            f             g                            ...
+#           C3:   -----> 0 --------> N ---------> T ---------> M ----------> N -----------> T -----------> etc  ...
+#                                                 |            |             |
+#                                                 | h          | id_M        | id_N
+#                                                 V            V             V
+#           C4:   -----> 0 --------> 0 ---------> M ---------> M ----------> N -----------> 0 -----------> etc  ...
+#                                                      id_M           f
+
+id_M := IdentityMorphism( M );
+#! <A morphism in Category of left presentations of Q[x,y,z]>
+id_N := IdentityMorphism( N );
+#! <A morphism in Category of left presentations of Q[x,y,z]>
+cochain_map := FiniteCochainMap( [ g, h, f, g ], 14, [ id_M, f ], 15, [ h, id_M, id_N ], 15 );
+#! <A morphism in Cochain complexes category over Category of left presentations of Q[x,y,z]>
+
+cochain_map[ 15 ] = h;
+#! true
+cochain_map[ 16 ] = id_M;
+#! true
+cochain_map[ 17 ] = id_N;
+#! true
+Source( cochain_map[ 18 ] ) = T;
+#! true
+IsQuasiIsomorphismMap( cochain_map );
+#! false
+
+# Let us constructe the finite chain map 
+###################################################################################################################
+#  obj index:            2            3            4           5           6              7                     ...
+#-----------------------------------------------------------------------------------------------------------------
+#  mor index:                   3           4             5            6             7             8               ...
+###################################################################################################################
+#
+#                                         id_N          id_N           f             h                          ...
+#           C5:   <----- 0 <-------- N <--------- N <--------- N <---------- M <----------- T <----------- etc  ...
+#                                                              |             |
+#                                                              | id_N        | id_M
+#                                                              V             V
+#           C6:   <----- 0 <-------- 0 <--------- 0 <--------- N <---------- M <----------- 0 <----------- etc  ...
+#                                                                     f
+
+chain_map := FiniteChainMap( [ id_N, id_N, f, h ], 4, [ f ], 6, [ id_N, id_M ], 5 );
+#! <A morphism in Cochain complexes category over Category of left presentations of Q[x,y,z]>
+IsQuasiIsomorphismMap( chain_map );
+#! true
+
