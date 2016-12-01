@@ -151,7 +151,9 @@ DeclareOperation( "LowerBound", [ IsChainOrCochainComplex ] );
 DeclareOperation( "LowerBound", [ IsChainOrCochainComplex, IsPosInt ] );
 DeclareOperation( "UpperBound", [ IsChainOrCochainComplex ] );
 DeclareOperation( "UpperBound", [ IsChainOrCochainComplex, IsPosInt ] );
-
+DeclareOperation( "SetUpperBoundForComplex", [ IsChainOrCochainComplex, IsInt ] );
+DeclareOperation( "SetLowerBoundForComplex", [ IsChainOrCochainComplex, IsInt ] );
+DeclareOperation( "Display", [ IsChainOrCochainComplex, IsInt, IsInt ] );
 ##
 
 DeclareOperation( "HomologyOfComplex", [ IsChainComplex, IsInt ] );

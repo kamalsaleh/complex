@@ -37,9 +37,10 @@ DeclareOperation( "MorphismOfChainMap", [ IsChainMap, IsInt ] );
 
 #n
 DeclareOperation( "MorphismOfCochainMap", [ IsCochainMap, IsInt ] );
-##
 DeclareOperation( "\^", [ IsChainMap, IsInt ] );
 DeclareOperation( "\[\]", [ IsChainOrCochainMap, IsInt ] );
+DeclareOperation( "Display", [ IsChainOrCochainMap, IsInt, IsInt ] );
+##
 
 DeclareOperation( "HighestKnownDegree", [ IsChainMap ] );
 DeclareOperation( "LowestKnownDegree", [ IsChainMap ] );
@@ -59,9 +60,6 @@ DeclareOperation( "CochainMapByMorphismList",
                   [ IsCochainComplex, IsCochainComplex, IsZList ] );
 ##
 
-
-DeclareOperation( "FiniteChainMap",
-                  [ IsChainComplex, IsChainComplex, IsInt, IsDenseList ] );
 #n
 DeclareOperation( "FiniteChainMap",
                   [ IsDenseList, IsInt, IsDenseList, IsInt, IsDenseList, IsInt ] );
@@ -76,13 +74,26 @@ DeclareOperation( "FiniteCochainMap",
                   [ IsDenseList, IsDenseList, IsDenseList ] );
 ##
 
+DeclareOperation( "FiniteChainMap",
+                  [ IsChainComplex, IsChainComplex, IsInt, IsDenseList ] );
+
+###############################
+#
+# More Operations
+#
+###############################
+
 #n
+DeclareOperation( "SetUpperBoundForMap", [ IsChainOrCochainMap, IsInt ] );
+
+DeclareOperation( "SetLowerBoundForMap", [ IsChainOrCochainMap, IsInt ] );
+
 DeclareOperation( "ZeroMap", 
                   [ IsChainOrCochainComplex, IsChainOrCochainComplex ] );
 DeclareOperation( "ZeroChainMap",
                   [ IsChainComplex, IsChainComplex ] );
 DeclareOperation( "ZeroCochainMap", 
                   [ IsCochainComplex, IsCochainComplex ] );
-
 DeclareOperation( "IsQuasiIsomorphismMap", [ IsChainOrCochainMap ] );
 ##
+

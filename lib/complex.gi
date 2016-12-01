@@ -353,7 +353,7 @@ function( cat, diffs, make_assertions, type )
   local C, assertion, f, msg;
 
   C := rec();
-  
+
   if type = "TheTypeOfChainComplexes" then
 
      ObjectifyWithAttributes( C, TheTypeOfChainComplexes,
@@ -379,7 +379,7 @@ function( cat, diffs, make_assertions, type )
                               CatOfComplex, cat,
                               Differentials, diffs );
      if make_assertions then
-#    this code need to be modified for the case of cochain complexes.
+#         this code need to be modified for the case of cochain complexes.
 #         for assertion in ComplexSingleAssertions do
 #         f := assertion[ 1 ];
 #         msg := assertion[ 2 ];
@@ -395,9 +395,9 @@ function( cat, diffs, make_assertions, type )
      Add( CochainComplexCategory( cat ), C );
 
   else 
-   
+
      Error( "4'th argument must be either 'TheTypeOfChainComplexes' or 'TheTypeOfCochainComplexes'" );
-     
+
   fi;
 
   return C;
@@ -445,7 +445,7 @@ ChainComplexByDifferentialList );
 #n
 BindGlobal( "FINITE_CHAIN_OR_COCHAIN_COMPLEX",
      function( cat, list, homological_index, string )
-     local zero, zero_map, zero_part, n, diffs, new_list;
+     local zero, zero_map, zero_part, n, diffs, new_list, complex;
   zero := ZeroObject( cat );
   zero_map := ZeroMorphism( zero, zero );
   zero_part := RepeatListN( [ zero_map ] );
@@ -457,14 +457,17 @@ BindGlobal( "FINITE_CHAIN_OR_COCHAIN_COMPLEX",
  
         new_list := Concatenation( [ ZeroMorphism( Range( list[ 1 ] ), zero ) ], list, [ ZeroMorphism( zero, Source( list[ n ] ) ) ] );
         diffs := Concatenate( zero_part, new_list, zero_part );
-        return ShiftUnsigned( ChainComplexByDifferentialList( cat, diffs ), 1 - homological_index );
+        complex := ShiftUnsigned( ChainComplexByDifferentialList( cat, diffs ), 1 - homological_index );
   else
 
         new_list := Concatenation( [ ZeroMorphism( zero, Source( list[ 1 ] ) ) ], list, [ ZeroMorphism( Range( list[ n ] ), zero ) ] );
         diffs := Concatenate( zero_part, new_list, zero_part );
-        return ShiftUnsigned( CochainComplexByDifferentialList( cat, diffs ), 1 - homological_index );
+        complex := ShiftUnsigned( CochainComplexByDifferentialList( cat, diffs ), 1 - homological_index );
   fi;
 
+  SetLowerBoundForComplex( complex, homological_index );
+  SetUpperBoundForComplex( complex, homological_index + Length( list ) - 1 );  
+  return complex;
 end );
 ##
 
@@ -633,6 +636,8 @@ InstallMethod( CochainComplexWithInductivePositiveSide,
    end );
 ##
 
+
+
 #########################################
 ##
 ## Attributes of (co)chain complexes and
@@ -679,6 +684,26 @@ end );
 InstallMethod( \[\], [ IsChainOrCochainComplex, IsInt ], ObjectOfComplex );
 ##
 
+#########################################
+#
+# Components of a (co)chain complex
+#
+#########################################
+
+InstallMethod( Display, 
+               [ IsChainOrCochainComplex, IsInt, IsInt ], 
+   function( C, m, n )
+   local i;
+   for i in [ m .. n ] do
+   Print( "-----------------------------------------------------------------\n" );
+   Print( "In index ", String( i ) );
+   Print( "\n\nObject[ ", String( i ), " ] is\n" );
+   Display( C[ i ] );
+   Print( "\nDifferential[ ", String( i ), " ] is\n" );
+   Display( C^i );
+   od;
+   end );
+   
 #############################################
 ##
 ## Homology and Cohomology computations
@@ -769,13 +794,6 @@ end );
 #c
 InstallMethod( HomologyOfComplex, [ IsChainComplex, IsInt ], HomologyOfChainComplex );
 ##
-
-# InstallMethod( UpperBound, 
-#               [ IsChainOrCochainComplex ], 
-#function( C )
-#local 
-#diffs := Differentials( C );
-#positive_part := PositivePart( diffs );
 
 ####################################
 #
@@ -1038,6 +1056,28 @@ InstallMethod( MappingCone, [ IsChainOrCochainMap ], MAPPING_CONE_OF_CHAIN_OR_CO
 # Upper and lower bounds of (co)chains
 #
 ########################################
+
+#n
+InstallMethod( SetUpperBoundForComplex, 
+              [ IsChainOrCochainComplex, IsInt ], 
+   function( C, upper_bound )
+   if IsBound( C!.UpperBound ) and C!.UpperBound < upper_bound then 
+      Error( "The input is bigger than the one that already exists!" );
+   fi;
+   C!.UpperBound := upper_bound;
+end );
+##
+
+#n
+InstallMethod( SetLowerBoundForComplex, 
+              [ IsChainOrCochainComplex, IsInt ], 
+   function( C, lower_bound )
+   if IsBound( C!.LowerBound ) and C!.LowerBound > lower_bound then 
+      Error( "The input is smaller than the one that already exists!" );
+   fi;
+   C!.LowerBound := lower_bound;
+end );
+##
 
 ## This code is not yet finished.
 BindGlobal( "LOWER_BOUND_OF_CHAIN_OR_COCHAIN", 
