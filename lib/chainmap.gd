@@ -65,6 +65,10 @@ DeclareOperation( "FiniteChainMap",
                   [ IsDenseList, IsInt, IsDenseList, IsInt, IsDenseList, IsInt ] );
 DeclareOperation( "FiniteChainMap",
                   [ IsDenseList, IsDenseList, IsDenseList ] );
+DeclareOperation( "FiniteChainMap",
+                  [ IsChainComplex, IsChainComplex, IsDenseList, IsInt ] );
+DeclareOperation( "FiniteChainMap",
+                  [ IsChainComplex, IsChainComplex, IsDenseList ] );
 
 DeclareOperation( "FiniteCochainMap",
                   [ IsCochainComplex, IsCochainComplex, IsInt, IsDenseList ] );
@@ -72,6 +76,10 @@ DeclareOperation( "FiniteCochainMap",
                   [ IsDenseList, IsInt, IsDenseList, IsInt, IsDenseList, IsInt ] );
 DeclareOperation( "FiniteCochainMap",
                   [ IsDenseList, IsDenseList, IsDenseList ] );
+DeclareOperation( "FiniteCochainMap",
+                  [ IsCochainComplex, IsCochainComplex, IsDenseList, IsInt ] );
+DeclareOperation( "FiniteCochainMap",
+                  [ IsCochainComplex, IsCochainComplex, IsDenseList ] );
 ##
 
 DeclareOperation( "FiniteChainMap",

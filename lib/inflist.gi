@@ -1458,6 +1458,6 @@ end );
 InstallMethod( ViewObj, 
                [ IsInfList ],
   function( inflist )
-  Print( "ViewObj method for all inflists is not yet implemented" );
+  Print( "<An infinit list>" );
 end );
 ##

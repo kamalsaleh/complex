@@ -55,6 +55,27 @@ BindGlobal( "CHAIN_OR_COCHAIN_MAP_BY_LIST",
         Error( "first and second argument should be both chains or cochains" );
      fi;
      Add( CapCategory( C1 ), map );
+
+     if IsBound( C1!.UpperBound ) then 
+        if IsBound( C2!.UpperBound ) then 
+           SetUpperBoundForMap( map, Minimum( C1!.UpperBound, C2!.UpperBound ) );
+        else
+           SetUpperBoundForMap( map, C1!.UpperBound );
+        fi;
+     elif IsBound( C2!.UpperBound ) then 
+           SetUpperBoundForMap( map, C2!.UpperBound );
+     fi;
+
+     if IsBound( C1!.LowerBound ) then 
+        if IsBound( C2!.LowerBound ) then 
+           SetLowerBoundForMap( map, Maximum( C1!.LowerBound, C2!.LowerBound ) );
+        else
+           SetLowerBoundForMap( map, C1!.LowerBound );
+        fi;
+     elif IsBound( C2!.LowerBound ) then 
+           SetLowerBoundForMap( map, C2!.LowerBound );
+     fi;
+
      return map;
 end );
 ##
@@ -165,41 +186,49 @@ InstallMethod( FiniteCochainMap,
    return FINITE_CHAIN_OR_COCHAIN_MAP_BY_THREE_LISTS( c1, 0, c2, 0, maps, 0, "cochain" );
 end );
 
-# InstallMethod( FiniteChainMap, 
-#                [ IsChainComplex, IsChainComplex, IsDenseList, n ],
-#   function( C1, C2, maps, n )
-#   local cat, zero, maps;
-#   cat := UnderlyingCategory( CapCategory( C1 ) );
-#   zero := ZeroMorphism( ZeroObject( cat ), ZeroObject( cat ) );
-#   zero := RepeatListN( [ zero ] );
-#   maps := Concatenate( zero, n, maps, zero );
-#   return ChainMapByMorphismList( C1, C2, maps );
-# end );
-# 
-# InstallMethod( FiniteCochainMap, 
-#                [ IsCochainComplex, IsCochainComplex, IsDenseList, n ],
-#   function( C1, C2, maps, n )
-#   local cat, zero, maps;
-#   cat := UnderlyingCategory( CapCategory( C1 ) );
-#   zero := ZeroMorphism( ZeroObject( cat ), ZeroObject( cat ) );
-#   zero := RepeatListN( [ zero ] );
-#   maps := Concatenate( zero, n, maps, zero );
-#   return ChainMapByMorphismList( C1, C2, maps );
-# end );
-# 
-# InstallMethod( FiniteChainMap, 
-#                [ IsChainComplex, IsChainComplex, IsDenseList, n ],
-#   function( C1, C2, maps, n )
-#   return FiniteChainMap( C1, C2, maps, 0 );
-# end );
-# 
-# InstallMethod( FiniteCochainMap, 
-#                [ IsCochainComplex, IsCochainComplex, IsDenseList, n ],
-#   function( C1, C2, maps, n )
-#   return FiniteCochainMap( C1, C2, maps, 0 );
-# end );
+InstallMethod( FiniteChainMap, 
+                [ IsChainComplex, IsChainComplex, IsDenseList, IsInt ],
+   function( C1, C2, maps, n )
+   local cat, zero, maps_list, obj1, obj2, negative_part, positive_part, map;
+   cat := UnderlyingCategory( CapCategory( C1 ) );
+   obj1 := Objects( C1 );
+   obj2 := Objects( C2 );
+   negative_part := Map( [ NegativePartFrom( obj1, n - 1 ), NegativePartFrom( obj2, n - 1 ) ], ZeroMorphism );
+   positive_part := Map( [ PositivePartFrom( obj1, n + 1 ), PositivePartFrom( obj2, n + 1 ) ], ZeroMorphism );
+   maps_list := Concatenate( negative_part, n, maps, positive_part );
+   map := ChainMapByMorphismList( C1, C2, maps_list );
+   SetLowerBoundForMap( map, n );
+   SetUpperBoundForMap( map, n + Length( maps ) -1 );
+   return map;
+end );
 
+InstallMethod( FiniteCochainMap, 
+                [ IsCochainComplex, IsCochainComplex, IsDenseList, IsInt ],
+   function( C1, C2, maps, n )
+   local cat, zero, maps_list, obj1, obj2, negative_part, positive_part, map;
+   cat := UnderlyingCategory( CapCategory( C1 ) );
+   obj1 := Objects( C1 );
+   obj2 := Objects( C2 );
+   negative_part := Map( [ NegativePartFrom( obj1, n - 1 ), NegativePartFrom( obj2, n - 1 ) ], ZeroMorphism );
+   positive_part := Map( [ PositivePartFrom( obj1, n + 1 ), PositivePartFrom( obj2, n + 1 ) ], ZeroMorphism );
+   maps_list := Concatenate( negative_part, n, maps, positive_part );
+   map := CochainMapByMorphismList( C1, C2, maps_list );
+   SetLowerBoundForMap( map, n );
+   SetUpperBoundForMap( map, n + Length( maps ) -1 );
+   return map;
+end );
 
+InstallMethod( FiniteChainMap, 
+                 [ IsChainComplex, IsChainComplex, IsDenseList ],
+    function( C1, C2, maps )
+    return FiniteChainMap( C1, C2, maps, 0 );
+end );
+
+InstallMethod( FiniteCochainMap, 
+                 [ IsCochainComplex, IsCochainComplex, IsDenseList],
+    function( C1, C2, maps )
+    return FiniteCochainMap( C1, C2, maps, 0 );
+end );
 ##
 
 ##################################
@@ -345,7 +374,7 @@ InstallMethod( Display,
 InstallMethod( IsQuasiIsomorphismMap, 
                   [ IsChainOrCochainMap ], 
    function( map )
-   local min, max, h_functor;
+   local min, max, h_functor, functor, i;
 
    if not IsBound( Source( map )!.UpperBound ) or not IsBound( Source( map )!.LowerBound ) then 
       Error( "The source is not known to be bounded" );
@@ -369,11 +398,13 @@ InstallMethod( IsQuasiIsomorphismMap,
    else 
       h_functor := CohomologyAsFunctor;
    fi;
-   return ForAll( [ min .. max ], function( i )
-                                   local functor; 
-                                   functor := h_functor( UnderlyingCategory( CapCategory( map ) ), i );
-                                   return IsIsomorphism( ApplyFunctor( functor, map ) );
-                                   end );
+   for i in [ min .. max ] do 
+     functor := h_functor( UnderlyingCategory( CapCategory( map ) ), i );
+     if not IsIsomorphism( ApplyFunctor( functor, map ) ) then 
+        return false;
+     fi;
+   od;
+   return true;
 end );
 ##
 
