@@ -92,9 +92,18 @@ DeclareOperation( "FiniteChainMap",
 ###############################
 
 #n
-DeclareOperation( "SetUpperBoundForMap", [ IsChainOrCochainMap, IsInt ] );
+DeclareOperation( "SetUpperBound", [ IsChainOrCochainMap, IsInt ] );
 
-DeclareOperation( "SetLowerBoundForMap", [ IsChainOrCochainMap, IsInt ] );
+DeclareOperation( "SetLowerBound", [ IsChainOrCochainMap, IsInt ] );
+
+DeclareOperation( "ActiveUpperBound", [ IsChainOrCochainMap ] );
+
+DeclareOperation( "ActiveLowerBound", [ IsChainOrCochainMap ] );
+
+DeclareOperation( "HasActiveUpperBound", [ IsChainOrCochainMap ] );
+
+DeclareOperation( "HasActiveLowerBound", [ IsChainOrCochainMap ] );
+##
 
 DeclareOperation( "ZeroMap", 
                   [ IsChainOrCochainComplex, IsChainOrCochainComplex ] );

@@ -151,8 +151,12 @@ DeclareOperation( "LowerBound", [ IsChainOrCochainComplex ] );
 DeclareOperation( "LowerBound", [ IsChainOrCochainComplex, IsPosInt ] );
 DeclareOperation( "UpperBound", [ IsChainOrCochainComplex ] );
 DeclareOperation( "UpperBound", [ IsChainOrCochainComplex, IsPosInt ] );
-DeclareOperation( "SetUpperBoundForComplex", [ IsChainOrCochainComplex, IsInt ] );
-DeclareOperation( "SetLowerBoundForComplex", [ IsChainOrCochainComplex, IsInt ] );
+DeclareOperation( "SetUpperBound", [ IsChainOrCochainComplex, IsInt ] );
+DeclareOperation( "SetLowerBound", [ IsChainOrCochainComplex, IsInt ] );
+DeclareOperation( "ActiveUpperBound", [ IsChainOrCochainComplex ] );
+DeclareOperation( "ActiveLowerBound", [ IsChainOrCochainComplex ] );
+DeclareOperation( "HasActiveUpperBound", [ IsChainOrCochainComplex ] );
+DeclareOperation( "HasActiveLowerBound", [ IsChainOrCochainComplex ] );
 DeclareOperation( "Display", [ IsChainOrCochainComplex, IsInt, IsInt ] );
 ##
 

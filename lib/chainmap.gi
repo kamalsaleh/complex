@@ -62,22 +62,22 @@ BindGlobal( "CHAIN_OR_COCHAIN_MAP_BY_LIST",
 
      if IsBound( C1!.UpperBound ) then
         if IsBound( C2!.UpperBound ) then
-           SetUpperBoundForMap( map, Minimum( C1!.UpperBound, C2!.UpperBound ) + u );
+           SetUpperBound( map, Minimum( C1!.UpperBound, C2!.UpperBound ) + u );
         else
-           SetUpperBoundForMap( map, C1!.UpperBound + u);
+           SetUpperBound( map, C1!.UpperBound + u);
         fi;
      elif IsBound( C2!.UpperBound ) then
-           SetUpperBoundForMap( map, C2!.UpperBound + u);
+           SetUpperBound( map, C2!.UpperBound + u);
      fi;
 
      if IsBound( C1!.LowerBound ) then
         if IsBound( C2!.LowerBound ) then
-           SetLowerBoundForMap( map, Maximum( C1!.LowerBound, C2!.LowerBound ) - l );
+           SetLowerBound( map, Maximum( C1!.LowerBound, C2!.LowerBound ) - l );
         else
-           SetLowerBoundForMap( map, C1!.LowerBound - l );
+           SetLowerBound( map, C1!.LowerBound - l );
         fi;
      elif IsBound( C2!.LowerBound ) then
-           SetLowerBoundForMap( map, C2!.LowerBound - l );
+           SetLowerBound( map, C2!.LowerBound - l );
      fi;
 
      return map;
@@ -131,14 +131,14 @@ BindGlobal( "FINITE_CHAIN_OR_COCHAIN_MAP_BY_THREE_LISTS",
    map := map_constructor( C1, C2, all_maps );
    
    if n <= base_list[ Length( base_list ) ] then 
-      SetLowerBoundForMap( map, Maximum( n, map!.LowerBound ) );
+      SetLowerBound( map, Maximum( n, map!.LowerBound ) );
       if Minimum( n + Length( mor ) - 1, map!.UpperBound ) >= map!.LowerBound then 
-         SetUpperBoundForMap( map, Minimum( n + Length( mor ) - 1, map!.UpperBound ) );
+         SetUpperBound( map, Minimum( n + Length( mor ) - 1, map!.UpperBound ) );
       else 
-         SetUpperBoundForMap( map, map!.LowerBound );
+         SetUpperBound( map, map!.LowerBound );
       fi;
    else
-      SetLowerBoundForMap( map, map!.UpperBound );
+      SetLowerBound( map, map!.UpperBound );
    fi;
    
    return map;
@@ -192,8 +192,8 @@ InstallMethod( FiniteChainMap,
    positive_part := Map( [ PositivePartFrom( obj1, n + 1 ), PositivePartFrom( obj2, n + 1 ) ], ZeroMorphism );
    maps_list := Concatenate( negative_part, n, maps, positive_part );
    map := ChainMapByMorphismList( C1, C2, maps_list );
-   SetLowerBoundForMap( map, n );
-   SetUpperBoundForMap( map, n + Length( maps ) -1 );
+   SetLowerBound( map, n );
+   SetUpperBound( map, n + Length( maps ) -1 );
    return map;
 end );
 
@@ -208,8 +208,8 @@ InstallMethod( FiniteCochainMap,
    positive_part := Map( [ PositivePartFrom( obj1, n + 1 ), PositivePartFrom( obj2, n + 1 ) ], ZeroMorphism );
    maps_list := Concatenate( negative_part, n, maps, positive_part );
    map := CochainMapByMorphismList( C1, C2, maps_list );
-   SetLowerBoundForMap( map, n );
-   SetUpperBoundForMap( map, n + Length( maps ) -1 );
+   SetLowerBound( map, n );
+   SetUpperBound( map, n + Length( maps ) -1 );
    return map;
 end );
 
@@ -232,7 +232,8 @@ end );
 #
 ##################################
 
-InstallMethod( SetUpperBoundForMap, 
+#n
+InstallMethod( SetUpperBound, 
               [ IsChainOrCochainMap, IsInt ], 
    function( map, upper_bound )
    if IsBound( map!.UpperBound ) and map!.UpperBound < upper_bound then 
@@ -241,7 +242,7 @@ InstallMethod( SetUpperBoundForMap,
    map!.UpperBound := upper_bound;
 end );
 
-InstallMethod( SetLowerBoundForMap, 
+InstallMethod( SetLowerBound, 
               [ IsChainOrCochainMap, IsInt ], 
    function( map, lower_bound )
    if IsBound( map!.LowerBound ) and map!.LowerBound > lower_bound then 
@@ -250,6 +251,36 @@ InstallMethod( SetLowerBoundForMap,
    map!.LowerBound := lower_bound;
 end );
 
+InstallMethod( ActiveUpperBound,
+[ IsChainOrCochainMap ],
+function( map )
+if not IsBound( map!.UpperBound ) then
+Error( "The map has not yet an upper bound" );
+fi;
+return map!.UpperBound;
+end );
+
+InstallMethod( ActiveLowerBound,
+[ IsChainOrCochainMap ],
+function( map )
+if not IsBound( map!.LowerBound ) then
+Error( "The map has not yet an upper bound" );
+fi;
+return map!.LowerBound;
+end );
+
+InstallMethod( HasActiveUpperBound,
+[ IsChainOrCochainMap ],
+function( map )
+return IsBound( map!.UpperBound );
+end );
+
+InstallMethod( HasActiveLowerBound,
+[ IsChainOrCochainMap ],
+function( map )
+return IsBound( map!.LowerBound );
+end );
+##
 ###################################
 #
 # Attributes of (Co)chain maps

@@ -465,8 +465,8 @@ BindGlobal( "FINITE_CHAIN_OR_COCHAIN_COMPLEX",
         complex := ShiftUnsigned( CochainComplexByDifferentialList( cat, diffs ), 1 - homological_index );
   fi;
 
-  SetLowerBoundForComplex( complex, homological_index );
-  SetUpperBoundForComplex( complex, homological_index + Length( list ) - 1 );  
+  SetLowerBound( complex, homological_index );
+  SetUpperBound( complex, homological_index + Length( list ) - 1 );  
   return complex;
 end );
 ##
@@ -1058,7 +1058,7 @@ InstallMethod( MappingCone, [ IsChainOrCochainMap ], MAPPING_CONE_OF_CHAIN_OR_CO
 ########################################
 
 #n
-InstallMethod( SetUpperBoundForComplex, 
+InstallMethod( SetUpperBound, 
               [ IsChainOrCochainComplex, IsInt ], 
    function( C, upper_bound )
    if IsBound( C!.UpperBound ) and C!.UpperBound < upper_bound then 
@@ -1069,13 +1069,47 @@ end );
 ##
 
 #n
-InstallMethod( SetLowerBoundForComplex, 
+InstallMethod( SetLowerBound, 
               [ IsChainOrCochainComplex, IsInt ], 
    function( C, lower_bound )
    if IsBound( C!.LowerBound ) and C!.LowerBound > lower_bound then 
       Error( "The input is smaller than the one that already exists!" );
    fi;
    C!.LowerBound := lower_bound;
+end );
+##
+
+#n
+InstallMethod( ActiveUpperBound,
+[ IsChainOrCochainComplex ],
+function( C )
+if not IsBound( C!.UpperBound ) then
+Error( "The complex does not have yet an upper bound" );
+else
+return C!.UpperBound;
+fi;
+end );
+
+InstallMethod( ActiveLowerBound,
+[ IsChainOrCochainComplex ],
+function( C )
+if not IsBound( C!.LowerBound ) then
+Error( "The complex does not have yet an lower bound" );
+else
+return C!.LowerBound;
+fi;
+end );
+
+InstallMethod( HasActiveUpperBound,
+[ IsChainOrCochainComplex ],
+function( C )
+return IsBound( C!.UpperBound );
+end );
+
+InstallMethod( HasActiveLowerBound,
+[ IsChainOrCochainComplex ],
+function( C )
+return IsBound( C!.LowerBound );
 end );
 ##
 
