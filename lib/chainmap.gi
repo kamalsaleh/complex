@@ -38,15 +38,19 @@ BindGlobal( "TheTypeOfCochainMap",
 #n
 BindGlobal( "CHAIN_OR_COCHAIN_MAP_BY_LIST",
      function( C1, C2, morphisms )
-     local map;
+     local map, l, u;
      map := rec( );
      if ForAll( [ C1, C2 ], IsChainComplex ) then 
+        l := 1;
+        u := 0;
         ObjectifyWithAttributes( map, TheTypeOfChainMap,
                            Source, C1,
                            Range, C2,
                            MorphismsOfMap, morphisms );
                            
      elif ForAll( [ C1, C2 ], IsCochainComplex ) then 
+        l := 0;
+        u := 1;
         ObjectifyWithAttributes( map, TheTypeOfCochainMap,
                            Source, C1,
                            Range, C2,
@@ -56,24 +60,24 @@ BindGlobal( "CHAIN_OR_COCHAIN_MAP_BY_LIST",
      fi;
      Add( CapCategory( C1 ), map );
 
-     if IsBound( C1!.UpperBound ) then 
-        if IsBound( C2!.UpperBound ) then 
-           SetUpperBoundForMap( map, Minimum( C1!.UpperBound, C2!.UpperBound ) );
+     if IsBound( C1!.UpperBound ) then
+        if IsBound( C2!.UpperBound ) then
+           SetUpperBoundForMap( map, Minimum( C1!.UpperBound, C2!.UpperBound ) + u );
         else
-           SetUpperBoundForMap( map, C1!.UpperBound );
+           SetUpperBoundForMap( map, C1!.UpperBound + u);
         fi;
-     elif IsBound( C2!.UpperBound ) then 
-           SetUpperBoundForMap( map, C2!.UpperBound );
+     elif IsBound( C2!.UpperBound ) then
+           SetUpperBoundForMap( map, C2!.UpperBound + u);
      fi;
 
-     if IsBound( C1!.LowerBound ) then 
-        if IsBound( C2!.LowerBound ) then 
-           SetLowerBoundForMap( map, Maximum( C1!.LowerBound, C2!.LowerBound ) );
+     if IsBound( C1!.LowerBound ) then
+        if IsBound( C2!.LowerBound ) then
+           SetLowerBoundForMap( map, Maximum( C1!.LowerBound, C2!.LowerBound ) - l );
         else
-           SetLowerBoundForMap( map, C1!.LowerBound );
+           SetLowerBoundForMap( map, C1!.LowerBound - l );
         fi;
-     elif IsBound( C2!.LowerBound ) then 
-           SetLowerBoundForMap( map, C2!.LowerBound );
+     elif IsBound( C2!.LowerBound ) then
+           SetLowerBoundForMap( map, C2!.LowerBound - l );
      fi;
 
      return map;
@@ -126,26 +130,17 @@ BindGlobal( "FINITE_CHAIN_OR_COCHAIN_MAP_BY_THREE_LISTS",
    
    map := map_constructor( C1, C2, all_maps );
    
-   if n <= base_list[ 1 ] and n + Length( mor ) - 1 <= base_list[ 1 ] then 
-     SetLowerBoundForMap( map, base_list[ 1 ] );
-     SetUpperBoundForMap( map, base_list[ 1 ] );
-   elif  n <= base_list[ 1 ] and n + Length( mor ) -1  > base_list[ 1 ] and n + Length( mor ) - 1 <= base_list[ Length( base_list ) ] then 
-     SetLowerBoundForMap( map, base_list[ 1 ] );
-     SetUpperBoundForMap( map, n + Length( mor ) - 1 );
-   elif n <= base_list[ 1 ] and n + Length( mor ) -1  > base_list[ 1 ] and n + Length( mor ) - 1 > base_list[ Length( base_list ) ] then 
-     SetLowerBoundForMap( map, base_list[ 1 ] );
-     SetUpperBoundForMap( map, base_list[ Length( base_list ) ] );
-   elif n > base_list[ 1 ] and n <= base_list[ Length( base_list ) ] and n + Length( mor ) -1  <= base_list[ Length( base_list ) ] then 
-     SetLowerBoundForMap( map, n );
-     SetUpperBoundForMap( map, n + Length( mor ) - 1 );
-   elif n > base_list[ 1 ] and n<= base_list[ Length( base_list ) ] and n + Length( mor ) -1  > base_list[ Length( base_list ) ] then
-     SetLowerBoundForMap( map, n );
-     SetUpperBoundForMap( map, base_list[ Length( base_list ) ] );
-   elif n > base_list[ Length( base_list ) ] then 
-     SetLowerBoundForMap( map, base_list[ 1 ] );
-     SetUpperBoundForMap( map, base_list[ 1 ] );
+   if n <= base_list[ Length( base_list ) ] then 
+      SetLowerBoundForMap( map, Maximum( n, map!.LowerBound ) );
+      if Minimum( n + Length( mor ) - 1, map!.UpperBound ) >= map!.LowerBound then 
+         SetUpperBoundForMap( map, Minimum( n + Length( mor ) - 1, map!.UpperBound ) );
+      else 
+         SetUpperBoundForMap( map, map!.LowerBound );
+      fi;
+   else
+      SetLowerBoundForMap( map, map!.UpperBound );
    fi;
-
+   
    return map;
 end );
 
@@ -240,12 +235,18 @@ end );
 InstallMethod( SetUpperBoundForMap, 
               [ IsChainOrCochainMap, IsInt ], 
    function( map, upper_bound )
+   if IsBound( map!.UpperBound ) and map!.UpperBound < upper_bound then 
+      Error( "There is already a smaller upper bound!" );
+   fi;
    map!.UpperBound := upper_bound;
 end );
 
 InstallMethod( SetLowerBoundForMap, 
               [ IsChainOrCochainMap, IsInt ], 
    function( map, lower_bound )
+   if IsBound( map!.LowerBound ) and map!.LowerBound > lower_bound then 
+      Error( "There is already a greater lower bound!" );
+   fi;
    map!.LowerBound := lower_bound;
 end );
 
@@ -349,9 +350,23 @@ end );
 
 #########################################
 #
-# Components of a (co)chain complex
+# View and display components of a (co)chain complex
 #
 #########################################
+
+InstallMethod( ViewObj, 
+               [ IsChainOrCochainMap ],
+   function( map )
+   if IsBound( map!.UpperBound ) and IsBound( map!.LowerBound ) then 
+     Print( "<A bounded morphism in ", Name( CapCategory( map ) ), ">" );
+   elif IsBound( map!.LowerBound ) then 
+     Print( "<A bounded from bellow morphism in ", Name( CapCategory( map ) ), ">" );
+   elif IsBound( map!.UpperBound ) then 
+   Print( "<A bounded from above morphism in ", Name( CapCategory( map ) ), ">" );
+   else
+   TryNextMethod( );
+   fi;
+end );
 
 InstallMethod( Display, 
                [ IsChainOrCochainMap, IsInt, IsInt ], 
