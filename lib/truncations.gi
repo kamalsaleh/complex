@@ -1,7 +1,7 @@
 
 #######################################################################
 ##
-#O  GoodTruncationBelow( <C>, <i> ) 
+##  GoodTruncationBelow( <C>, <i> ) 
 ##
 ##  Not working at the moment.  Suppose that C is a complex
 ##    ... --> C_{i+1} --> C_i --> C_{i-1} --> ...
@@ -32,7 +32,7 @@ end );
 
 #######################################################################
 ##
-#O  GoodTruncationAbove( <C>, <i> ) 
+##  GoodTruncationAbove( <C>, <i> ) 
 ##
 ##  Not working at the moment.  Suppose that C is a complex
 ##    ... --> C_{i+1} --> C_i --> C_{i-1} --> ...
@@ -65,7 +65,7 @@ end );
 
 #######################################################################
 ##
-#O  GoodTruncation( <C>, <i>, <j> ) 
+##  GoodTruncation( <C>, <i>, <j> ) 
 ##
 ##  Suppose that C is a complex
 ##    ... --> C_{i+1} --> C_i --> C_{i-1} --> ...
@@ -91,7 +91,7 @@ end );
 
 #######################################################################
 ##
-#O  BrutalTruncationBelow( <C>, <i> ) 
+##  BrutalTruncationBelow( <C>, <i> ) 
 ##
 ##  Suppose that C is a complex
 ##    ... --> C_{i+1} --> C_i --> C_{i-1} --> ...
@@ -120,7 +120,7 @@ end );
 
 #######################################################################
 ##
-#O  BrutalTruncationAbove( <C>, <i> ) 
+##  BrutalTruncationAbove( <C>, <i> ) 
 ##
 ##  Suppose that C is a complex
 ##    ... --> C_{i+1} --> C_i --> C_{i-1} --> ...
@@ -149,7 +149,7 @@ end );
 
 #######################################################################
 ##
-#O  BrutalTruncation( <C>, <i>, <j> ) 
+##  BrutalTruncation( <C>, <i>, <j> ) 
 ##
 ##  Suppose that C is a complex
 ##    ... --> C_{i+1} --> C_i --> C_{i-1} --> ...
@@ -172,7 +172,7 @@ end );
 
 #######################################################################
 ##
-#O  KernelTruncation( <C>, <i> ) 
+##  KernelTruncation( <C>, <i> ) 
 ##
 ##  Suppose that C is a complex
 ##    ... --> C_{i+1} --> C_i --> C_{i-1} --> ...
@@ -205,7 +205,7 @@ end );
 
 #######################################################################
 ##
-#O  CokernelTruncation( <C>, <i> ) 
+##  CokernelTruncation( <C>, <i> ) 
 ##
 ##  Suppose that C is a complex
 ##    ... --> C_{i+1} --> C_i --> C_{i-1} --> ...
@@ -239,7 +239,7 @@ end );
 
 #######################################################################
 ##
-#O  KernelCokernelTruncation( <C>, <i>, <j> ) 
+##  KernelCokernelTruncation( <C>, <i>, <j> ) 
 ##
 ##  Suppose that C is a complex
 ##    ... --> C_{i+1} --> C_i --> C_{i-1} --> ...

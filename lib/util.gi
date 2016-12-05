@@ -1,6 +1,6 @@
 ######################################################
 ##
-#O MultiplyListsOfMaps( <projections>, <matrix>, <inclusions> )
+## MultiplyListsOfMaps( <projections>, <matrix>, <inclusions> )
 ##
 ## <projections> is a list of m maps, <matrix> is a list of
 ## m lists of n maps, <inclusions> is a list of n maps. 

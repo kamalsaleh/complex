@@ -1,6 +1,6 @@
 #######################################################################
 ##
-#O  MappingCone( <f> )
+##  MappingCone( <f> )
 ##  
 ##  <f> is a chain map between two complexes A and B.
 ##  This method returns a list [ C, i, p ] where C is the mapping cone

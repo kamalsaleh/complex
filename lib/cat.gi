@@ -118,7 +118,7 @@ end );
 
 #######################################################################
 ##
-#M  PrintObj( <cat> ) 
+##  PrintObj( <cat> ) 
 ##
 ##  Printing a category, using its name.
 ##  
@@ -130,7 +130,7 @@ end );
 
 #######################################################################
 ##
-#M  ViewObj( <cat> ) 
+##  ViewObj( <cat> ) 
 ##
 ##  Viewing a cateory, adding no more information than the PrintObj.
 ##  

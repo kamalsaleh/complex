@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This is an automatically generated file. -->
+<TitlePage>
+  <Title>
+    complex
+  </Title>
+  <Subtitle>
+    I wear a chain complex now.  Chain complexes are cool
+  </Subtitle>
+  <Version>
+    0.1-dev
+  </Version>
+  <Author>
+    Kristin Krogh Arnesen<Alt Only="LaTeX"><Br/></Alt>
+<Address>
+Trondheim<Br/>
+</Address>
+<Email>kristink@math.ntnu.no</Email>
+<Homepage>http://www.math.ntnu.no/~kristink</Homepage>
+
+  </Author>
+  <Author>
+    Oystein Skartsaeterhagen<Alt Only="LaTeX"><Br/></Alt>
+<Address>
+Trondheim<Br/>
+</Address>
+<Email>oysteini@math.ntnu.no</Email>
+<Homepage>http://www.math.ntnu.no/~oysteini</Homepage>
+
+  </Author>
+  <Date>
+    24/12/2013
+  </Date>
+  </TitlePage>

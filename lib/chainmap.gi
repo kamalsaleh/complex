@@ -79,7 +79,7 @@ BindGlobal( "CHAIN_OR_COCHAIN_MAP_BY_LIST",
      elif IsBound( C2!.LowerBound ) then
            SetLowerBound( map, C2!.LowerBound - l );
      fi;
-
+     map!.ListOfComputedMorphisms := [ ];
      return map;
 end );
 ##
@@ -252,33 +252,33 @@ InstallMethod( SetLowerBound,
 end );
 
 InstallMethod( ActiveUpperBound,
-[ IsChainOrCochainMap ],
-function( map )
-if not IsBound( map!.UpperBound ) then
-Error( "The map has not yet an upper bound" );
-fi;
-return map!.UpperBound;
+                [ IsChainOrCochainMap ],
+   function( map )
+   if not IsBound( map!.UpperBound ) then
+      Error( "The map has not yet an upper bound" );
+   fi;
+   return map!.UpperBound;
 end );
 
 InstallMethod( ActiveLowerBound,
-[ IsChainOrCochainMap ],
-function( map )
-if not IsBound( map!.LowerBound ) then
-Error( "The map has not yet an upper bound" );
-fi;
-return map!.LowerBound;
+               [ IsChainOrCochainMap ],
+   function( map )
+   if not IsBound( map!.LowerBound ) then
+      Error( "The map has not yet an upper bound" );
+   fi;
+   return map!.LowerBound;
 end );
 
 InstallMethod( HasActiveUpperBound,
-[ IsChainOrCochainMap ],
-function( map )
-return IsBound( map!.UpperBound );
+              [ IsChainOrCochainMap ],
+  function( map )
+  return IsBound( map!.UpperBound );
 end );
 
 InstallMethod( HasActiveLowerBound,
-[ IsChainOrCochainMap ],
-function( map )
-return IsBound( map!.LowerBound );
+            [ IsChainOrCochainMap ],
+  function( map )
+  return IsBound( map!.LowerBound );
 end );
 ##
 ###################################
@@ -357,6 +357,16 @@ InstallMethod( ZeroCochainMap, [ IsCochainComplex, IsCochainComplex ], ZeroMap )
 InstallMethod( MorphismOfMap, 
           [ IsChainOrCochainMap, IsInt ], 
 function( map, i )
+     local l,j;
+     l := map!.ListOfComputedMorphisms;
+     if i in List( l, i->i[ 1 ] ) then 
+        for j in l do
+          if i = j[ 1 ] then 
+              return j[ 2 ];
+          fi;
+        od;
+     fi;
+     Add( map!.ListOfComputedMorphisms, [ i, MorphismsOfMap( map )[ i ] ] );
      return MorphismsOfMap( map )[ i ];
 end );
 ##

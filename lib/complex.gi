@@ -90,9 +90,12 @@ function( cat, shift_index )
   #c
   AddZeroObject( complex_cat, 
     function( ) 
-    local zero_map;
+    local zero_map, zero_complex;
     zero_map := ZeroMorphism( ZeroObject( cat ), ZeroObject( cat ) );
-    return complex_constructor( cat, RepeatListZ( [ zero_map ] ), false );
+    zero_complex := complex_constructor( cat, RepeatListZ( [ zero_map ] ), false );
+    SetUpperBound( zero_complex, 0 );
+    SetLowerBound( zero_complex, 0 );
+    return zero_complex;
     end );
   ##
 
@@ -101,12 +104,22 @@ function( cat, shift_index )
   ##
 
   addition_for_morphisms := function( m1, m2 )
-    local morphisms;
+    local morphisms, map;
     morphisms := Map( [ MorphismsOfMap( m1 ),
                         MorphismsOfMap( m2 ) ],
                       AdditionForMorphisms );
-    return maps_constructor( Source( m1 ), Range( m1 ),
+    map := maps_constructor( Source( m1 ), Range( m1 ),
                                    morphisms );
+    
+    if HasActiveUpperBound( m1 ) and HasActiveUpperBound( m2 ) then 
+       SetUpperBound( map, Maximum( ActiveUpperBound( m1 ), ActiveUpperBound( m2 ) ) );
+    fi;
+    
+    if HasActiveLowerBound( m1 ) and HasActiveLowerBound( m2 ) then 
+       SetLowerBound( map, Minimum( ActiveLowerBound( m1 ), ActiveLowerBound( m2 ) ) );
+    fi;
+    
+    return map;
   end;
   AddAdditionForMorphisms( complex_cat, addition_for_morphisms );
 
@@ -120,13 +133,32 @@ function( cat, shift_index )
   AddAdditiveInverseForMorphisms( complex_cat, additive_inverse_for_morphisms );
 
   pre_compose := function( m1, m2 )
-    local morphisms;
+    local morphisms, map;
     morphisms := Map( [ MorphismsOfMap( m1 ),
                         MorphismsOfMap( m2 ) ],
                       PreCompose );
-    return maps_constructor( Source( m1 ), Range( m2 ),
+    map := maps_constructor( Source( m1 ), Range( m2 ),
                                    morphisms );
+       
+    if HasActiveUpperBound( m1 ) and HasActiveUpperBound( m2 ) then 
+       SetUpperBound( map, Minimum( ActiveUpperBound( m1 ), ActiveUpperBound( m2 ) ) );
+    elif HasActiveUpperBound( m1 ) then 
+       SetUpperBound( map, ActiveUpperBound( m1 ) );
+    elif HasActiveUpperBound( m2 ) then 
+       SetUpperBound( map, ActiveUpperBound( m2 ) );
+    fi;
+    
+    if HasActiveLowerBound( m1 ) and HasActiveLowerBound( m2 ) then 
+       SetLowerBound( map, Maximum( ActiveLowerBound( m1 ), ActiveLowerBound( m2 ) ) );
+    elif HasActiveLowerBound( m1 ) then 
+       SetLowerBound( map, ActiveLowerBound( m1 ) );
+    elif HasActiveLowerBound( m2 ) then 
+       SetLowerBound( map, ActiveLowerBound( m2 ) );
+    fi;
+    
+    return map;
   end;
+  
   AddPreCompose( complex_cat, pre_compose );
 
   identity_morphism := function( C )
@@ -138,11 +170,20 @@ function( cat, shift_index )
   AddIdentityMorphism( complex_cat, identity_morphism );
 
   inverse := function( iso )
-    local morphisms;
+    local morphisms, map;
     morphisms := Map( MorphismsOfMap( iso ), Inverse );
-    return maps_constructor( Range( iso ), Source( iso ),
+    map := maps_constructor( Range( iso ), Source( iso ),
                                    morphisms );
+    if HasActiveUpperBound( iso ) then 
+       SetUpperBound( map, ActiveUpperBound( iso ) );
+    fi;
+
+    if HasActiveLowerBound( iso ) then 
+       SetLowerBound( map, ActiveLowerBound( iso ) );
+    fi;
+    return map;
   end;
+  
   AddInverse( complex_cat, inverse );
 
   lift_along_monomorphism := function( mono, test )
@@ -215,12 +256,24 @@ function( cat, shift_index )
   fi;
 
   direct_sum := function( complexes )
-    local diffs;
+    local C, diffs;
+
     diffs := Map( Combine( List( complexes, Differentials ) ),
                   DirectSumFunctorial );
     #cat := UnderlyingCategory( CapCategory( complexes[ 1 ] ) );
-    return complex_constructor( cat, diffs );
+    C := complex_constructor( cat, diffs );
+    
+    if ForAll( complexes, u -> HasActiveUpperBound( u ) ) then 
+       SetUpperBound( C, Maximum( List( complexes, C -> ActiveUpperBound( C ) ) ) );
+    fi;
+    
+    if ForAll( complexes, u -> HasActiveLowerBound( u ) ) then 
+       SetLowerBound( C, Minimum( List( complexes, C -> ActiveLowerBound( C ) ) ) );
+    fi;
+    
+    return C;
   end;
+  
   AddDirectSum( complex_cat, direct_sum );
 
   injection_of_cofactor := function( complexes, i, sum_complex )
@@ -399,7 +452,8 @@ function( cat, diffs, make_assertions, type )
      Error( "4'th argument must be either 'TheTypeOfChainComplexes' or 'TheTypeOfCochainComplexes'" );
 
   fi;
-
+  C!.ListOfComputedDifferentials := [ ];
+  C!.ListOfComputedObjects := [ ];
   return C;
 end );
 ##
@@ -666,7 +720,17 @@ InstallMethod( ObjectsOfCochainComplex, [ IsCochainComplex ], Objects );
 
 #c
 InstallMethod( DifferentialOfComplex, [ IsChainOrCochainComplex, IsInt ],
-function( C, i )
+  function( C, i )
+  local l;
+  l := C!.ListOfComputedDifferentials;
+     if i in List( l, i->i[ 1 ] ) then 
+        for j in l do
+          if i = j[ 1 ] then 
+              return j[ 2 ];
+          fi;
+        od;
+     fi;
+  Add( C!.ListOfComputedDifferentials, [ i, Differentials( C )[ i ] ] );
   return Differentials( C )[ i ];
 end );
 ##
@@ -677,6 +741,16 @@ InstallMethod( \^, [ IsChainOrCochainComplex, IsInt ], DifferentialOfComplex );
 
 InstallMethod( ObjectOfComplex, [ IsChainOrCochainComplex, IsInt ],
 function( C, i )
+  local l;
+  l := C!.ListOfComputedObjects;
+     if i in List( l, i->i[ 1 ] ) then 
+        for j in l do
+          if i = j[ 1 ] then 
+              return j[ 2 ];
+          fi;
+        od;
+     fi;
+  Add( C!.ListOfComputedObjects, [ i, Source( DifferentialOfComplex( C, i ) ) ] );
   return Source( DifferentialOfComplex( C, i ) );
 end );
 
@@ -702,7 +776,21 @@ InstallMethod( Display,
    Print( "\nDifferential[ ", String( i ), " ] is\n" );
    Display( C^i );
    od;
-   end );
+end );
+
+InstallMethod( ViewObj,
+               [ IsChainOrCochainComplex ],
+   function( C )
+   if HasActiveUpperBound( C ) and HasActiveLowerBound( C ) then
+     Print( "<A bounded object in ", Name( CapCategory( C ) ), ">" );
+   elif   HasActiveLowerBound( C ) then
+     Print( "<A bounded from bellow object in ", Name( CapCategory( C ) ), ">" );
+   elif HasActiveUpperBound( C ) then
+   Print( "<A bounded from above object in ", Name( CapCategory( C ) ), ">" );
+   else
+   TryNextMethod( );
+   fi;
+end );
    
 #############################################
 ##
@@ -872,7 +960,16 @@ BindGlobal( "SHIFT_AS_FUNCTOR",
      local morphisms;
      morphisms := MorphismsOfMap( map );
      morphisms := Shift( morphisms, n );
-     return morphism_constructor( new_source, new_range, morphisms );
+     morphisms := morphism_constructor( new_source, new_range, morphisms );
+     if HasActiveUpperBound( map ) then 
+        SetUpperBound( morphisms, ActiveUpperBound( map ) - n );
+     fi;
+  
+     if HasActiveLowerBound( map ) then 
+        SetLowerBound( morphisms, ActiveLowerBound( map ) - n );
+     fi;
+     
+     return morphisms;
      end );
    
    return shift;
@@ -911,7 +1008,14 @@ BindGlobal( "UNSIGNED_SHIFT_AS_FUNCTOR",
      local morphisms;
      morphisms := MorphismsOfMap( map );
      morphisms := Shift( morphisms, n );
-     return morphism_constructor( new_source, new_range, morphisms );
+     morphisms := morphism_constructor( new_source, new_range, morphisms );
+     if HasActiveUpperBound( map ) then 
+        SetUpperBound( morphisms, ActiveUpperBound( map ) - n );
+     fi;
+     if HasActiveLowerBound( map ) then 
+        SetLowerBound( morphisms, ActiveLowerBound( map ) - n );
+     fi;
+     return morphisms;
      end );
    
    return shift;
@@ -942,12 +1046,19 @@ BindGlobal( "CHAIN_TO_COCHAIN_OR_COCHAIN_TO_CHAIN_FUNCTOR",
  
    AddObjectFunction( functor,
      function( C )
-     local diffs, neg_part, pos_part, new_diffs;
+     local diffs, neg_part, pos_part, new_diffs, complex;
      diffs := Differentials( C );
      neg_part := NegativePartFrom( diffs, 0 );
      pos_part := PositivePartFrom( diffs, 1 );
      new_diffs := Concatenate( pos_part, neg_part );
-     return complex_constructor( cat, new_diffs );
+     complex := complex_constructor( cat, new_diffs );
+     if HasActiveUpperBound( C ) then 
+        SetLowerBound( complex, -ActiveUpperBound( C ) );
+     fi;
+     if HasActiveLowerBound( C ) then 
+        SetUpperBound( complex, -ActiveLowerBound( C ) );
+     fi;
+     return complex;
      end );
    AddMorphismFunction( functor, 
      function( new_source, map, new_range )
@@ -956,7 +1067,14 @@ BindGlobal( "CHAIN_TO_COCHAIN_OR_COCHAIN_TO_CHAIN_FUNCTOR",
      neg_part := NegativePartFrom( morphisms, 0 );
      pos_part := PositivePartFrom( morphisms, 1 );
      new_morphisms := Concatenate( pos_part, neg_part );
-     return morphism_constructor( new_source, new_range, new_morphisms );
+     new_morphisms := morphism_constructor( new_source, new_range, new_morphisms );
+     if HasActiveUpperBound( map ) then 
+        SetLowerBound( new_morphisms, -ActiveUpperBound( map ) );
+     fi;
+     if HasActiveLowerBound( map ) then 
+        SetUpperBound( new_morphisms, -ActiveLowerBound( map ) );
+     fi;
+     return new_morphisms;
      end );
 
    return functor;
@@ -1010,7 +1128,7 @@ FUNCTORS_INSTALLER( );
 BindGlobal( "MAPPING_CONE_OF_CHAIN_OR_COCHAIN_MAP", 
     function( map )
     local complex_cat, shift, complex_constructor, morphism_constructor, A, B, C, A_shifted, C_shifted, map1, map2, 
-          map_C_to_A_shifted, map_B_to_C, map_B_shifted_to_C_shifted, map_A_shifted_to_B_shifted, diffs_C;
+          map_C_to_A_shifted, map_B_to_C, map_B_shifted_to_C_shifted, map_A_shifted_to_B_shifted, diffs_C, injection, projection, complex;
     complex_cat := CapCategory( map );
     
     if IsChainMap( map ) then 
@@ -1043,14 +1161,23 @@ BindGlobal( "MAPPING_CONE_OF_CHAIN_OR_COCHAIN_MAP",
     
     map2 := PreCompose( [ map_C_to_A_shifted, map_A_shifted_to_B_shifted, map_B_shifted_to_C_shifted ] );
     
-    return complex_constructor( UnderlyingCategory( complex_cat), MorphismsOfMap( map1 + map2 ) );
+    complex := complex_constructor( UnderlyingCategory( complex_cat), MorphismsOfMap( map1 + map2 ) );
+    if HasActiveLowerBound( map2 ) then SetLowerBound( complex, ActiveLowerBound( map2 ) );fi;
+    if HasActiveUpperBound( map2 ) then SetUpperBound( complex, ActiveUpperBound( map2 ) );fi;
+    
+    injection := MorphismsOfMap( InjectionOfCofactorOfDirectSum( [ A_shifted, B ], 2 ) );
+    projection := MorphismsOfMap( ProjectionInFactorOfDirectSum( [ A_shifted, B ], 1 ) );
+    
+    injection := morphism_constructor( B, complex, injection );
+    projection := morphism_constructor( complex, A_shifted, projection );
 
+    return [ complex, injection, projection ];
 end );
 
 #n
-InstallMethod( MappingCone, [ IsChainOrCochainMap ], MAPPING_CONE_OF_CHAIN_OR_COCHAIN_MAP );
+# InstallMethod( MappingCone, [ IsChainOrCochainMap ], MAPPING_CONE_OF_CHAIN_OR_COCHAIN_MAP );
 ##
-
+ 
 ########################################
 #
 # Upper and lower bounds of (co)chains
@@ -1394,31 +1521,56 @@ end );
 #c
 InstallMethod( Shift, [ IsChainOrCochainComplex, IsInt ],
 function( C, i )
-  local newDifferentials;
+  local newDifferentials, complex;
   newDifferentials := Shift( Differentials( C ), i );
   if i mod 2 = 1 then
     newDifferentials := Map( newDifferentials, d -> -d );
   fi;
   
-  if IsChainComplex( C ) then 
-     return ChainComplexByDifferentialList( CatOfComplex( C ), newDifferentials );
+  if IsChainComplex( C ) then
+     complex := ChainComplexByDifferentialList( CatOfComplex( C ), newDifferentials );
   else
-     return CochainComplexByDifferentialList( CatOfComplex( C ), newDifferentials );
+     complex := CochainComplexByDifferentialList( CatOfComplex( C ), newDifferentials );
   fi;
+  
+  if HasActiveUpperBound( C ) then 
+     SetUpperBound( complex, ActiveUpperBound( C ) - i );
+  fi;
+  
+  if HasActiveLowerBound( C ) then 
+     SetLowerBound( complex, ActiveLowerBound( C ) - i );
+  fi;
+  
+  complex!.ListOfComputedDifferentials := List( C!.ListOfComputedDifferentials, l -> [ l[ 1 ] - i, (-1)^i*l[ 2 ] ] );
+  complex!.ListOfComputedObjects := List( C!.ListOfComputedObjects, l -> [ l[ 1 ] - i, l[ 2 ] ] );
+  
+  return complex;
 end );
 ##
 
 #c
 InstallMethod( ShiftUnsigned, [ IsChainOrCochainComplex, IsInt ],
 function( C, i )
-  local newDifferentials;
+  local newDifferentials, complex;
   newDifferentials := Shift( Differentials( C ), i );
   
   if IsChainComplex( C ) then 
-     return ChainComplexByDifferentialList( CatOfComplex( C ), newDifferentials );
+     complex := ChainComplexByDifferentialList( CatOfComplex( C ), newDifferentials );
   else
-     return CochainComplexByDifferentialList( CatOfComplex( C ), newDifferentials );
+     complex := CochainComplexByDifferentialList( CatOfComplex( C ), newDifferentials );
   fi;
+  if HasActiveUpperBound( C ) then 
+     SetUpperBound( complex, ActiveUpperBound( C ) - i );
+  fi;
+  
+  if HasActiveLowerBound( C ) then 
+     SetLowerBound( complex, ActiveLowerBound( C ) - i );
+  fi;
+  
+  complex!.ListOfComputedDifferentials := List( C!.ListOfComputedDifferentials, l -> [ l[ 1 ] - i, l[ 2 ] ] );
+  complex!.ListOfComputedObjects := List( C!.ListOfComputedObjects, l -> [ l[ 1 ] - i, l[ 2 ] ] );
+  
+  return complex;
 end );
 ##
 

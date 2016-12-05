@@ -26,8 +26,8 @@ Persons := [
     Institution   := "NTNU"
   ),
   rec( 
-    LastName      := "Skartsæterhagen",
-    FirstNames    := "Øystein",
+    LastName      := "Skartsaeterhagen",
+    FirstNames    := "Oystein",
     IsAuthor      := true,
     IsMaintainer  := true,
     Email         := "oysteini@math.ntnu.no",
