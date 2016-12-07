@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This is an automatically generated file. -->
+<Chapter Label="Chapter_Complexes_categories">
+<Heading>Complexes categories</Heading>
+
+<Section Label="Chapter_Complexes_categories_Section_Chain_and_cochain_complex_categories">
+<Heading>Chain and cochain complex categories</Heading>
+
+<ManSection>
+  <Filt Arg="arg" Name="IsChainOrCochainComplexCategory" Label="for IsCapCategory"/>
+ <Returns><C>true</C> or <C>false</C>
+</Returns>
+ <Description>
+bla bla
+ </Description>
+</ManSection>
+
+
+<ManSection>
+  <Filt Arg="arg" Name="IsChainComplexCategory" Label="for IsChainOrCochainComplexCategory"/>
+ <Returns><C>true</C> or <C>false</C>
+</Returns>
+ <Description>
+bla bla
+ </Description>
+</ManSection>
+
+
+<ManSection>
+  <Filt Arg="arg" Name="IsCochainComplexCategory" Label="for IsChainOrCochainComplexCategory"/>
+ <Returns><C>true</C> or <C>false</C>
+</Returns>
+ <Description>
+bla bla
+ </Description>
+</ManSection>
+
+
+<ManSection>
+  <Attr Arg="A" Name="ChainComplexCategory" Label="for IsCapCategory"/>
+ <Returns>a CAP category
+</Returns>
+ <Description>
+Creates the chain complex category <A>Ch(A)</A> an Abelian category <A>A</A>.
+ </Description>
+</ManSection>
+
+
+<ManSection>
+  <Attr Arg="A" Name="CochainComplexCategory" Label="for IsCapCategory"/>
+ <Returns>a CAP category
+</Returns>
+ <Description>
+Creates the cochain complex category <A>CoCh(A)</A> an Abelian category <A>A</A>.
+ </Description>
+</ManSection>
+
+
+<ManSection>
+  <Attr Arg="B" Name="UnderlyingCategory" Label="for IsChainOrCochainComplexCategory"/>
+ <Returns>a CAP category
+</Returns>
+ <Description>
+The input is a chain or cochain complex category <A>B=C(A)</A> constructed by one of the previous commands.
+The outout is <A>A</A>.
+ </Description>
+</ManSection>
+
+
+</Section>
+
+
+</Chapter>
+

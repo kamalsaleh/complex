@@ -3,7 +3,7 @@
 #
 #
 #
-#! @Chapter Complexe categories
+#! @Chapter Complexes categories
 #
 ###################################################################################
 
@@ -45,10 +45,14 @@ DeclareAttribute( "CochainComplexCategory", IsCapCategory );
 #! @Arguments B
 #! @Returns a CAP category
 DeclareAttribute( "UnderlyingCategory", IsChainOrCochainComplexCategory );
+#! @EndSection
 
+DeclareGlobalVariable( "ComplexSingleAssertions" );
+DeclareGlobalVariable( "ComplexDoubleAssertions" );
 
+#! @Chapter Working with complexes
 
-#! @Section Chain and cochain complexes 
+#! @Section Filters 
 #! @Description
 #!  bla bla
 DeclareCategory( "IsChainOrCochainComplex", IsCapCategoryObject );
@@ -60,11 +64,9 @@ DeclareCategory( "IsChainComplex", IsChainOrCochainComplex );
 #! @Description
 #!  bla bla
 DeclareCategory( "IsCochainComplex", IsChainOrCochainComplex );
+#! @EndSection
 
-DeclareGlobalVariable( "ComplexSingleAssertions" );
-DeclareGlobalVariable( "ComplexDoubleAssertions" );
-
-
+#! @Section Creating chain and cochain complexes
 #########################################
 #
 #  Constructors of (Co)chain complexes 
@@ -86,6 +88,8 @@ DeclareOperation( "CochainComplexByDifferentialList", [ IsCapCategory, IsZList, 
 #! @Arguments A, diffs
 #! @Returns a cochain complex
 DeclareOperation( "CochainComplexByDifferentialList", [ IsCapCategory, IsZList ] );
+
+#! @InsertChunk cochain_creation
 
 #! @Description
 #! The input is a finite dense list <A>diffs</A> and an integer <A>n</A> . The output is the chain complex $M_{\bullet}\in \mathrm{Ch}(A)$ where 
@@ -113,74 +117,200 @@ DeclareOperation( "FiniteCochainComplex", [ IsDenseList, IsInt ] );
 #! @Returns a cochain complex
 DeclareOperation( "FiniteCochainComplex", [ IsDenseList ] );
 
+#! @InsertChunk 2
+#! @Description
+#! The input is an object $M\in A$. The output is chain complex $M_{\bullet}\in\mathrm{Ch(A)}$ where $M_0=M$ and $M_i=0$ whenever $i\neq 0$.
+#! @Arguments M
+#! @Returns a chain complex
 DeclareOperation( "StalkChainComplex", [ IsCapCategoryObject ] );
+
+#! @Description
+#! The input is an object $M\in A$. The output is cochain complex $M^{\bullet}\in\mathrm{CoCh(A)}$ where $M^0=M$ and $M^i=0$ whenever $i\neq 0$.
+#! @Arguments M
+#! @Returns a cochain complex
 DeclareOperation( "StalkCochainComplex", [ IsCapCategoryObject ] );
 
+#! @InsertChunk 3
+#! @Description
+#! The input is a morphism $d\in A$ and two functions $F,G$. 
+#! The output is chain complex $M_{\bullet}\in\mathrm{Ch(A)}$ where $d^{M}_{0}=d$ 
+#! and $d^M_{i}=G^{i}( d )$ for all $i\leq -1$ and $d^M_{i}=F^{i}( d )$ for all $i \geq 1$.
+#! @Arguments d,G,F
+#! @Returns a chain complex
 DeclareOperation( "ChainComplexWithInductiveSides", [ IsCapCategoryMorphism, IsFunction, IsFunction ] );
+
+#! @Description
+#! The input is a morphism $d\in A$ and two functions $F,G$. 
+#! The output is cochain complex $M^{\bullet}\in\mathrm{CoCh(A)}$ where $d_{M}^{0}=d$ 
+#! and $d_M^{i}=G^{i}( d )$ for all $i\leq -1$ and $d_M^{i}=F^{i}( d )$ for all $i \geq 1$.
+#! @Arguments d,G,F
+#! @Returns a cochain complex
 DeclareOperation( "CochainComplexWithInductiveSides", [ IsCapCategoryMorphism, IsFunction, IsFunction ] );
+
+#! @Description
+#! The input is a morphism $d\in A$ and a functions $G$. 
+#! The output is chain complex $M_{\bullet}\in\mathrm{Ch(A)}$ where $d^{M}_{0}=d$ 
+#! and $d^M_{i}=G^{i}( d )$ for all $i\leq -1$ and $d^M_{i}=0$ for all $i \geq 1$.
+#! @Arguments d,G
+#! @Returns a chain complex
 DeclareOperation( "ChainComplexWithInductiveNegativeSide", [ IsCapCategoryMorphism, IsFunction ] );
+
+#! @Description
+#! The input is a morphism $d\in A$ and a functions $F$. 
+#! The output is chain complex $M_{\bullet}\in\mathrm{Ch(A)}$ where $d^{M}_{0}=d$ 
+#! and $d^M_{i}=F^{i}( d )$ for all $i\geq 1$ and $d^M_{i}=0$ for all $i \leq 1$.
+#! @Arguments d,F
+#! @Returns a chain complex
 DeclareOperation( "ChainComplexWithInductivePositiveSide", [ IsCapCategoryMorphism, IsFunction ] );
+
+#! @Description
+#! The input is a morphism $d\in A$ and a functions $G$. 
+#! The output is cochain complex $M^{\bullet}\in\mathrm{CoCh(A)}$ where $d_{M}^{0}=d$ 
+#! and $d_M^{i}=G^{i}( d )$ for all $i\leq -1$ and $d_M^{i}=0$ for all $i \geq 1$.
+#! @Arguments d,G
+#! @Returns a cochain complex
 DeclareOperation( "CochainComplexWithInductiveNegativeSide", [ IsCapCategoryMorphism, IsFunction ] );
+
+#! @Description
+#! The input is a morphism $d\in A$ and a functions $F$. 
+#! The output is cochain complex $M^{\bullet}\in\mathrm{CoCh(A)}$ where $d_{M}^{0}=d$ 
+#! and $d_M^{i}=F^{i}( d )$ for all $i\geq 1$ and $d_M^{i}=0$ for all $i \leq 1$.
+#! @Arguments d,F
+#! @Returns a cochain complex
 DeclareOperation( "CochainComplexWithInductivePositiveSide", [ IsCapCategoryMorphism, IsFunction ] );
 ##
+#! @InsertChunk 4
 
 # DeclareAttribute( "ComplexCategory", IsCapCategory );
 # DeclareAttribute( "CocomplexCategory", IsCapCategory );
 
-#########################################
+##############################################
 #
-#   Functors
+# Attributes of (co)chain complexes
 #
-########################################
+##############################################
+#! @EndSection
+#! @Section Attributes and operations on complexes.
 
-
-#! @Section Functors
+#! @BeginGroup 1
 #! @Description
-#! The input is an Abelian category <A>A</A> and an integer <A>n</A>. The output is the $n$-th homology functor 
-#! $H_n:\mathrm{Ch}(A) \rightarrow A$.
-#! @Arguments A,n
-#! @Returns a functor
-DeclareOperation( "HomologyAsFunctor", [ IsCapCategory, IsInt ] );
-
-#! @Description
-#! The input is an Abelian category <A>A</A> and an integer <A>n</A>. The output is the $n$-th cohomology functor 
-#! $H^n:\mathrm{CoCh}(A) \rightarrow A$.
-#! @Arguments A,n
-#! @Returns a functor
-DeclareOperation( "CohomologyAsFunctor", [ IsCapCategory, IsInt ] );
-
-#! @Description
-#! The input is a complex category <A>C=C(A)</A> and an integer <A>n</A>. The output is the the shift functor 
-#! $T[n]:C \rightarrow C$, defined by $M\mapsto M[n]$ for complexes and by $\phi\mapsto \phi[n]$ for maps. In chain complex category we have  $M[n]_i=M_{n+i}, d_{i}^{M[n]}=(-1)^{n}d_{n+i}^{M}$
-#! for any chain complex $M\in C$ and $\phi[n]_i=\phi_{n+i}$ for any chain map $\phi\in C$. The same holds in the cochain complex category, i.e.,
-#! $M[n]^i=M^{n+i}, d^{i}_{M[n]}=(-1)^{n}d^{n+i}_{M}$ and $\phi[n]^i=\phi^{n+i}$.
-#! @Arguments C(A), n
-#! @Returns a functor
-DeclareOperation( "ShiftAsFunctor", [ IsCapCategory, IsInt ] );
-
-#! @Description
-#! The input is a complex category <A>C=C(A)</A> and an integer <A>n</A>. The output is the the shift functor 
-#! $S[n]:C \rightarrow C$, defined by $M\mapsto S[n](M)$ for complexes and by $\phi\mapsto S[n](\phi)$ for maps. In chain complex category we have $(S[n](M))_i=M_{n+i}, d_{i}^{S[n](M)}=d_{n+i}^{M}$
-#! for any chain complex $M\in C$ and $\phi[n]_i=\phi_{n+i}$ for any chain map $\phi\in C$. The same holds in the cochain complex category, i.e.,
-#! $(S[n](M))^i=M^{n+i}, d^{i}_{S[n](M)}=d^{n+i}_{M}$ and $\phi[n]^i=\phi^{n+i}$.
-#! @Arguments C(A), n
-#! @Returns a functor
-DeclareOperation( "UnsignedShiftAsFunctor", [ IsCapCategory, IsInt ] );
-
-#! @Description
-#! The input is a category <A>A</A>. The output is the functor $F:\mathrm{Ch(A)}\rightarrow\mathrm{CoCh(A)}$ defined by $M_{\bullet}\mapsto M^{\bullet}$ for any 
-#! for any chain complex $M_{\bullet}\in \mathrm{Ch}(A)$ and by $\phi_{\bullet}\mapsto \phi^{\bullet}$ for any map $\phi$ where $M^{i}=M_{-i}$ and $\phi^{i}=\phi_{-i}$.
-#! @Arguments A
-#! @Returns a functor
-DeclareOperation( "ChainToCochainComplexAsFunctor", [ IsCapCategory ] );
-
-#! @Description
-#! The input is a category <A>A</A>. The output is the functor $F:\mathrm{CoCh(A)}\rightarrow\mathrm{Ch(A)}$ defined by $M^{\bullet}\mapsto M_{\bullet}$ for any 
-#! cochain complex $M^{\bullet}\in \mathrm{CoCh}(A)$ and by $\phi^{\bullet}\mapsto \phi_{\bullet}$ for any map $\phi$ where $M_{i}=M^{-i}$ and $\phi_{i}=\phi^{-i}$.
-#! @Arguments A
-#! @Returns a functor
-DeclareOperation( "CochainToChainComplexAsFunctor", [ IsCapCategory ] );
+#! Both commands return the differentials of the chain or cochain complex as an infinite list.
+#! @Arguments C
+#! @Returns an infinite list
+DeclareAttribute( "Differentials", IsChainOrCochainComplex );
+#! @EndGroup
+#! @Group 1
+#! @Arguments C
+DeclareAttribute( "DifferentialsOfComplex", IsChainOrCochainComplex );
 ##
+#c
+# This is supposed to be called ObjectsOfComplex, but it
+# causes a conflict with an operation in homalg
+# DeclareAttribute( "ObjectsOfComplex", IsChainOrCochainComplex );
+##
+
+#! @BeginGroup 2
+#! @Description
+#! All commands return the objects of the chain or cochain complex as an infinite list.
+#! @Arguments C
+#! @Returns an infinite list
+DeclareAttribute( "Objects", IsChainOrCochainComplex );
+#! @Arguments C
+DeclareAttribute( "ObjectsOfChainComplex", IsChainComplex );
+##
+#! @EndGroup
+#! @Group 2
+#! @Arguments C
+DeclareAttribute( "ObjectsOfCochainComplex", IsCochainComplex );
+
+DeclareAttribute( "CatOfComplex", IsChainOrCochainComplex );
+
+##############################################
+#
+# operations derived from Attributes
+#
+##############################################
+
+#c
+#! @BeginGroup 3
+#! @Description
+#! Both commands return the object of the chain or cochain complex in index $i$.
+#! @Arguments C, i
+DeclareOperation( "ObjectOfComplex", [ IsChainOrCochainComplex, IsInt ] );
+#! @EndGroup
+#! @Group 3
+#! @Arguments C, i
+#! @Returns an object
+DeclareOperation( "\[\]", [ IsChainOrCochainComplex, IsInt ] );
+
+#! @BeginGroup 4
+#! @Description
+#! Both commands return the differential of the chain or cochain complex in index $i$.
+#! @Arguments C, i
+DeclareOperation( "DifferentialOfComplex", [ IsChainOrCochainComplex, IsInt ] );
+#! @EndGroup
+#! @Group 4
+#! @Arguments C, i
+#! @Returns a morphism
+DeclareOperation( "\^", [ IsChainOrCochainComplex, IsInt ] );
+
+#! @Description
+#! The input is a chain or cochain complex $C$ and an integer $n$. The outout is the homology(cohomology) object of $C$ in index $n$ if $C$ is chain(cochain) complex.
+#! @Arguments C, n
+#! @Returns a object
+DeclareOperation( "DefectOfExactness", [ IsChainOrCochainComplex, IsInt ] );
+
+#! @Description
+#! The input is a chain or cochain complex $C$ and an integer $n$. The outout is <A>true</A> if $C$ is exact in $i$. Otherwise the output is <A>false</A>.
+#! @Arguments C, n
+#! @Returns true or false
+DeclareOperation( "IsExactInIndex", [ IsChainOrCochainComplex, IsInt ] );
+
+#! @Description
+#! The command sets an upper bound $n$ to the chain(cochain) complex $C$. This means $C_{i\geq n}=0(C^{\geq n}=0)$. This upper bound will be called $\textit{active}$ upper bound and it can be changed whenever it is needed.
+#! @Arguments C, n
+#! @Returns a nothing
+DeclareOperation( "SetUpperBound", [ IsChainOrCochainComplex, IsInt ] );
+
+#! @Description
+#! The command sets a lower bound $n$ to the chain(cochain) complex $C$. This means $C_{i \leq n}=0(C^{i \leq n}=0)$.
+#! This lower bound will be called $\textit{active}$ lower bound and it can be changed whenever it is needed.
+#! @Arguments C, n
+#! @Returns nothing
+DeclareOperation( "SetLowerBound", [ IsChainOrCochainComplex, IsInt ] );
+
+#! @Description
+#! The input is chain or cochain complex. The output is <A>true</A> if an upper bound has been set to $C$ and <A>false</A> otherwise.
+#! @Arguments C
+#! @Returns true or false
+DeclareOperation( "HasActiveUpperBound", [ IsChainOrCochainComplex ] );
+
+#! @Description
+#! The input is chain or cochain complex. The output is <A>true</A> if a lower bound has been set to $C$ and <A>false</A> otherwise.
+#! @Arguments C
+#! @Returns true or false
+DeclareOperation( "HasActiveLowerBound", [ IsChainOrCochainComplex ] );
+
+#! @Description
+#! The input is chain or cochain complex. The output is its active upper bound if such has been set to $C$. Otherwise we get error.
+#! @Arguments C
+#! @Returns an integer
+DeclareOperation( "ActiveUpperBound", [ IsChainOrCochainComplex ] );
+
+#! @Description
+#! The input is chain or cochain complex. The output is its active lower bound if such has been set to $C$. Otherwise we get error.
+#! @Arguments C
+#! @Returns an integer
+DeclareOperation( "ActiveLowerBound", [ IsChainOrCochainComplex ] );
+
+#! @Description
+#! The input is chain or cochain complex $C$ and two integers $m$ and $n$. The command displays all components of $C$ between the indices $m,n$.
+#! @Arguments C, m, n
+#! @Returns nothing
+DeclareOperation( "Display", [ IsChainOrCochainComplex, IsInt, IsInt ] );
+
+#! @EndSection
+
 
 
 
@@ -219,63 +349,16 @@ DeclareOperation( "SyzygyCosyzygyTruncation", [ IsChainComplex, IsInt, IsInt ] )
 #DeclareOperation( "CutComplexBelow", [ IsChainComplex ] );
 
 
-##############################################
-#
-# Attributes of (co)chain complexes
-#
-##############################################
 
-#c
-DeclareAttribute( "DifferentialsOfComplex", IsChainOrCochainComplex );
-DeclareAttribute( "Differentials", IsChainOrCochainComplex );
-
-##
-#c
-# This is supposed to be called ObjectsOfComplex, but it
-# causes a conflict with an operation in homalg
-DeclareAttribute( "Objects", IsChainOrCochainComplex );
-# DeclareAttribute( "ObjectsOfComplex", IsChainOrCochainComplex );
-##
-
-#n
-DeclareAttribute( "ObjectsOfChainComplex", IsChainComplex );
-DeclareAttribute( "ObjectsOfCochainComplex", IsCochainComplex );
-##
-
-DeclareAttribute( "CatOfComplex", IsChainOrCochainComplex );
-
-##############################################
-#
-# operations derived from Attributes
-#
-##############################################
-
-#c
-DeclareOperation( "ObjectOfComplex", [ IsChainOrCochainComplex, IsInt ] );
-DeclareOperation( "DifferentialOfComplex", [ IsChainOrCochainComplex, IsInt ] );
-DeclareOperation( "\^", [ IsChainOrCochainComplex, IsInt ] );
-DeclareOperation( "\[\]", [ IsChainOrCochainComplex, IsInt ] );
+DeclareOperation( "HomologyOfComplex", [ IsChainComplex, IsInt ] );
 DeclareOperation( "CyclesOfComplex", [ IsChainOrCochainComplex, IsInt ] );
 DeclareOperation( "BoundariesOfComplex", [ IsChainOrCochainComplex, IsInt ] );
 DeclareOperation( "HomologyOfChainComplex", [ IsChainComplex, IsInt ] );
 DeclareOperation( "CohomologyOfCochainComplex", [ IsCochainComplex, IsInt ] );
-DeclareOperation( "DefectOfExactness", [ IsChainOrCochainComplex, IsInt ] );
-DeclareOperation( "IsExactInIndex", [ IsChainOrCochainComplex, IsInt ] );
 DeclareOperation( "LowerBound", [ IsChainOrCochainComplex ] );
 DeclareOperation( "LowerBound", [ IsChainOrCochainComplex, IsPosInt ] );
 DeclareOperation( "UpperBound", [ IsChainOrCochainComplex ] );
 DeclareOperation( "UpperBound", [ IsChainOrCochainComplex, IsPosInt ] );
-DeclareOperation( "SetUpperBound", [ IsChainOrCochainComplex, IsInt ] );
-DeclareOperation( "SetLowerBound", [ IsChainOrCochainComplex, IsInt ] );
-DeclareOperation( "ActiveUpperBound", [ IsChainOrCochainComplex ] );
-DeclareOperation( "ActiveLowerBound", [ IsChainOrCochainComplex ] );
-DeclareOperation( "HasActiveUpperBound", [ IsChainOrCochainComplex ] );
-DeclareOperation( "HasActiveLowerBound", [ IsChainOrCochainComplex ] );
-DeclareOperation( "Display", [ IsChainOrCochainComplex, IsInt, IsInt ] );
-##
-
-DeclareOperation( "HomologyOfComplex", [ IsChainComplex, IsInt ] );
-
 #c
 DeclareOperation( "UpperBound", [ IsChainComplex ] );
 # DeclareOperation( "LowerBound", [ IsChainComplex ] );

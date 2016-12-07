@@ -1,78 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!-- This is an automatically generated file. -->
-<Chapter Label="Chapter_Complexe_categories">
-<Heading>Complexe categories</Heading>
+<Chapter Label="Chapter_Working_with_complexes">
+<Heading>Working with complexes</Heading>
 
-<Section Label="Chapter_Complexe_categories_Section_Chain_and_cochain_complex_categories">
-<Heading>Chain and cochain complex categories</Heading>
-
-<ManSection>
-  <Filt Arg="arg" Name="IsChainOrCochainComplexCategory" Label="for IsCapCategory"/>
- <Returns><C>true</C> or <C>false</C>
-</Returns>
- <Description>
-bla bla
- </Description>
-</ManSection>
-
-
-<ManSection>
-  <Filt Arg="arg" Name="IsChainComplexCategory" Label="for IsChainOrCochainComplexCategory"/>
- <Returns><C>true</C> or <C>false</C>
-</Returns>
- <Description>
-bla bla
- </Description>
-</ManSection>
-
-
-<ManSection>
-  <Filt Arg="arg" Name="IsCochainComplexCategory" Label="for IsChainOrCochainComplexCategory"/>
- <Returns><C>true</C> or <C>false</C>
-</Returns>
- <Description>
-bla bla
- </Description>
-</ManSection>
-
-
-<ManSection>
-  <Attr Arg="A" Name="ChainComplexCategory" Label="for IsCapCategory"/>
- <Returns>a CAP category
-</Returns>
- <Description>
-Creates the chain complex category <A>Ch(A)</A> an Abelian category <A>A</A>.
- </Description>
-</ManSection>
-
-
-<ManSection>
-  <Attr Arg="A" Name="CochainComplexCategory" Label="for IsCapCategory"/>
- <Returns>a CAP category
-</Returns>
- <Description>
-Creates the cochain complex category <A>CoCh(A)</A> an Abelian category <A>A</A>.
- </Description>
-</ManSection>
-
-
-<ManSection>
-  <Attr Arg="B" Name="UnderlyingCategory" Label="for IsChainOrCochainComplexCategory"/>
- <Returns>a CAP category
-</Returns>
- <Description>
-The input is a chain or cochain complex category <A>B=C(A)</A> constructed by one of the previous commands.
-The outout is <A>A</A>.
- </Description>
-</ManSection>
-
-
-</Section>
-
-
-<Section Label="Chapter_Complexe_categories_Section_Chain_and_cochain_complexes">
-<Heading>Chain and cochain complexes</Heading>
+<Section Label="Chapter_Working_with_complexes_Section_Filters">
+<Heading>Filters</Heading>
 
 <ManSection>
   <Filt Arg="arg" Name="IsChainOrCochainComplex" Label="for IsCapCategoryObject"/>
@@ -104,6 +37,12 @@ bla bla
 </ManSection>
 
 
+</Section>
+
+
+<Section Label="Chapter_Working_with_complexes_Section_Creating_chain_and_cochain_complexes">
+<Heading>Creating chain and cochain complexes</Heading>
+
 <ManSection>
   <Oper Arg="A, diffs" Name="ChainComplexByDifferentialList" Label="for IsCapCategory, IsZList"/>
  <Returns>a chain complex
@@ -125,15 +64,8 @@ The input is category <A>A</A> and an infinite list <A>diffs</A>. The output is 
 
 
 <Example><![CDATA[
-gap> LoadPackage( "ModulePresentationsForCap" );
-gap> LoadPackage( "complex" );
 gap> S := HomalgFieldOfRationalsInSingular()*"x,y,z";;
 gap> left_pre_cat := LeftPresentations( S );
-gap> inductive_function := function( mor ) local ker_embedding, cover;
-gap> ker_embedding := KernelEmbedding( mor );
-gap> cover := CoverByFreeModule( Source( ker_embedding ) );
-gap> return PreCompose( cover, ker_embedding ); 
-gap> end;;
 Category of left presentations of Q[x,y,z]
 gap> cochain_cat := CochainComplexCategory ( left_pre_cat );
 Cochain complexes category over Category of left presentations of Q[x,y,z]
@@ -255,7 +187,7 @@ Let us constructe the finite cochain map
 \begin{tikzpicture}
 \matrix (m) [matrix of math nodes,row sep=1em,column sep=3em,minimum width=2em]
 {
-\cdots & 14 & 15 & 16 & 17 & 18 & 19 & \cdots\\
+\cdots\;13 & 14 & 15 & 16 & 17 & 18 & 19 & \cdots\\
 C_2:0 & N & T & M & N & T & 0 & 0 \\};
 \path[-stealth]
 (m-2-1) edge (m-2-2)
@@ -277,9 +209,9 @@ gap> C2[ 29 ];
 gap> C2[ -100 ];
 <A zero object in Category of left presentations of Q[x,y,z]>
 gap> ActiveUpperBound( C2 );
-17
+19
 gap> ActiveLowerBound( C2 );
-14
+13
 ]]></Example>
 
 
@@ -322,9 +254,9 @@ true
 gap> Range( cochain_N^-1 ) = N;
 true
 gap> ActiveLowerBound( cochain_N );
-0
+-1
 gap> ActiveUpperBound( cochain_N );
-0
+1
 ]]></Example>
 
 
@@ -405,12 +337,7 @@ To illustrate this let us constructe the free (projective) resolution of M as a 
 <Example><![CDATA[
 gap> d0 := UniversalMorphismIntoZeroObject( M );
 <A zero, split epimorphism in Category of left presentations of Q[x,y,z]> 
-gap> inductive_function := function( mor ) \
->            local ker_embedding, cover;
-gap>         ker_embedding := KernelEmbedding( mor );
-gap>         cover := CoverByFreeModule( Source( ker_embedding ) );
-gap>         return PreCompose( cover, ker_embedding ); 
-gap> end;;
+gap> inductive_function := function( mor ) local ker_embedding, cover;ker_embedding := KernelEmbedding( mor );cover := CoverByFreeModule( Source( ker_embedding ) );return PreCompose( cover, ker_embedding );end;;
 gap> proj_M := ChainComplexWithInductivePositiveSide( d0, inductive_function );
 <A bounded from bellow object in Chain complexes category over Category of left 
 presentations of Q[x,y,z]>
@@ -487,75 +414,142 @@ A morphism in Category of left presentations of Q[x,y,z]
 </Section>
 
 
-<Section Label="Chapter_Complexe_categories_Section_Functors">
-<Heading>Functors</Heading>
+<Section Label="Chapter_Working_with_complexes_Section_Attributes_and_operations_on_complexes">
+<Heading>Attributes and operations on complexes.</Heading>
 
-<ManSection>
-  <Oper Arg="A,n" Name="HomologyAsFunctor" Label="for IsCapCategory, IsInt"/>
- <Returns>a functor
+<ManSection Label="1">
+  <Attr Arg="C" Name="Differentials" Label="for IsChainOrCochainComplex"/>
+  <Attr Arg="C" Name="DifferentialsOfComplex" Label="for IsChainOrCochainComplex"/>
+ <Returns>an infinite list
 </Returns>
  <Description>
-The input is an Abelian category <A>A</A> and an integer <A>n</A>. The output is the <Math>n</Math>-th homology functor
-<Math>H_n:\mathrm{Ch}(A) \rightarrow A</Math>.
+Both commands return the differentials of the chain or cochain complex as an infinite list.
+ </Description>
+</ManSection>
+
+
+<ManSection Label="2">
+  <Attr Arg="C" Name="Objects" Label="for IsChainOrCochainComplex"/>
+  <Attr Arg="C" Name="ObjectsOfChainComplex" Label="for IsChainComplex"/>
+  <Attr Arg="C" Name="ObjectsOfCochainComplex" Label="for IsCochainComplex"/>
+ <Returns>an infinite list
+</Returns>
+ <Description>
+All commands return the objects of the chain or cochain complex as an infinite list.
+<Br/>
+ </Description>
+</ManSection>
+
+
+<ManSection Label="3">
+  <Oper Arg="C, i" Name="ObjectOfComplex" Label="for IsChainOrCochainComplex, IsInt"/>
+  <Oper Arg="C, i" Name="\[\]" Label="for IsChainOrCochainComplex, IsInt"/>
+ <Returns>an object
+</Returns>
+ <Description>
+Both commands return the object of the chain or cochain complex in index <Math>i</Math>.
+ </Description>
+</ManSection>
+
+
+<ManSection Label="4">
+  <Oper Arg="C, i" Name="DifferentialOfComplex" Label="for IsChainOrCochainComplex, IsInt"/>
+  <Oper Arg="C, i" Name="\^" Label="for IsChainOrCochainComplex, IsInt"/>
+ <Returns>a morphism
+</Returns>
+ <Description>
+Both commands return the differential of the chain or cochain complex in index <Math>i</Math>.
  </Description>
 </ManSection>
 
 
 <ManSection>
-  <Oper Arg="A,n" Name="CohomologyAsFunctor" Label="for IsCapCategory, IsInt"/>
- <Returns>a functor
+  <Oper Arg="C, n" Name="DefectOfExactness" Label="for IsChainOrCochainComplex, IsInt"/>
+ <Returns>a object
 </Returns>
  <Description>
-The input is an Abelian category <A>A</A> and an integer <A>n</A>. The output is the <Math>n</Math>-th cohomology functor
-<Math>H^n:\mathrm{CoCh}(A) \rightarrow A</Math>.
+The input is a chain or cochain complex <Math>C</Math> and an integer <Math>n</Math>. The outout is the homology(cohomology) object of <Math>C</Math> in index <Math>n</Math> if <Math>C</Math> is chain(cochain) complex.
  </Description>
 </ManSection>
 
 
 <ManSection>
-  <Oper Arg="C(A), n" Name="ShiftAsFunctor" Label="for IsCapCategory, IsInt"/>
- <Returns>a functor
+  <Oper Arg="C, n" Name="IsExactInIndex" Label="for IsChainOrCochainComplex, IsInt"/>
+ <Returns>true or false
 </Returns>
  <Description>
-The input is a complex category <A>C=C(A)</A> and an integer <A>n</A>. The output is the the shift functor
-<Math>T[n]:C \rightarrow C</Math>, defined by <Math>M\mapsto M[n]</Math> for complexes and by <Math>\phi\mapsto \phi[n]</Math> for maps. In chain complex category we have <Math>M[n]_i=M_{n+i}, d_{i}^{M[n]}=(-1)^{n}d_{n+i}^{M}</Math>
-for any chain complex <Math>M\in C</Math> and <Math>\phi[n]_i=\phi_{n+i}</Math> for any chain map <Math>\phi\in C</Math>. The same holds in the cochain complex category, i.e.,
-<Math>M[n]^i=M^{n+i}, d^{i}_{M[n]}=(-1)^{n}d^{n+i}_{M}</Math> and <Math>\phi[n]^i=\phi^{n+i}</Math>.
+The input is a chain or cochain complex <Math>C</Math> and an integer <Math>n</Math>. The outout is <A>true</A> if <Math>C</Math> is exact in <Math>i</Math>. Otherwise the output is <A>false</A>.
  </Description>
 </ManSection>
 
 
 <ManSection>
-  <Oper Arg="C(A), n" Name="UnsignedShiftAsFunctor" Label="for IsCapCategory, IsInt"/>
- <Returns>a functor
+  <Oper Arg="C, n" Name="SetUpperBound" Label="for IsChainOrCochainComplex, IsInt"/>
+ <Returns>a nothing
 </Returns>
  <Description>
-The input is a complex category <A>C=C(A)</A> and an integer <A>n</A>. The output is the the shift functor
-<Math>S[n]:C \rightarrow C</Math>, defined by <Math>M\mapsto S[n](M)</Math> for complexes and by <Math>\phi\mapsto S[n](\phi)</Math> for maps. In chain complex category we have <Math>(S[n](M))_i=M_{n+i}, d_{i}^{S[n](M)}=d_{n+i}^{M}</Math>
-for any chain complex <Math>M\in C</Math> and <Math>\phi[n]_i=\phi_{n+i}</Math> for any chain map <Math>\phi\in C</Math>. The same holds in the cochain complex category, i.e.,
-<Math>(S[n](M))^i=M^{n+i}, d^{i}_{S[n](M)}=d^{n+i}_{M}</Math> and <Math>\phi[n]^i=\phi^{n+i}</Math>.
+The command sets an upper bound <Math>n</Math> to the chain(cochain) complex <Math>C</Math>. This means <Math>C_{i\geq n}=0(C^{\geq n}=0)</Math>. This upper bound will be called <Math>\textit{active}</Math> upper bound and it can be changed whenever it is needed.
  </Description>
 </ManSection>
 
 
 <ManSection>
-  <Oper Arg="A" Name="ChainToCochainComplexAsFunctor" Label="for IsCapCategory"/>
- <Returns>a functor
+  <Oper Arg="C, n" Name="SetLowerBound" Label="for IsChainOrCochainComplex, IsInt"/>
+ <Returns>nothing
 </Returns>
  <Description>
-The input is a category <A>A</A>. The output is the functor <Math>F:\mathrm{Ch(A)}\rightarrow\mathrm{CoCh(A)}</Math> defined by <Math>M_{\bullet}\mapsto M^{\bullet}</Math> for any
-for any chain complex <Math>M_{\bullet}\in \mathrm{Ch}(A)</Math> and by <Math>\phi_{\bullet}\mapsto \phi^{\bullet}</Math> for any map <Math>\phi</Math> where <Math>M^{i}=M_{-i}</Math> and <Math>\phi^{i}=\phi_{-i}</Math>.
+The command sets a lower bound <Math>n</Math> to the chain(cochain) complex <Math>C</Math>. This means <Math>C_{i \leq n}=0(C^{i \leq n}=0)</Math>.
+This lower bound will be called <Math>\textit{active}</Math> lower bound and it can be changed whenever it is needed.
  </Description>
 </ManSection>
 
 
 <ManSection>
-  <Oper Arg="A" Name="CochainToChainComplexAsFunctor" Label="for IsCapCategory"/>
- <Returns>a functor
+  <Oper Arg="C" Name="HasActiveUpperBound" Label="for IsChainOrCochainComplex"/>
+ <Returns>true or false
 </Returns>
  <Description>
-The input is a category <A>A</A>. The output is the functor <Math>F:\mathrm{CoCh(A)}\rightarrow\mathrm{Ch(A)}</Math> defined by <Math>M^{\bullet}\mapsto M_{\bullet}</Math> for any
-cochain complex <Math>M^{\bullet}\in \mathrm{CoCh}(A)</Math> and by <Math>\phi^{\bullet}\mapsto \phi_{\bullet}</Math> for any map <Math>\phi</Math> where <Math>M_{i}=M^{-i}</Math> and <Math>\phi_{i}=\phi^{-i}</Math>.
+The input is chain or cochain complex. The output is <A>true</A> if an upper bound has been set to <Math>C</Math> and <A>false</A> otherwise.
+ </Description>
+</ManSection>
+
+
+<ManSection>
+  <Oper Arg="C" Name="HasActiveLowerBound" Label="for IsChainOrCochainComplex"/>
+ <Returns>true or false
+</Returns>
+ <Description>
+The input is chain or cochain complex. The output is <A>true</A> if a lower bound has been set to <Math>C</Math> and <A>false</A> otherwise.
+ </Description>
+</ManSection>
+
+
+<ManSection>
+  <Oper Arg="C" Name="ActiveUpperBound" Label="for IsChainOrCochainComplex"/>
+ <Returns>an integer
+</Returns>
+ <Description>
+The input is chain or cochain complex. The output is its active upper bound if such has been set to <Math>C</Math>. Otherwise we get error.
+ </Description>
+</ManSection>
+
+
+<ManSection>
+  <Oper Arg="C" Name="ActiveLowerBound" Label="for IsChainOrCochainComplex"/>
+ <Returns>an integer
+</Returns>
+ <Description>
+The input is chain or cochain complex. The output is its active lower bound if such has been set to <Math>C</Math>. Otherwise we get error.
+ </Description>
+</ManSection>
+
+
+<ManSection>
+  <Oper Arg="C, m, n" Name="Display" Label="for IsChainOrCochainComplex, IsInt, IsInt"/>
+ <Returns>nothing
+</Returns>
+ <Description>
+The input is chain or cochain complex <Math>C</Math> and two integers <Math>m</Math> and <Math>n</Math>. The command displays all components of <Math>C</Math> between the indices <Math>m,n</Math>.
  </Description>
 </ManSection>
 

@@ -499,7 +499,7 @@ ChainComplexByDifferentialList );
 #n
 BindGlobal( "FINITE_CHAIN_OR_COCHAIN_COMPLEX",
      function( cat, list, homological_index, string )
-     local zero, zero_map, zero_part, n, diffs, new_list, complex;
+     local zero, zero_map, zero_part, n, diffs, new_list, complex, upper_bound, lower_bound;
   zero := ZeroObject( cat );
   zero_map := ZeroMorphism( zero, zero );
   zero_part := RepeatListN( [ zero_map ] );
@@ -512,15 +512,19 @@ BindGlobal( "FINITE_CHAIN_OR_COCHAIN_COMPLEX",
         new_list := Concatenation( [ ZeroMorphism( Range( list[ 1 ] ), zero ) ], list, [ ZeroMorphism( zero, Source( list[ n ] ) ) ] );
         diffs := Concatenate( zero_part, new_list, zero_part );
         complex := ShiftUnsigned( ChainComplexByDifferentialList( cat, diffs ), 1 - homological_index );
+        lower_bound := homological_index - 2;
+        upper_bound := homological_index + Length( list );
   else
 
         new_list := Concatenation( [ ZeroMorphism( zero, Source( list[ 1 ] ) ) ], list, [ ZeroMorphism( Range( list[ n ] ), zero ) ] );
         diffs := Concatenate( zero_part, new_list, zero_part );
         complex := ShiftUnsigned( CochainComplexByDifferentialList( cat, diffs ), 1 - homological_index );
+        lower_bound := homological_index - 1;
+        upper_bound := homological_index + Length( list ) + 1;
   fi;
 
-  SetLowerBound( complex, homological_index );
-  SetUpperBound( complex, homological_index + Length( list ) - 1 );  
+  SetLowerBound( complex, lower_bound );
+  SetUpperBound( complex, upper_bound );  
   return complex;
 end );
 ##
@@ -557,19 +561,23 @@ InstallMethod( FiniteCochainComplex,
 InstallMethod( StalkChainComplex, 
                    [ IsCapCategoryObject ], 
    function( obj )
-   local zero, diffs;
+   local zero, diffs, complex;
    zero := ZeroObject( CapCategory( obj ) );
    diffs := [ ZeroMorphism( obj, zero ) ];
-   return FiniteChainComplex( diffs );
+   complex := FiniteChainComplex( diffs );
+   SetLowerBound( complex, -1 );
+   return complex;
    end );
 
 InstallMethod( StalkCochainComplex, 
                    [ IsCapCategoryObject ], 
    function( obj )
-   local zero, diffs;
+   local zero, diffs, complex;
    zero := ZeroObject( CapCategory( obj ) );
    diffs := [ ZeroMorphism( obj, zero ) ];
-   return FiniteCochainComplex( diffs );
+   complex := FiniteCochainComplex( diffs );
+   SetUpperBound( complex, 1 );
+   return complex;
    end );
 ##
 
@@ -605,16 +613,18 @@ end );
 #n
 BindGlobal( "CHAIN_OR_COCHAIN_WITH_INDUCTIVE_NEGATIVE_SIDE",
   function( d0, negative_part_function, string )
-  local complex_constructor, negative_part, positive_part, cat, diffs, d1, zero_part;
+  local complex_constructor, negative_part, positive_part, cat, diffs, d1, zero_part, complex, upper_bound;
 
   cat := CapCategory( d0 ); 
   zero_part := RepeatListN( [ UniversalMorphismFromZeroObject( ZeroObject( cat ) ) ] );
   if string = "chain" then 
      complex_constructor := ChainComplexByDifferentialList;
      d1 := UniversalMorphismFromZeroObject( Source( d0 ) );
+     upper_bound := 1;
   elif string = "cochain" then
      complex_constructor := CochainComplexByDifferentialList;
      d1 := UniversalMorphismIntoZeroObject( Range( d0 ) );
+     upper_bound := 2;
   else
      Error( "string must be either chain or cochain" );
   fi;
@@ -622,24 +632,28 @@ BindGlobal( "CHAIN_OR_COCHAIN_WITH_INDUCTIVE_NEGATIVE_SIDE",
   negative_part := InductiveList( negative_part_function( d0 ), negative_part_function );
   positive_part := Concatenate( [ d0, d1 ], zero_part );
   diffs := Concatenate( negative_part, positive_part );
-
-  return complex_constructor( cat, diffs );
+  complex :=  complex_constructor( cat, diffs );
+  SetUpperBound( complex, upper_bound );
+  return complex;
+  
 end );
 ##
 
 #n
 BindGlobal( "CHAIN_OR_COCHAIN_WITH_INDUCTIVE_POSITIVE_SIDE",
   function( d0, positive_part_function, string )
-  local complex_constructor, negative_part, positive_part, cat, diffs, d_minus_1, zero_part;
+  local complex_constructor, negative_part, positive_part, cat, diffs, d_minus_1, zero_part, complex, lower_bound;
 
   cat := CapCategory( d0 ); 
   zero_part := RepeatListN( [ UniversalMorphismFromZeroObject( ZeroObject( cat ) ) ] );
   if string = "chain" then 
      complex_constructor := ChainComplexByDifferentialList;
      d_minus_1 := UniversalMorphismIntoZeroObject( Range( d0 ) );
+     lower_bound := -2;
   elif string = "cochain" then
      complex_constructor := CochainComplexByDifferentialList;
      d_minus_1 := UniversalMorphismFromZeroObject( Source( d0 ) );
+     lower_bound := -1;
   else
      Error( "string must be either chain or cochain" );
   fi;
@@ -647,8 +661,9 @@ BindGlobal( "CHAIN_OR_COCHAIN_WITH_INDUCTIVE_POSITIVE_SIDE",
   positive_part := InductiveList( d0, positive_part_function );
   negative_part := Concatenate( [ d_minus_1 ], zero_part );
   diffs := Concatenate( negative_part, positive_part );
-
-  return complex_constructor( cat, diffs );
+  complex :=  complex_constructor( cat, diffs );
+  SetLowerBound( complex, lower_bound );
+  return complex;
 end );
 ##
 
@@ -721,7 +736,7 @@ InstallMethod( ObjectsOfCochainComplex, [ IsCochainComplex ], Objects );
 #c
 InstallMethod( DifferentialOfComplex, [ IsChainOrCochainComplex, IsInt ],
   function( C, i )
-  local l;
+  local l,j;
   l := C!.ListOfComputedDifferentials;
      if i in List( l, i->i[ 1 ] ) then 
         for j in l do
@@ -741,7 +756,7 @@ InstallMethod( \^, [ IsChainOrCochainComplex, IsInt ], DifferentialOfComplex );
 
 InstallMethod( ObjectOfComplex, [ IsChainOrCochainComplex, IsInt ],
 function( C, i )
-  local l;
+  local l,j;
   l := C!.ListOfComputedObjects;
      if i in List( l, i->i[ 1 ] ) then 
         for j in l do
@@ -883,241 +898,6 @@ end );
 InstallMethod( HomologyOfComplex, [ IsChainComplex, IsInt ], HomologyOfChainComplex );
 ##
 
-####################################
-#
-#    Functors 
-#
-####################################
-
-# Homology and Cohomology functors
-
-#n
-BindGlobal( "HOMOLOGY_OR_COHOMOLOGY_AS_FUNCTOR", 
-     function( cat, i, string )
-     local functor, complex_cat, name;
-     
-     if string = "Homology" then
-     
-     complex_cat := ChainComplexCategory( cat );
-     
-     name := Concatenation( String( i ), "-th homology functor in ", Name( cat ) );
-     
-     else
-     
-     complex_cat := CochainComplexCategory( cat );
-     
-     name := Concatenation( String( i ), "-th cohomology functor in ", Name( cat ) );
-     
-     fi;
-     
-     functor := CapFunctor( name, complex_cat, cat );
-
-     AddObjectFunction( functor, 
-     function( complex )
-     return HOMOLOGY_OR_COHOMOLOGY_OF_COMPLEX( complex, i );
-     end );
-     
-     AddMorphismFunction( functor,
-     function( new_source, map, new_range )
-     return HOMOLOGY_OR_COHOMOLOGY_OF_COMPLEX_FUNCTORIAL( map, i );
-     end );
-     
-     return functor;
-     end );
-##
-
-## Shift functor
-
-#n
-BindGlobal( "SHIFT_AS_FUNCTOR",
-   function( complex_cat, n )
-   local name, shift, morphism_constructor;
-   
-   if IsChainComplexCategory( complex_cat ) then 
-      morphism_constructor := ChainMapByMorphismList;
-   elif IsCochainComplexCategory( complex_cat ) then 
-      morphism_constructor := CochainMapByMorphismList;
-   else 
-      Error( "The category should be either chain or cochain complexes category" );
-   fi;
-   
-   if n = 0 then 
-      return IdentityFunctor( complex_cat );
-   elif n>0 then 
-      name := Concatenation( "Shift (", String( n ), " times to the left) functor in ", Name( complex_cat ) );
-   else
-      name := Concatenation( "Shift (", String( -n ), " times to the right) functor in ", Name( complex_cat ) );
-   fi;
-   
-   shift := CapFunctor( name, complex_cat, complex_cat );
-   
-   AddObjectFunction( shift, 
-     function( complex )
-       return Shift( complex, n );
-     end );
-   AddMorphismFunction( shift, 
-     function( new_source, map, new_range )
-     local morphisms;
-     morphisms := MorphismsOfMap( map );
-     morphisms := Shift( morphisms, n );
-     morphisms := morphism_constructor( new_source, new_range, morphisms );
-     if HasActiveUpperBound( map ) then 
-        SetUpperBound( morphisms, ActiveUpperBound( map ) - n );
-     fi;
-  
-     if HasActiveLowerBound( map ) then 
-        SetLowerBound( morphisms, ActiveLowerBound( map ) - n );
-     fi;
-     
-     return morphisms;
-     end );
-   
-   return shift;
-end );
-##
-
-#n
-BindGlobal( "UNSIGNED_SHIFT_AS_FUNCTOR",
-   function( complex_cat, n )
-   local name, shift, morphism_constructor;
-   
-   if IsChainComplexCategory( complex_cat ) then 
-      morphism_constructor := ChainMapByMorphismList;
-   elif IsCochainComplexCategory( complex_cat ) then 
-      morphism_constructor := CochainMapByMorphismList;
-   else 
-      Error( "The category should be either chain or cochain complexes category" );
-   fi;
-   
-   if n = 0 then 
-      return IdentityFunctor( complex_cat );
-   elif n>0 then 
-      name := Concatenation( "Unsigned shift (", String( n ), " times to the left) functor in ", Name( complex_cat ) );
-   else
-      name := Concatenation( "Unsigned shift (", String( -n ), " times to the right) functor in ", Name( complex_cat ) );
-   fi;
-   
-   shift := CapFunctor( name, complex_cat, complex_cat );
-   
-   AddObjectFunction( shift, 
-     function( complex )
-       return ShiftUnsigned( complex, n );
-     end );
-   AddMorphismFunction( shift, 
-     function( new_source, map, new_range )
-     local morphisms;
-     morphisms := MorphismsOfMap( map );
-     morphisms := Shift( morphisms, n );
-     morphisms := morphism_constructor( new_source, new_range, morphisms );
-     if HasActiveUpperBound( map ) then 
-        SetUpperBound( morphisms, ActiveUpperBound( map ) - n );
-     fi;
-     if HasActiveLowerBound( map ) then 
-        SetLowerBound( morphisms, ActiveLowerBound( map ) - n );
-     fi;
-     return morphisms;
-     end );
-   
-   return shift;
-end );
-##
-
-#n
-BindGlobal( "CHAIN_TO_COCHAIN_OR_COCHAIN_TO_CHAIN_FUNCTOR",
-   function( cat, string )
-   local chain_complexes, cochain_complexes, complex_constructor, name, functor, morphism_constructor; 
-
-   chain_complexes := ChainComplexCategory( cat );
-   cochain_complexes := CochainComplexCategory( cat );
-
-   if string = "chain_to_cochain" then
-      name := Concatenation("Chain to Cochain complex functor over ", Name( cat ) );
-      functor := CapFunctor( name, chain_complexes, cochain_complexes );
-      complex_constructor := CochainComplexByDifferentialList;
-      morphism_constructor := CochainMapByMorphismList;
-   elif string = "cochain_to_chain" then 
-      name := Concatenation("Cochain to chain complex functor over ", Name( cat ) );
-      functor := CapFunctor( name, cochain_complexes, chain_complexes );
-      complex_constructor := ChainComplexByDifferentialList;
-      morphism_constructor := ChainMapByMorphismList;
-   else 
-      Error( "string should be either chain_to_cochain or cochain_to_chain" );
-   fi;
- 
-   AddObjectFunction( functor,
-     function( C )
-     local diffs, neg_part, pos_part, new_diffs, complex;
-     diffs := Differentials( C );
-     neg_part := NegativePartFrom( diffs, 0 );
-     pos_part := PositivePartFrom( diffs, 1 );
-     new_diffs := Concatenate( pos_part, neg_part );
-     complex := complex_constructor( cat, new_diffs );
-     if HasActiveUpperBound( C ) then 
-        SetLowerBound( complex, -ActiveUpperBound( C ) );
-     fi;
-     if HasActiveLowerBound( C ) then 
-        SetUpperBound( complex, -ActiveLowerBound( C ) );
-     fi;
-     return complex;
-     end );
-   AddMorphismFunction( functor, 
-     function( new_source, map, new_range )
-     local morphisms, neg_part, pos_part, new_morphisms;
-     morphisms := MorphismsOfMap( map );
-     neg_part := NegativePartFrom( morphisms, 0 );
-     pos_part := PositivePartFrom( morphisms, 1 );
-     new_morphisms := Concatenate( pos_part, neg_part );
-     new_morphisms := morphism_constructor( new_source, new_range, new_morphisms );
-     if HasActiveUpperBound( map ) then 
-        SetLowerBound( new_morphisms, -ActiveUpperBound( map ) );
-     fi;
-     if HasActiveLowerBound( map ) then 
-        SetUpperBound( new_morphisms, -ActiveLowerBound( map ) );
-     fi;
-     return new_morphisms;
-     end );
-
-   return functor;
-end );
-##
-
-BindGlobal( "FUNCTORS_INSTALLER",
-   function( )
-
-InstallMethod( HomologyAsFunctor, 
-               [ IsCapCategory, IsInt ], 
-  function( cat, i )
-  return HOMOLOGY_OR_COHOMOLOGY_AS_FUNCTOR( cat, i, "Homology" );
-  end );
-
-InstallMethod( CohomologyAsFunctor, 
-               [ IsCapCategory, IsInt ],
-  function( cat, i )
-  return HOMOLOGY_OR_COHOMOLOGY_AS_FUNCTOR( cat, i, "Cohomology" );
-  end );
-
-InstallMethod( ShiftAsFunctor, 
-               [ IsCapCategory, IsInt ],
-SHIFT_AS_FUNCTOR );
-
-InstallMethod( UnsignedShiftAsFunctor, 
-               [ IsCapCategory, IsInt ],
-UNSIGNED_SHIFT_AS_FUNCTOR );
-
-InstallMethod( ChainToCochainComplexAsFunctor, 
-               [ IsCapCategory ], 
-   function( cat )
-   return CHAIN_TO_COCHAIN_OR_COCHAIN_TO_CHAIN_FUNCTOR( cat, "chain_to_cochain" );
-   end );
-
-InstallMethod( CochainToChainComplexAsFunctor, 
-               [ IsCapCategory ], 
-   function( cat )
-   return CHAIN_TO_COCHAIN_OR_COCHAIN_TO_CHAIN_FUNCTOR( cat, "cochain_to_chain" );
-   end );
-end );
-
-FUNCTORS_INSTALLER( );
 
 ########################################
 #
@@ -1175,7 +955,7 @@ BindGlobal( "MAPPING_CONE_OF_CHAIN_OR_COCHAIN_MAP",
 end );
 
 #n
-# InstallMethod( MappingCone, [ IsChainOrCochainMap ], MAPPING_CONE_OF_CHAIN_OR_COCHAIN_MAP );
+InstallMethod( MappingCone, [ IsChainOrCochainMap ], MAPPING_CONE_OF_CHAIN_OR_COCHAIN_MAP );
 ##
  
 ########################################

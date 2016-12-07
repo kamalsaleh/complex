@@ -47,7 +47,7 @@ BindGlobal( "CHAIN_OR_COCHAIN_MAP_BY_LIST",
                            Source, C1,
                            Range, C2,
                            MorphismsOfMap, morphisms );
-                           
+
      elif ForAll( [ C1, C2 ], IsCochainComplex ) then 
         l := 0;
         u := 1;
@@ -62,22 +62,22 @@ BindGlobal( "CHAIN_OR_COCHAIN_MAP_BY_LIST",
 
      if IsBound( C1!.UpperBound ) then
         if IsBound( C2!.UpperBound ) then
-           SetUpperBound( map, Minimum( C1!.UpperBound, C2!.UpperBound ) + u );
+           SetUpperBound( map, Minimum( C1!.UpperBound, C2!.UpperBound ) );
         else
-           SetUpperBound( map, C1!.UpperBound + u);
+           SetUpperBound( map, C1!.UpperBound );
         fi;
      elif IsBound( C2!.UpperBound ) then
-           SetUpperBound( map, C2!.UpperBound + u);
+           SetUpperBound( map, C2!.UpperBound );
      fi;
 
      if IsBound( C1!.LowerBound ) then
         if IsBound( C2!.LowerBound ) then
-           SetLowerBound( map, Maximum( C1!.LowerBound, C2!.LowerBound ) - l );
+           SetLowerBound( map, Maximum( C1!.LowerBound, C2!.LowerBound ) );
         else
-           SetLowerBound( map, C1!.LowerBound - l );
+           SetLowerBound( map, C1!.LowerBound  );
         fi;
      elif IsBound( C2!.LowerBound ) then
-           SetLowerBound( map, C2!.LowerBound - l );
+           SetLowerBound( map, C2!.LowerBound  );
      fi;
      map!.ListOfComputedMorphisms := [ ];
      return map;
@@ -87,61 +87,38 @@ end );
 #n
 BindGlobal( "FINITE_CHAIN_OR_COCHAIN_MAP_BY_THREE_LISTS",
    function( l1,m1, l2,m2, mor, n, string )
-   local cat, complex_category, complex_constructor, map_constructor, 
-         C1, C2, zero, maps, min, max, all_maps, start_of_maps, end_of_maps, base_list, map;
-   
+   local C1, C2, base_list, maps, zero, all_maps, cat, complex_category, complex_constructor, map_constructor, map;
    cat := CapCategory( l1[ 1 ] );
-   min := Minimum( m1, m2 );
-   max := Maximum( m1 + Length( l1 ) - 1, m2 + Length( l2 ) - 1 );
-   
-   start_of_maps := n;
-   end_of_maps := n + Length( mor ) - 1;
-   
+
    if string = "chain_map" then 
       complex_category := ChainComplexCategory( cat );
       complex_constructor := FiniteChainComplex;
       map_constructor := ChainMapByMorphismList;
-      base_list := [ min - 1 .. max ];
-      
    else 
       complex_category := CochainComplexCategory( cat );
       complex_constructor := FiniteCochainComplex;
       map_constructor := CochainMapByMorphismList;
-      base_list := [ min .. max + 1 ];
    fi;
-   
+
    C1 := complex_constructor( l1, m1 );
    C2 := complex_constructor( l2, m2 );
-   
-   maps := List( base_list,      function( i )
+   base_list := [ Minimum( ActiveLowerBound( C1 ), ActiveLowerBound( C2 ) ) + 1 .. Maximum( ActiveUpperBound( C1 ), ActiveUpperBound( C2 ) ) - 1 ];
 
-                                 if i >= start_of_maps and i <= end_of_maps then 
-                                        return mor[ i - start_of_maps + 1 ];
+   maps := List( base_list,      function( i )
+                                 if i >= n and i <= n + Length( mor ) - 1 then 
+                                        return mor[ i - n + 1 ];
                                  else 
                                         return ZeroMorphism( C1[ i ], C2[ i ] );
                                  fi;
                                  end );
-   
    zero := ZeroMorphism( ZeroObject( cat ), ZeroObject( cat ) );
-   
    zero := RepeatListN( [ zero ] );
-   
    all_maps := Concatenate( zero, base_list[ 1 ], maps, zero );
-   
    map := map_constructor( C1, C2, all_maps );
-   
-   if n <= base_list[ Length( base_list ) ] then 
-      SetLowerBound( map, Maximum( n, map!.LowerBound ) );
-      if Minimum( n + Length( mor ) - 1, map!.UpperBound ) >= map!.LowerBound then 
-         SetUpperBound( map, Minimum( n + Length( mor ) - 1, map!.UpperBound ) );
-      else 
-         SetUpperBound( map, map!.LowerBound );
-      fi;
-   else
-      SetLowerBound( map, map!.UpperBound );
-   fi;
-   
-   return map;
+
+  if n >= ActiveUpperBound( map ) then SetIsZero( map, true );fi;
+  if n + Length( mor ) -1 <= ActiveLowerBound( map ) then SetIsZero( map, true ); fi;
+  return map;
 end );
 
 #c
@@ -192,8 +169,14 @@ InstallMethod( FiniteChainMap,
    positive_part := Map( [ PositivePartFrom( obj1, n + 1 ), PositivePartFrom( obj2, n + 1 ) ], ZeroMorphism );
    maps_list := Concatenate( negative_part, n, maps, positive_part );
    map := ChainMapByMorphismList( C1, C2, maps_list );
-   SetLowerBound( map, n );
-   SetUpperBound( map, n + Length( maps ) -1 );
+   if HasActiveUpperBound( map ) and n>= ActiveUpperBound( map ) then 
+      SetIsZero( map, true );
+   fi;
+   
+   if HasActiveLowerBound( map ) and n + Length( maps ) - 1 <= ActiveLowerBound( map ) then 
+      SetIsZero( map, true );
+   fi;
+   # To Do. take care of bounds
    return map;
 end );
 
@@ -208,8 +191,13 @@ InstallMethod( FiniteCochainMap,
    positive_part := Map( [ PositivePartFrom( obj1, n + 1 ), PositivePartFrom( obj2, n + 1 ) ], ZeroMorphism );
    maps_list := Concatenate( negative_part, n, maps, positive_part );
    map := CochainMapByMorphismList( C1, C2, maps_list );
-   SetLowerBound( map, n );
-   SetUpperBound( map, n + Length( maps ) -1 );
+   if HasActiveUpperBound( map ) and n>= ActiveUpperBound( map ) then 
+      SetIsZero( map, true );
+   fi;
+   if HasActiveLowerBound( map ) and n + Length( maps ) - 1 <= ActiveLowerBound( map ) then 
+      SetIsZero( map, true );
+   fi;
+   # To Do. take care of bounds
    return map;
 end );
 
@@ -398,7 +386,9 @@ end );
 InstallMethod( ViewObj, 
                [ IsChainOrCochainMap ],
    function( map )
-   if IsBound( map!.UpperBound ) and IsBound( map!.LowerBound ) then 
+   if HasIsZero( map ) and IsZero( map ) then 
+     TryNextMethod();
+   elif IsBound( map!.UpperBound ) and IsBound( map!.LowerBound ) then 
      Print( "<A bounded morphism in ", Name( CapCategory( map ) ), ">" );
    elif IsBound( map!.LowerBound ) then 
      Print( "<A bounded from bellow morphism in ", Name( CapCategory( map ) ), ">" );
@@ -432,22 +422,16 @@ InstallMethod( IsQuasiIsomorphismMap,
    function( map )
    local min, max, h_functor, functor, i;
 
-   if not IsBound( Source( map )!.UpperBound ) or not IsBound( Source( map )!.LowerBound ) then 
+   if not HasActiveUpperBound(  Source( map ) ) or not HasActiveLowerBound(  Source( map ) ) then 
       Error( "The source is not known to be bounded" );
    fi;
 
-   if not IsBound( Range( map )!.UpperBound ) or not IsBound( Range( map )!.LowerBound ) then 
+   if not HasActiveUpperBound(  Range( map ) ) or not HasActiveLowerBound(  Range( map ) ) then 
       Error( "The range is not known to be bounded" );
    fi;
 
-   min := Minimum( Source( map )!.LowerBound, Range( map )!.LowerBound ) - 1;
-   max := Maximum( Source( map )!.UpperBound, Range( map )!.UpperBound ) + 1;
-
-#  the commented code is also true.
-#  lower_bound := Minimum( l1, l2 );
-#  upper_bound := Maximum( u1, u2 );
-#  cone_mapping := MappingCone( map );
-#  return ForAll( [ lower_bound .. upper_bound + 1 ], i-> IsExactInIndex( cone_mapping, i ) );
+   min := Minimum( ActiveLowerBound(  Source( map ) ), ActiveLowerBound(  Range( map ) ) ) + 1;
+   max := Maximum( ActiveUpperBound(  Source( map ) ), ActiveUpperBound(  Range( map ) ) ) - 1;
 
    if IsChainMap( map ) then 
       h_functor := HomologyAsFunctor;

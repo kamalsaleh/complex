@@ -11,8 +11,6 @@ g := VectorSpaceMorphism( B, HomalgMatrix( [ [ 0 ], [ 0 ] ], 2, 1, Q ), A );;
 
 #  Now I want to define the chain complex
 #  obj index:        -1         0            1             2           3           4         etc.
-#  mor index:              0           1             2          3            4               etc.
-#
 #                          f           g             f          g
 #            <------ B <------- A <--------- B <---------- A <-------- B <--------
 
@@ -69,5 +67,5 @@ P1 := ApplyFunctor( shift1, P );
 #! <An object in Chain complexes category over Category of matrices over Q>
 Display( P1^1 );
 #! [ [  -1,  -3 ] ]
-#! 
+#!
 #! A morphism in Category of matrices over Q

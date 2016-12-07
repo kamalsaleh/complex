@@ -1,6 +1,8 @@
-LoadPackage( "ModulePresentationsForCap" );
-LoadPackage( "complex" );
+LoadPackage( "ModulePresentationsForCap" );;
+LoadPackage( "complex" );;
 
+#! @Chunk example1
+#! @Example
 S := KoszulDualRing( HomalgFieldOfRationalsInSingular()*"x,y,z" );;
 right_pre_category := RightPresentations( S );
 #! Category of right presentations of Q{e0,e1,e2}
@@ -49,6 +51,7 @@ H1 := HomologyAsFunctor( right_pre_category, 1 );
 #! 1-th homology functor in Category of right presentations of Q{e0,e1,e2}
 H2 := HomologyAsFunctor( right_pre_category, 2 );
 #! 2-th homology functor in Category of right presentations of Q{e0,e1,e2}
+
 IsZeroForObjects(ApplyFunctor( H1, cone ) );
 #! false
 IsZeroForMorphisms( ApplyFunctor( H0, map ) );
@@ -57,4 +60,5 @@ IsZeroForMorphisms( ApplyFunctor( H1, map ) );
 #! true
 IsZeroForMorphisms( ApplyFunctor( H2, map ) );
 #! true
-
+#! @EndExample
+#! @EndChunk
