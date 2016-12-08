@@ -897,67 +897,6 @@ end );
 #c
 InstallMethod( HomologyOfComplex, [ IsChainComplex, IsInt ], HomologyOfChainComplex );
 ##
-
-
-########################################
-#
-# Mapping cone
-#
-########################################
-
-BindGlobal( "MAPPING_CONE_OF_CHAIN_OR_COCHAIN_MAP", 
-    function( map )
-    local complex_cat, shift, complex_constructor, morphism_constructor, A, B, C, A_shifted, C_shifted, map1, map2, 
-          map_C_to_A_shifted, map_B_to_C, map_B_shifted_to_C_shifted, map_A_shifted_to_B_shifted, diffs_C, injection, projection, complex;
-    complex_cat := CapCategory( map );
-    
-    if IsChainMap( map ) then 
-       shift := ShiftAsFunctor( complex_cat, -1 );
-       complex_constructor := ChainComplexByDifferentialList;
-       morphism_constructor := ChainMapByMorphismList;
-    else
-       shift := ShiftAsFunctor( complex_cat, 1 );
-       complex_constructor := CochainComplexByDifferentialList;
-       morphism_constructor := CochainMapByMorphismList;
-    fi;
-
-    A := Source( map );
-    B := Range( map );
-    
-    A_shifted := ApplyFunctor( shift, A );
-    
-    C := DirectSum( A_shifted, B );
-    
-    diffs_C := Differentials( C );
-    
-    C_shifted := ApplyFunctor( shift, C );
-    
-    map1 := morphism_constructor( C, C_shifted, diffs_C );
-    
-    map_C_to_A_shifted := ProjectionInFactorOfDirectSum( [ A_shifted, B ], 1 );
-    map_A_shifted_to_B_shifted := ApplyFunctor( shift, map );
-    map_B_to_C := InjectionOfCofactorOfDirectSum( [ A_shifted, B ], 2 );
-    map_B_shifted_to_C_shifted := ApplyFunctor( shift, map_B_to_C );
-    
-    map2 := PreCompose( [ map_C_to_A_shifted, map_A_shifted_to_B_shifted, map_B_shifted_to_C_shifted ] );
-    
-    complex := complex_constructor( UnderlyingCategory( complex_cat), MorphismsOfMap( map1 + map2 ) );
-    if HasActiveLowerBound( map2 ) then SetLowerBound( complex, ActiveLowerBound( map2 ) );fi;
-    if HasActiveUpperBound( map2 ) then SetUpperBound( complex, ActiveUpperBound( map2 ) );fi;
-    
-    injection := MorphismsOfMap( InjectionOfCofactorOfDirectSum( [ A_shifted, B ], 2 ) );
-    projection := MorphismsOfMap( ProjectionInFactorOfDirectSum( [ A_shifted, B ], 1 ) );
-    
-    injection := morphism_constructor( B, complex, injection );
-    projection := morphism_constructor( complex, A_shifted, projection );
-
-    return [ complex, injection, projection ];
-end );
-
-#n
-InstallMethod( MappingCone, [ IsChainOrCochainMap ], MAPPING_CONE_OF_CHAIN_OR_COCHAIN_MAP );
-##
- 
 ########################################
 #
 # Upper and lower bounds of (co)chains

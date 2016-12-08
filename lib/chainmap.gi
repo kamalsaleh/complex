@@ -176,7 +176,12 @@ InstallMethod( FiniteChainMap,
    if HasActiveLowerBound( map ) and n + Length( maps ) - 1 <= ActiveLowerBound( map ) then 
       SetIsZero( map, true );
    fi;
-   # To Do. take care of bounds
+   if not HasActiveLowerBound( map ) then 
+      SetLowerBound( map, n - 1 );
+   fi;
+   if not HasActiveUpperBound( map ) then
+      SetUpperBound( map, n + Length( maps ) );
+   fi;
    return map;
 end );
 
@@ -197,7 +202,14 @@ InstallMethod( FiniteCochainMap,
    if HasActiveLowerBound( map ) and n + Length( maps ) - 1 <= ActiveLowerBound( map ) then 
       SetIsZero( map, true );
    fi;
-   # To Do. take care of bounds
+   
+   if not HasActiveLowerBound( map ) then 
+      SetLowerBound( map, n - 1 );
+   fi;
+   if not HasActiveUpperBound( map ) then
+      SetUpperBound( map, n + Length( maps ) );
+   fi;
+   
    return map;
 end );
 
@@ -447,6 +459,92 @@ InstallMethod( IsQuasiIsomorphismMap,
    return true;
 end );
 ##
+########################################
+#
+# Mapping cone
+#
+########################################
 
+BindGlobal( "MAPPING_CONE_OF_CHAIN_OR_COCHAIN_MAP", 
+    function( map )
+    local complex_cat, shift, complex_constructor, morphism_constructor, A, B, C, A_shifted, C_shifted, map1, map2, 
+          map_C_to_A_shifted, map_B_to_C, map_B_shifted_to_C_shifted, map_A_shifted_to_B_shifted, diffs_C, injection, 
+          projection, complex, u;
+    complex_cat := CapCategory( map );
+    
+    if IsChainMap( map ) then 
+       shift := ShiftAsFunctor( complex_cat, -1 );
+       complex_constructor := ChainComplexByDifferentialList;
+       morphism_constructor := ChainMapByMorphismList;
+       u := -1;
+    else
+       shift := ShiftAsFunctor( complex_cat, 1 );
+       complex_constructor := CochainComplexByDifferentialList;
+       morphism_constructor := CochainMapByMorphismList;
+       u := 1;
+    fi;
+
+    A := Source( map );
+    B := Range( map );
+    
+    A_shifted := ApplyFunctor( shift, A );
+    
+    C := DirectSum( A_shifted, B );
+
+    diffs_C := Differentials( C );
+
+    C_shifted := ApplyFunctor( shift, C );
+
+    map1 := morphism_constructor( C, C_shifted, diffs_C );
+
+    map_C_to_A_shifted := ProjectionInFactorOfDirectSum( [ A_shifted, B ], 1 );
+    map_A_shifted_to_B_shifted := ApplyFunctor( shift, map );
+    map_B_to_C := InjectionOfCofactorOfDirectSum( [ A_shifted, B ], 2 );
+    map_B_shifted_to_C_shifted := ApplyFunctor( shift, map_B_to_C );
+
+    map2 := PreCompose( [ map_C_to_A_shifted, map_A_shifted_to_B_shifted, map_B_shifted_to_C_shifted ] );
+
+    complex := complex_constructor( UnderlyingCategory( complex_cat), MorphismsOfMap( map1 - map2 ) );
+
+    if HasActiveLowerBound( A ) and HasActiveLowerBound( B ) then 
+       SetLowerBound( complex, Minimum( ActiveLowerBound( A ) - u, ActiveLowerBound( B ) ) );
+    fi;
+    if HasActiveUpperBound( A ) and HasActiveUpperBound( B ) then 
+       SetUpperBound( complex, Maximum( ActiveUpperBound( A ) - u, ActiveUpperBound( B ) ) );
+    fi;
+
+    injection := MorphismsOfMap( InjectionOfCofactorOfDirectSum( [ A_shifted, B ], 2 ) );
+    projection := MorphismsOfMap( ProjectionInFactorOfDirectSum( [ A_shifted, B ], 1 ) );
+
+    injection := morphism_constructor( B, complex, injection );
+    projection := morphism_constructor( complex, A_shifted, projection );
+
+    SetInjectionInMappingCone( map, injection );
+    SetProjectionFromMappingCone( map, projection );
+
+    return [ complex, injection, projection ];
+end );
+
+#n
+InstallMethod( MappingCone, [ IsChainOrCochainMap ], 
+   function( map )
+   return MAPPING_CONE_OF_CHAIN_OR_COCHAIN_MAP( map )[ 1 ]; 
+end );
+
+InstallMethod( InjectionInMappingCone, [ IsChainOrCochainMap ], 
+   function( map )
+   local mapping_cone;
+   mapping_cone := MappingCone( map );
+   return InjectionInMappingCone( map );
+end );
+
+InstallMethod( ProjectionFromMappingCone, [ IsChainOrCochainMap ], 
+   function( map )
+   local mapping_cone;
+   mapping_cone := MappingCone( map );
+   return ProjectionFromMappingCone( map );
+end );
+##
+ 
 InstallMethod( SetString, [ IsChainMap, IsString ],
                function( m, str ) end );

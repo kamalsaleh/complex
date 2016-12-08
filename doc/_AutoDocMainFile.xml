@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!-- This is an automatically generated file. -->
+<#Include SYSTEM "_Chapter_Working_with_maps.xml">
 <#Include SYSTEM "_Chapter_Complexes_categories.xml">
 <#Include SYSTEM "_Chapter_Working_with_complexes.xml">
 <#Include SYSTEM "_Chapter_Functors.xml">

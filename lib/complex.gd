@@ -311,7 +311,7 @@ DeclareOperation( "Display", [ IsChainOrCochainComplex, IsInt, IsInt ] );
 
 #! @EndSection
 
-
+#! @InsertChunk maps
 
 
 #c

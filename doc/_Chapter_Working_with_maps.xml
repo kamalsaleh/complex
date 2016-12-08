@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This is an automatically generated file. -->
+<Chapter Label="Chapter_Working_with_maps">
+<Heading>Working with maps</Heading>
+
+<Section Label="Chapter_Working_with_maps_Section_Filters">
+<Heading>Filters</Heading>
+
+<ManSection>
+  <Filt Arg="\phi" Name="IsChainOrCochainMap" Label="for IsCapCategoryMorphism"/>
+ <Returns><C>true</C> or <C>false</C>
+</Returns>
+ <Description>
+bla bla
+ </Description>
+</ManSection>
+
+
+<ManSection>
+  <Filt Arg="\phi" Name="IsChainMap" Label="for IsChainOrCochainMap"/>
+ <Returns><C>true</C> or <C>false</C>
+</Returns>
+ <Description>
+bla bla
+ </Description>
+</ManSection>
+
+
+<ManSection>
+  <Filt Arg="\phi" Name="IsCochainMap" Label="for IsChainOrCochainMap"/>
+ <Returns><C>true</C> or <C>false</C>
+</Returns>
+ <Description>
+bla bla
+ </Description>
+</ManSection>
+
+
+</Section>
+
+
+<Section Label="Chapter_Working_with_maps_Section_Creating_chain_and_cochain_maps">
+<Heading>Creating chain and cochain maps</Heading>
+
+<ManSection>
+  <Oper Arg="A, B, l" Name="ChainMapByMorphismList" Label="for IsChainComplex, IsChainComplex, IsZList"/>
+ <Returns>a chain map
+</Returns>
+ <Description>
+The input is two chain complexes <Math>A,B</Math> and an infinite list <Math>l</Math>.
+The output is the chain map <Math>\phi:A\rightarrow B</Math> defined by <Math>\phi_i :=l[i]</Math>.
+ </Description>
+</ManSection>
+
+
+<ManSection>
+  <Oper Arg="A, B, l" Name="CochainMapByMorphismList" Label="for IsCochainComplex, IsCochainComplex, IsZList"/>
+ <Returns>a cochain map
+</Returns>
+ <Description>
+The input is two cochain complexes <Math>A,B</Math> and an infinite list <Math>l</Math>.
+The output is the cochain map <Math>\phi:A\rightarrow B</Math> defined by <Math>\phi^i :=l[i]</Math> for <Math>i\in\mathcal{Z}</Math>.
+ </Description>
+</ManSection>
+
+
+<ManSection>
+  <Oper Arg="s,m,t,n,l, k" Name="FiniteChainMap" Label="for IsDenseList, IsInt, IsDenseList, IsInt, IsDenseList, IsInt"/>
+ <Returns>a chain map
+</Returns>
+ <Description>
+The output is the chain map <Math>\phi:A\rightarrow B</Math>, where <Math>A_m = s[ 1 ], A_{m+1} =s[ 2 ],</Math> etc.
+<Math>B_n = t[ 1 ], B_{n+1} =t[ 2 ],</Math> etc., and <Math>\phi_{k}=l[1]</Math>, <Math>\phi_{k+1}=l[2]</Math>, etc.
+ </Description>
+</ManSection>
+
+
+<ManSection>
+  <Oper Arg="A,B,l, k" Name="FiniteChainMap" Label="for IsChainComplex, IsChainComplex, IsDenseList, IsInt"/>
+ <Returns>a chain map
+</Returns>
+ <Description>
+The input is two chain complexes <Math>A, B</Math> and a dense list <Math>l</Math> and integer <Math>k</Math>. The output is the finite chain
+<Math>\phi:A\rightarrow B</Math> where <Math>\phi_k=l[1], \phi_{k+1}=l[2],</Math> etc.
+ </Description>
+</ManSection>
+
+
+<ManSection>
+  <Oper Arg="s,m,t,n,l,k" Name="FiniteCochainMap" Label="for IsDenseList, IsInt, IsDenseList, IsInt, IsDenseList, IsInt"/>
+ <Returns>a chain map
+</Returns>
+ <Description>
+The output is the chain map <Math>\phi:A\rightarrow B</Math>, where <Math>A^m = s[ 1 ], A^{m+1} =s[ 2 ],</Math> etc.
+<Math>B^n = t[ 1 ], B^{n+1} =t[ 2 ],</Math> etc., and <Math>\phi^{k}=l[ 1 ]</Math>, <Math>\phi^{k+1}=l[ 2 ]</Math>, etc.
+ </Description>
+</ManSection>
+
+
+<ManSection>
+  <Oper Arg="A, B, l, k" Name="FiniteCochainMap" Label="for IsCochainComplex, IsCochainComplex, IsDenseList, IsInt"/>
+ <Returns>a chain map
+</Returns>
+ <Description>
+The input is two cochain complexes <Math>A, B</Math> and a dense list <Math>l</Math> and integer <Math>k</Math>. The output is the finite cochain
+<Math>\phi:A\rightarrow B</Math> where <Math>\phi_k=l[1], \phi_{k+1}=l[2],</Math> etc.
+ </Description>
+</ManSection>
+
+
+</Section>
+
+
+<Section Label="Chapter_Working_with_maps_Section_Attributes">
+<Heading>Attributes</Heading>
+
+<ManSection Label="m1">
+  <Attr Arg="\phi" Name="MorphismsOfMap" Label="for IsChainOrCochainMap"/>
+  <Attr Arg="\phi" Name="MorphismsOfChainMap" Label="for IsChainMap"/>
+  <Attr Arg="\phi" Name="MorphismsOfCochainMap" Label="for IsCochainMap"/>
+ <Returns>infinite list
+</Returns>
+ <Description>
+The output is morphisms of the map as an infinite list.
+<Br/>
+ </Description>
+</ManSection>
+
+
+<ManSection>
+  <Attr Arg="\phi" Name="MappingCone" Label="for IsChainOrCochainMap"/>
+ <Returns>complex
+</Returns>
+ <Description>
+The input a chain or cochain map <Math>\phi:A \rightarrow B</Math>. The output is its
+mapping cone complex <Math>C(\phi )</Math>.
+ </Description>
+</ManSection>
+
+
+<ManSection>
+  <Attr Arg="\phi" Name="InjectionInMappingCone" Label="for IsChainOrCochainMap"/>
+ <Returns>chain or cochain map
+</Returns>
+ <Description>
+The input a chain or cochain map <Math>\phi:A\rightarrow B</Math>. The output is the natural injection
+<Math>i:B\rightarrow C(\phi )</Math>.
+ </Description>
+</ManSection>
+
+
+<ManSection>
+  <Attr Arg="\phi" Name="ProjectionFromMappingCone" Label="for IsChainOrCochainMap"/>
+ <Returns>chain or cochain map
+</Returns>
+ <Description>
+The input a chain or cochain map <Math>\phi:A\rightarrow B</Math>. The output is the natural projection
+<Math>\pi:C(\phi ) \rightarrow A[u]</Math>. where <Math>u=-1</Math> if <Math>\phi</Math> is chain map and <Math>u=1</Math> if <Math>\phi</Math> is cochain map.
+ </Description>
+</ManSection>
+
+
+</Section>
+
+
+<Section Label="Chapter_Working_with_maps_Section_Operations_on_maps">
+<Heading>Operations on maps</Heading>
+
+<ManSection Label="m2">
+  <Oper Arg="\phi, i" Name="MorphismOfMap" Label="for IsChainOrCochainMap, IsInt"/>
+  <Oper Arg="\phi, i" Name="MorphismOfChainMap" Label="for IsChainMap, IsInt"/>
+  <Oper Arg="\phi, i" Name="MorphismOfCochainMap" Label="for IsCochainMap, IsInt"/>
+ <Returns>morphism
+</Returns>
+ <Description>
+The output is the morphism of the map in index <Math>i</Math>.
+<Br/>
+ </Description>
+</ManSection>
+
+
+<ManSection>
+  <Oper Arg="\phi, n" Name="SetUpperBound" Label="for IsChainOrCochainMap, IsInt"/>
+ <Returns>nothing
+</Returns>
+ <Description>
+The command sets an upper bound to the map <Math>\phi</Math>. An upper bound of <Math>\phi</Math> is an integer <Math>n</Math>
+with <Math>\phi_{i\geq n}= 0</Math>. The integer <Math>n</Math> will be called <Emph>active</Emph> upper bound of <Math>\phi</Math>.
+ </Description>
+</ManSection>
+
+
+<ManSection>
+  <Oper Arg="\phi, m" Name="SetLowerBound" Label="for IsChainOrCochainMap, IsInt"/>
+ <Returns>nothing
+</Returns>
+ <Description>
+The command sets an lower bound to the map <Math>\phi</Math>. An lower bound of <Math>\phi</Math> is an integer <Math>n</Math>
+with <Math>\phi_{i\leq m}= 0</Math>. The integer <Math>n</Math> will be called <Emph>active</Emph> lower bound of <Math>\phi</Math>.
+ </Description>
+</ManSection>
+
+
+<ManSection>
+  <Oper Arg="\phi" Name="HasActiveUpperBound" Label="for IsChainOrCochainMap"/>
+ <Returns>true or false
+</Returns>
+ <Description>
+The input is chain or cochain map <Math>\phi</Math>.
+The output is <A>true</A> if an upper bound has been set to <Math>\phi</Math> and <A>false</A> otherwise.
+ </Description>
+</ManSection>
+
+
+<ManSection>
+  <Oper Arg="\phi" Name="HasActiveLowerBound" Label="for IsChainOrCochainMap"/>
+ <Returns>true or false
+</Returns>
+ <Description>
+The input is chain or cochain map <Math>\phi</Math>.
+The output is <A>true</A> if a lower bound has been set to <Math>\phi</Math> and <A>false</A> otherwise.
+ </Description>
+</ManSection>
+
+
+<ManSection>
+  <Oper Arg="\phi" Name="ActiveUpperBound" Label="for IsChainOrCochainMap"/>
+ <Returns>an integer
+</Returns>
+ <Description>
+The input is chain or cochain map. The output is its active upper bound if such has been set to <Math>\phi</Math>. Otherwise we get error.
+ </Description>
+</ManSection>
+
+
+<ManSection>
+  <Oper Arg="\phi" Name="ActiveLowerBound" Label="for IsChainOrCochainMap"/>
+ <Returns>an integer
+</Returns>
+ <Description>
+The input is chain or cochain map. The output is its active lower bound if such has been set to <Math>\phi</Math>. Otherwise we get error.
+ </Description>
+</ManSection>
+
+
+<ManSection>
+  <Oper Arg="\phi" Name="IsQuasiIsomorphismMap" Label="for IsChainOrCochainMap"/>
+ <Returns>true or false
+</Returns>
+ <Description>
+The input is chain or cochain map. The output is <A>true</A> if <Math>\phi</Math> is quasi-isomorphism.
+Otherwise it returns <A>false</A>. If the source or range of <Math>\phi</Math> are not bounded we get error.
+ </Description>
+</ManSection>
+
+
+</Section>
+
+
+</Chapter>
+
