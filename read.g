@@ -4,6 +4,7 @@
 #ReadPackage( "complex", "lib/cats.gi" );
 ReadPackage( "complex", "lib/assert.gi" );
 ReadPackage( "complex", "lib/inflist.gi" );
+ReadPackage( "complex", "lib/inflist2.gi" );
 ReadPackage( "complex", "lib/complex.gi" );
 ReadPackage( "complex", "lib/chainmap.gi" );
 #ReadPackage( "complex", "lib/cone.gi" );
