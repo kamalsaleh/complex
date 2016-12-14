@@ -135,6 +135,13 @@ end );
 
 InstallMethod( SetString, [ IsInfList, IsString ],
                function( L, str ) end );
+#n
+InstallMethod( ViewObj, 
+                [ IsInfList ],
+   function( l )
+   Print( "<An infinite list>" );
+end );
+##
 
 InstallMethod( AddImplementationUser, [ IsInfList, IsInfList ],
 function( L, userL )
@@ -804,7 +811,10 @@ function( lists, f )
               items -> CallFuncList( f, items ) );
 end );
 
-InstallMethod( Map, [ IsInfList, IsFunction ],
+# changed
+# [ IsInfList, IsFunction ] --> [ IsInfList and IsNList, IsFunction ]
+# because in code there is "IsMapNList".
+InstallMethod( Map, [ IsInfList and IsNList, IsFunction ],
 function( list, f )
   local L;
   L := MakeInfList( IsMapNList,
@@ -814,6 +824,7 @@ function( list, f )
   AddDerivation( list, L );
   return L;
 end );
+##
 
 InstallMethod( \=, [ IsMapNList, IsMapNList ],
 function( L1, L2 )
