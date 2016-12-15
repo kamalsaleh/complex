@@ -3,13 +3,10 @@
 # DeclareCategory( "IsChainOrCochainComplex", IsCapCategoryObject );
 # DeclareCategory( "IsChainComplex", IsChainOrCochainComplex );
 # DeclareCategory( "IsCochainComplex", IsChainOrCochainComplex );
+# DeclareCategory( "IsChainOrCochainComplexCategory", IsCapCategory );
+# DeclareCategory( "IsChainComplexCategory", IsChainOrCochainComplexCategory );
+# DeclareCategory( "IsCochainComplexCategory", IsChainOrCochainComplexCategory );
 # }
-
-
-DeclareCategory( "IsChainOrCochainComplexCategory", IsCapCategory );
-DeclareCategory( "IsChainComplexCategory", IsChainOrCochainComplexCategory );
-DeclareCategory( "IsCochainComplexCategory", IsChainOrCochainComplexCategory );
-
 DeclareGlobalVariable( "ComplexSingleAssertions" );
 DeclareGlobalVariable( "ComplexDoubleAssertions" );
 
