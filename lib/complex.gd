@@ -1,6 +1,11 @@
-DeclareCategory( "IsChainOrCochainComplex", IsCapCategoryObject );
-DeclareCategory( "IsChainComplex", IsChainOrCochainComplex );
-DeclareCategory( "IsCochainComplex", IsChainOrCochainComplex );
+# The commented declarations are now in file complexes.gd 
+# {
+# DeclareCategory( "IsChainOrCochainComplex", IsCapCategoryObject );
+# DeclareCategory( "IsChainComplex", IsChainOrCochainComplex );
+# DeclareCategory( "IsCochainComplex", IsChainOrCochainComplex );
+# }
+
+
 DeclareCategory( "IsChainOrCochainComplexCategory", IsCapCategory );
 DeclareCategory( "IsChainComplexCategory", IsChainOrCochainComplexCategory );
 DeclareCategory( "IsCochainComplexCategory", IsChainOrCochainComplexCategory );
@@ -42,8 +47,13 @@ DeclareOperation( "SyzygyCosyzygyTruncation", [ IsChainComplex, IsInt, IsInt ] )
 DeclareAttribute( "CatOfComplex", IsChainComplex );
 DeclareOperation( "ObjectOfComplex", [ IsChainComplex, IsInt ] );
 DeclareOperation( "DifferentialOfComplex", [ IsChainComplex, IsInt ] );
-DeclareOperation( "\^", [ IsChainComplex, IsInt ] );
-DeclareOperation( "\[\]", [ IsChainComplex, IsInt ] );
+
+# The commented declarations are now in file complexes.gd 
+# {
+# DeclareOperation( "\^", [ IsChainComplex, IsInt ] );
+# DeclareOperation( "\[\]", [ IsChainComplex, IsInt ] );
+# }
+
 DeclareAttribute( "DifferentialsOfComplex", IsChainComplex );
 DeclareAttribute( "ObjectsOfComplex", IsChainComplex );
 DeclareOperation( "CyclesOfComplex", [ IsChainComplex, IsInt ] );
