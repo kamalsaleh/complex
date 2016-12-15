@@ -23,8 +23,8 @@ end );
 InstallMethod( FiniteChainMap, [ IsChainComplex, IsChainComplex, IsInt, IsDenseList ],
 function( C1, C2, base_pos, morphisms_list )
   local zero_morphisms, morphisms;
-  zero_morphisms := Map( [ ObjectsOfComplex( C1 ),
-                           ObjectsOfComplex( C2 ) ],
+  zero_morphisms := Map( [ Objects( C1 ),
+                           Objects( C2 ) ],
                          ZeroMorphism );
   morphisms := Replace( zero_morphisms, base_pos, morphisms_list );
   return ChainMapByMorphismList( C1, C2, morphisms );
@@ -33,8 +33,8 @@ end );
 InstallMethod( ZeroChainMap, [ IsChainComplex, IsChainComplex ],
 function( C1, C2 )
   local morphisms;
-  morphisms := Map( [ ObjectsOfComplex( C1 ),
-                      ObjectsOfComplex( C2 ) ],
+  morphisms := Map( [ Objects( C1 ),
+                      Objects( C2 ) ],
                     ZeroMorphism );
   return ChainMapByMorphismList( C1, C2, morphisms );
 end );

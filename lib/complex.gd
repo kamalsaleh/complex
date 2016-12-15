@@ -52,7 +52,9 @@ DeclareOperation( "DifferentialOfComplex", [ IsChainComplex, IsInt ] );
 # }
 
 DeclareAttribute( "DifferentialsOfComplex", IsChainComplex );
-DeclareAttribute( "ObjectsOfComplex", IsChainComplex );
+# This is commented because it cause conflict. 
+# Alternative we can use the command: Objects( C );
+# DeclareAttribute( "ObjectsOfComplex", IsChainComplex );
 DeclareOperation( "CyclesOfComplex", [ IsChainComplex, IsInt ] );
 DeclareOperation( "BoundariesOfComplex", [ IsChainComplex, IsInt ] );
 DeclareOperation( "HomologyOfComplex", [ IsChainComplex, IsInt ] );

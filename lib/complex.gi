@@ -4,7 +4,7 @@
 # DeclareRepresentation( "IsChainComplexRep",
 #                        IsComponentObjectRep and IsAttributeStoringRep,
 #                        [ ] );
-#
+# 
 # BindGlobal( "FamilyOfChainComplexes",
 #             NewFamily( "chain complexes" ) );
 # }
@@ -173,8 +173,8 @@ function( cat )
 
   injection_of_cofactor := function( complexes, i, sum_complex )
     local morphisms;
-    morphisms := Map( [ Combine( List( complexes, ObjectsOfComplex ) ),
-                        ObjectsOfComplex( sum_complex ) ],
+    morphisms := Map( [ Combine( List( complexes, Objects ) ),
+                        Objects( sum_complex ) ],
                       function( summands, sum )
                         return InjectionOfCofactorOfDirectSumWithGivenDirectSum
                                ( summands, i, sum );
@@ -187,8 +187,8 @@ function( cat )
 
   projection_in_factor := function( complexes, i, sum_complex )
     local morphisms;
-    morphisms := Map( [ Combine( List( complexes, ObjectsOfComplex ) ),
-                        ObjectsOfComplex( sum_complex ) ],
+    morphisms := Map( [ Combine( List( complexes, Objects ) ),
+                        Objects( sum_complex ) ],
                       function( summands, sum )
                         return ProjectionInFactorOfDirectSumWithGivenDirectSum
                                ( summands, i, sum );
@@ -235,7 +235,7 @@ function( cat, diffs, make_assertions )
   return C;
 end );
 
-InstallMethod( ObjectsOfComplex, [ IsChainComplex ],
+InstallMethod( Objects, [ IsChainComplex ],
 function( C )
   return Map( DifferentialsOfComplex( C ), Source );
 end );
@@ -402,10 +402,12 @@ function( C )
   return InfListString( opt, DifferentialsOfComplex( C ), true );
 end );
 
-InstallMethod( ViewObj, [ IsChainComplex ],
-function( C )
-  Print( String( C ) );
-end );
+# This is commented because in many cases it causes errors.
+# There is default method already in CAP.
+# InstallMethod( ViewObj, [ IsChainComplex ],
+# function( C )
+#   Print( String( C ) );
+# end );
 
 InstallMethod( SetString, [ IsChainComplex, IsString ],
                function( L, str ) end );
