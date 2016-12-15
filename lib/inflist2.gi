@@ -2,7 +2,7 @@
 
 # Lazy apply of a function f on a z list
 
-InstallMethod( MapLazy, 
+InstallMethod( MapLazy,
                [ IsZList, IsFunction ],
   function( l, f )
   return MakeInfList( IsMapZList,
@@ -11,7 +11,7 @@ InstallMethod( MapLazy,
                       MapFunction, f ] );
 end );
 
-InstallMethod( MapLazy, 
+InstallMethod( MapLazy,
                [ IsDenseList, IsFunction ],
   function( l, f )
   return MapLazy( CombineZLazy( l ), f );
@@ -25,6 +25,27 @@ InstallMethod( CombineZLazy,
   return MakeInfList( IsCombinationZList,
                       rec( ),
                       [ BaseLists, lists ] );
+end );
+
+# shift of MapZList
+
+InstallMethod( ShiftLazy, [ IsZList, IsInt ],
+  function( l, i )
+  return MakeInfList( IsShiftedZList,
+                      rec( ),
+                      [ BaseList, l,
+                        ShiftIndex, i ] );
+end );
+
+# Reflection of z list
+
+InstallMethod( Reflection,
+               [ IsZList ],
+  function( l )
+  return MakeInfList( IsReflectedZList,
+                      rec( ),
+                      [ BaseList, l,
+                        Reflection, l ] );
 end );
 
 # Compute the entry in index n
@@ -48,6 +69,18 @@ InstallMethod( LookupInfList,
    return List( BaseLists( l ), u -> u[ n ] );
 end );
 
+InstallMethod( LookupInfList,
+               [ IsShiftedZList, IsInt ],
+   function( l, n )
+   return BaseList( l )[ n + ShiftIndex( l ) ];
+end );
+
+InstallMethod( LookupInfList,
+               [ IsReflectedZList, IsInt ],
+   function( l, n )
+   return BaseList( l )[ -n ];
+end );
+
 # testing if two combination z lists are equal!
 
 InstallMethod( \=, [ IsCombinationZList, IsCombinationZList ],
@@ -60,4 +93,14 @@ end );
 InstallMethod( \=, [ IsMapZList, IsMapZList ],
   function( l1, l2 )
   return BaseList( l1 ) = BaseList( l2 ) and MapFunction( l1 ) = MapFunction( l2 );
+end );
+
+InstallMethod( \=, [ IsShiftedZList, IsShiftedZList ],
+  function( l1, l2 )
+  return BaseList( l1 ) = BaseList( l2 ) and ShiftIndex( l1 ) = ShiftIndex( l2 );
+end );
+
+InstallMethod( \=, [ IsReflectedZList, IsReflectedZList ],
+  function( l1, l2 )
+  return BaseList( l1 ) = BaseList( l2 );
 end );

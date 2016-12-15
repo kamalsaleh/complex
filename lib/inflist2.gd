@@ -2,6 +2,8 @@
 
 DeclareCategory( "IsMapZList", IsZList );
 DeclareCategory( "IsCombinationZList", IsZList );
+DeclareCategory( "IsShiftedZList", IsZList );
+DeclareCategory( "IsReflectedZList", IsZList );
 
 #############################
 #
@@ -11,7 +13,14 @@ DeclareCategory( "IsCombinationZList", IsZList );
 
 DeclareAttribute( "MapFunction", IsMapZList );
 DeclareAttribute( "BaseList", IsMapZList );
+
+DeclareAttribute( "BaseList", IsShiftedZList );
+DeclareAttribute( "ShiftIndex", IsShiftedZList );
+
 DeclareAttribute( "BaseLists", IsCombinationZList );
+
+DeclareAttribute( "BaseList", IsReflectedZList );
+DeclareAttribute( "Reflection", IsZList );
 
 #############################
 #
@@ -22,4 +31,5 @@ DeclareAttribute( "BaseLists", IsCombinationZList );
 DeclareOperation( "CombineZLazy", [ IsDenseList ] );
 
 DeclareOperation( "MapLazy", [ IsZList, IsFunction ] );
+DeclareOperation( "ShiftLazy", [ IsZList, IsInt ] );
 DeclareOperation( "MapLazy", [ IsDenseList, IsFunction ] );
