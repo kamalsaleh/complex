@@ -1,9 +1,13 @@
-DeclareRepresentation( "IsChainComplexRep",
-                       IsComponentObjectRep and IsAttributeStoringRep,
-                       [ ] );
 
-BindGlobal( "FamilyOfChainComplexes",
-            NewFamily( "chain complexes" ) );
+# The commented declarations are now in file complexes.gi
+# {
+# DeclareRepresentation( "IsChainComplexRep",
+#                        IsComponentObjectRep and IsAttributeStoringRep,
+#                        [ ] );
+#
+# BindGlobal( "FamilyOfChainComplexes",
+#             NewFamily( "chain complexes" ) );
+# }
 
 InstallValue( ComplexSingleAssertions,
 [ [ function( C, i, d )
