@@ -235,30 +235,30 @@ function( cat, diffs, make_assertions )
   return C;
 end );
 
-InstallMethod( Objects, [ IsChainComplex ],
-function( C )
-  return Map( DifferentialsOfComplex( C ), Source );
-end );
+# InstallMethod( Objects, [ IsChainComplex ],
+# function( C )
+#   return Map( DifferentialsOfComplex( C ), Source );
+# end );
 
 InstallMethod( DifferentialOfComplex, [ IsChainComplex, IsInt ],
 function( C, i )
   return DifferentialsOfComplex( C )[ i ];
 end );
 
-InstallMethod( \^, [ IsChainComplex, IsInt ],
-function( C, i )
-  return DifferentialOfComplex( C, i );
-end );
+# InstallMethod( \^, [ IsChainComplex, IsInt ],
+# function( C, i )
+#   return DifferentialOfComplex( C, i );
+# end );
 
 InstallMethod( ObjectOfComplex, [ IsChainComplex, IsInt ],
 function( C, i )
   return Source( DifferentialOfComplex( C, i ) );
 end );
 
-InstallMethod( \[\], [ IsChainComplex, IsInt ],
-function( C, i )
-  return ObjectOfComplex( C, i );
-end );
+# InstallMethod( \[\], [ IsChainComplex, IsInt ],
+# function( C, i )
+#   return ObjectOfComplex( C, i );
+# end );
 
 InstallMethod( CyclesOfComplex, [ IsChainComplex, IsInt ],
 function( C, i )
