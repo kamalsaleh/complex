@@ -9,8 +9,8 @@ DeclareAttribute( "Source", IsChainMap );
 DeclareAttribute( "Range", IsChainMap );
 DeclareAttribute( "MorphismsOfChainMap", IsChainMap );
 DeclareOperation( "MorphismOfChainMap", [ IsChainMap, IsInt ] );
-DeclareOperation( "\^", [ IsChainMap, IsInt ] );
-DeclareOperation( "\[\]", [ IsChainMap, IsInt ] );
+# DeclareOperation( "\^", [ IsChainMap, IsInt ] );
+# DeclareOperation( "\[\]", [ IsChainMap, IsInt ] );
 
 DeclareOperation( "HighestKnownDegree", [ IsChainMap ] );
 DeclareOperation( "LowestKnownDegree", [ IsChainMap ] );
