@@ -7,6 +7,7 @@ ReadPackage( "complex", "lib/inflist.gd" );
 ReadPackage( "complex", "lib/inflist2.gd" );
 ReadPackage( "complex", "lib/complexes.gd" );
 ReadPackage( "complex", "lib/complex.gd" );
+ReadPackage( "complex", "lib/chainmaps.gd" );
 ReadPackage( "complex", "lib/chainmap.gd" );
 ReadPackage( "complex", "lib/categories.gd" );
 #ReadPackage( "complex", "lib/cone.gd" );

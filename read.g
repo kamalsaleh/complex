@@ -8,6 +8,7 @@ ReadPackage( "complex", "lib/inflist2.gi" );
 ReadPackage( "complex", "lib/complexes.gi" );
 ReadPackage( "complex", "lib/complex.gi" );
 ReadPackage( "complex", "lib/categories.gi" );
+ReadPackage( "complex", "lib/chainmaps.gi" );
 ReadPackage( "complex", "lib/chainmap.gi" );
 #ReadPackage( "complex", "lib/cone.gi" );
 #ReadPackage( "complex", "lib/truncations.gi" );
