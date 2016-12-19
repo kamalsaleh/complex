@@ -104,3 +104,4 @@ InstallMethod( \=, [ IsReflectedZList, IsReflectedZList ],
   function( l1, l2 )
   return BaseList( l1 ) = BaseList( l2 );
 end );
+
