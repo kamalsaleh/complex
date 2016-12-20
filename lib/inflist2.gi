@@ -3,18 +3,26 @@
 # Lazy apply of a function f on a z list
 
 InstallMethod( MapLazy,
-               [ IsZList, IsFunction ],
-  function( l, f )
+               [ IsZList, IsFunction, IsInt ],
+  function( l, f, n )
+  
+  if n<0 then 
+
+       Error( "Number of arguments should be >= 0" );
+
+  fi;
+
   return MakeInfList( IsMapZList,
                       rec( ),
                       [ BaseList, l,
-                      MapFunction, f ] );
+                      MapFunction, f,
+                      NrArg, n ] );
 end );
 
 InstallMethod( MapLazy,
-               [ IsDenseList, IsFunction ],
-  function( l, f )
-  return MapLazy( CombineZLazy( l ), f );
+               [ IsDenseList, IsFunction, IsInt ],
+  function( l, f, n )
+  return MapLazy( CombineZLazy( l ), f, n );
 end );
 
 # Lazy combination of z lists
@@ -56,7 +64,7 @@ InstallMethod( LookupInfList,
    local b;
    b := BaseList( l )[ n ];
 
-   if not IsList( b ) then 
+   if NrArg( l) = 1 then 
       return MapFunction( l )( b );
    else 
       return CallFuncList( MapFunction( l ), b );

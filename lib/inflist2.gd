@@ -13,6 +13,7 @@ DeclareCategory( "IsReflectedZList", IsZList );
 
 DeclareAttribute( "MapFunction", IsMapZList );
 DeclareAttribute( "BaseList", IsMapZList );
+DeclareAttribute( "NrArg", IsMapZList );
 
 DeclareAttribute( "BaseList", IsShiftedZList );
 DeclareAttribute( "ShiftIndex", IsShiftedZList );
@@ -30,6 +31,6 @@ DeclareAttribute( "Reflection", IsZList );
 
 DeclareOperation( "CombineZLazy", [ IsDenseList ] );
 
-DeclareOperation( "MapLazy", [ IsZList, IsFunction ] );
+DeclareOperation( "MapLazy", [ IsZList, IsFunction, IsInt ] );
 DeclareOperation( "ShiftLazy", [ IsZList, IsInt ] );
-DeclareOperation( "MapLazy", [ IsDenseList, IsFunction ] );
+DeclareOperation( "MapLazy", [ IsDenseList, IsFunction, IsInt ] );
