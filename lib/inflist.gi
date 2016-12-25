@@ -80,7 +80,8 @@ function( L, i )
   fi;
 end );
 
-InstallMethod( \[\], [ IsZList, IsInt ],
+## new
+InstallMethod( CertainEntryOp, [ IsZList, IsInt ],
 function( L, i )
   if HasImplementation( L ) then
     return Implementation( L )[ i ];
@@ -88,6 +89,9 @@ function( L, i )
     return LookupInfList( L, i );
   fi;
 end );
+
+InstallMethod( \[\], [ IsZList, IsInt ], CertainEntry );
+##
 
 InstallMethod( HasImplementation, [ IsInfList ],
 function( L )

@@ -40,6 +40,9 @@ DeclareAttribute( "Implementation", IsInfList );
 DeclareOperation( "ImplementationNotification", [ IsInfList, IsInfList ] );
 
 DeclareOperation( "\[\]", [ IsNList, IsPosInt ] );
+
+# Now CertainEntry is kind of attribute for any inflist l and integer i.
+KeyDependentOperation( "CertainEntry", IsZList, IsInt, ReturnTrue );
 DeclareOperation( "\[\]", [ IsZList, IsInt ] );
 DeclareOperation( "LookupInfList", [ IsNList, IsPosInt ] );
 DeclareOperation( "LookupInfList", [ IsZList, IsInt ] );
