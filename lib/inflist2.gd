@@ -32,5 +32,5 @@ DeclareAttribute( "Reflection", IsZList );
 DeclareOperation( "CombineZLazy", [ IsDenseList ] );
 
 DeclareOperation( "MapLazy", [ IsZList, IsFunction, IsInt ] );
-DeclareOperation( "ShiftLazy", [ IsZList, IsInt ] );
+KeyDependentOperation( "ShiftLazy", IsZList, IsInt, ReturnTrue );
 DeclareOperation( "MapLazy", [ IsDenseList, IsFunction, IsInt ] );

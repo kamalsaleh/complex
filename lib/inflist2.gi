@@ -37,7 +37,7 @@ end );
 
 # shift of MapZList
 
-InstallMethod( ShiftLazy, [ IsZList, IsInt ],
+InstallMethod( ShiftLazyOp, [ IsZList, IsInt ],
   function( l, i )
   return MakeInfList( IsShiftedZList,
                       rec( ),
