@@ -28,9 +28,9 @@ DeclareOperation( "Coresolution", [ IsAbelianCategory, IsObject, IsFunction ] );
 DeclareOperation( "Shift", [ IsChainComplex, IsInt ] );
 DeclareOperation( "ShiftUnsigned", [ IsChainComplex, IsInt ] );
 DeclareOperation( "YonedaProduct", [ IsChainComplex, IsChainComplex ] );
-
-DeclareOperation( "GoodTruncationBelow", [ IsChainComplex, IsInt ] );
-DeclareOperation( "GoodTruncationAbove", [ IsChainComplex, IsInt ] );
+##c
+#DeclareOperation( "GoodTruncationBelow", [ IsChainComplex, IsInt ] );
+#DeclareOperation( "GoodTruncationAbove", [ IsChainComplex, IsInt ] );
 DeclareOperation( "GoodTruncation", [ IsChainComplex, IsInt, IsInt ] );
 DeclareOperation( "BrutalTruncationBelow", [ IsChainComplex, IsInt ] );
 DeclareOperation( "BrutalTruncationAbove", [ IsChainComplex, IsInt ] );
