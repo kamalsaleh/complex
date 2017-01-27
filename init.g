@@ -11,6 +11,7 @@ ReadPackage( "complex", "lib/chainmaps.gd" );
 #ReadPackage( "complex", "lib/chainmap.gd" );
 ReadPackage( "complex", "lib/categories.gd" );
 ReadPackage( "complex", "lib/functors.gd" );
+ReadPackage( "complex", "lib/resolutions.gd" );
 #ReadPackage( "complex", "lib/cone.gd" );
 #ReadPackage( "complex", "lib/truncations.gd" );
 
