@@ -1,8 +1,8 @@
 SetPackageInfo( rec(
 PackageName := "complex",
 Subtitle := "I wear a chain complex now.  Chain complexes are cool",
-Version := "0.1-dev",
-Date := "24/12/2013",
+Version := "27.01.2017",
+Date := "27/01/2017",
 ##  Optional: if the package manual uses GAPDoc, you may duplicate the 
 ##  version and the release date as shown below to read them while building
 ##  the manual using GAPDoc facilities to distibute documents across files.
@@ -35,6 +35,17 @@ Persons := [
     PostalAddress := "Trondheim",
     Place         := "Trondheim",
     Institution   := "NTNU"
+  ),
+   rec( 
+    LastName      := "Saleh",
+    FirstNames    := "Kamal",
+    IsAuthor      := true,
+    IsMaintainer  := true,
+    Email         := "kamal.saleh@uni-siegen.de",
+    WWWHome       := "https://github.com/kamalsaleh/complex",
+    PostalAddress := "Siegen",
+    Place         := "Siegen University",
+    Institution   := "Reine Mathematik und Informatik"
   ),
   
 ],
