@@ -80,3 +80,22 @@ return CochainMorphism( proj, C, MapLazy( inductive_list, function( j ) return j
 
 end );
 
+InstallMethod( QuasiIsomorphismFromProjectiveResolution,
+                 [ IsBoundedBelowChainComplex ], 
+function( C )
+local cat, F, G, C1, quasi;
+
+cat := UnderlyingCategory( CapCategory( C ) );
+
+F := ChainToCochainComplexFunctor( cat );
+
+G := CochainToChainComplexFunctor( cat );
+
+C1 := ApplyFunctor( F, C );
+
+quasi := QuasiIsomorphismFromProjectiveResolution( C1 );
+
+return ApplyFunctor( G, quasi );
+
+end );
+
