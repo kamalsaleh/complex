@@ -17,4 +17,5 @@ doc/*.toc
 doc/*.out
 doc/*.xml
 doc/manual.lab
+doc/manual.pdf
 doc/manual.six
