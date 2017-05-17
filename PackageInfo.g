@@ -1,8 +1,16 @@
 SetPackageInfo( rec(
 PackageName := "complex",
 Subtitle := "I wear a chain complex now.  Chain complexes are cool",
-Version := "27.01.2017",
-Date := "27/01/2017",
+
+Version := Maximum( [
+                   "2017.05.10", ## Kamals's version
+                   ] ),
+
+Date := ~.Version{[ 1 .. 10 ]},
+Date := Concatenation( ~.Date{[ 9, 10 ]}, "/", ~.Date{[ 6, 7 ]}, "/", ~.Date{[ 1 .. 4 ]} ),
+
+# Version := "27.01.2017",
+# Date := "27/01/2017",
 ##  Optional: if the package manual uses GAPDoc, you may duplicate the 
 ##  version and the release date as shown below to read them while building
 ##  the manual using GAPDoc facilities to distibute documents across files.
