@@ -113,3 +113,17 @@ InstallMethod( \=, [ IsReflectedZList, IsReflectedZList ],
   return BaseList( l1 ) = BaseList( l2 );
 end );
 
+InstallMethod( Replace, 
+               [ IsMapZList, IsInt, IsDenseList ],
+  function( l, n, d )
+  local m;
+  m := Length( d );
+  
+  return MapLazy( IntegersList, function( i )
+                                if i in [ n .. n + m - 1 ] then 
+                                   return d[ i - n + 1 ];
+                                else
+                                   return l[ i ];
+                                fi;
+                                end, 1 );
+end, 1000 );
