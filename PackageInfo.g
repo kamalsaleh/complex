@@ -3,7 +3,7 @@ PackageName := "complex",
 Subtitle := "I wear a chain complex now.  Chain complexes are cool",
 
 Version := Maximum( [
-                   "2017.05.10", ## Kamals's version
+                   "2017.08.01", ## Kamals's version
                    ## this line prevents merge conflicts
                    "2017.05.11", ## Mohamed's version
                    ] ),
