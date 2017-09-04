@@ -772,7 +772,7 @@ end );
 #############################################
 
 ##
-InstallMethod( CycleAtOp, [ IsChainOrCochainComplex, IsInt ],
+InstallMethod( CyclesAtOp, [ IsChainOrCochainComplex, IsInt ],
   function( C, i )
 
   return KernelEmbedding( C^i );
@@ -780,7 +780,7 @@ InstallMethod( CycleAtOp, [ IsChainOrCochainComplex, IsInt ],
 end );
 
 ##
-InstallMethod( BoundaryAtOp, [ IsChainOrCochainComplex, IsInt ],
+InstallMethod( BoundariesAtOp, [ IsChainOrCochainComplex, IsInt ],
   function( C, i )
 
   if IsChainComplex( C ) then
@@ -800,7 +800,7 @@ BindGlobal( "HOMOLOGY_OR_COHOMOLOGY_OF_COMPLEX",
   function( C, i )
   local im, inc;
 
-  im := BoundaryAt( C, i );
+  im := BoundariesAt( C, i );
 
   inc := KernelLift( C^i, im );
 
@@ -828,19 +828,19 @@ BindGlobal( "HOMOLOGY_OR_COHOMOLOGY_OF_COMPLEX_FUNCTORIAL",
 
   C2 := Range( map );
 
-  im1 := BoundaryAt( C1, i );
+  im1 := BoundariesAt( C1, i );
 
   d1 := C1^i;
 
   inc1 := KernelLift( d1, im1 );
 
-  im2 := BoundaryAt( C2, i );
+  im2 := BoundariesAt( C2, i );
 
   d2 := C2^i;
 
   inc2 := KernelLift( d2, im2 );
 
-  cycle1 := CycleAt( C1, i );
+  cycle1 := CyclesAt( C1, i );
 
   map_i := map[ i ];
 
