@@ -1,1 +1,4 @@
 # A new package for GAP
+This package has been splitted into two packages
+  * InfiniteLists    https://github.com/kamalsaleh/InfiniteLists
+  * ComplexesForCAP  https://github.com/kamalsaleh/ComplexesForCAP
